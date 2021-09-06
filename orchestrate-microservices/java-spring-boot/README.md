@@ -1,8 +1,19 @@
-# External Task Worker / Java
+# Orchestrate Microservices By Providing a Spring Boot Application as Process Solutions
 
-* Requirements:
-  * Java >= 8
-  * Maven
+The process solution contains your microservices code alongside
+
+* The process model as BPMN (auto-deployed during startup)
+* Glue code for the service task
+* REST endpoint that then starts a process instance
+
+Walkthrough and Thoughts: https://drive.google.com/file/d/12llz457OOmkzPxv0gQhsdkGtjgoBpZDm/view?usp=sharing
+
+Requirements:
+
+* Java >= 8
+* Maven
+
+How to run:
 
 * Download/clone the code in this folder.
 * You need to set your Camunda cloud client connection details in the file `application.properties`. Simply replace the existing sample values.
