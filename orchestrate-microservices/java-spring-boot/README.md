@@ -6,14 +6,34 @@ The process solution contains your microservices code alongside
 * Glue code for the service task
 * REST endpoint that then starts a process instance
 
-Walkthrough and Thoughts: https://drive.google.com/file/d/12llz457OOmkzPxv0gQhsdkGtjgoBpZDm/view?usp=sharing
-
 Requirements:
 
 * Java >= 8
 * Maven
 
-How to run:
+## Walkthrough and Thoughts
+
+https://drive.google.com/file/d/12llz457OOmkzPxv0gQhsdkGtjgoBpZDm/view?usp=sharing
+
+## Possible steps for a tutorial-like guide
+
+1. Create Model using Camunda Modeler (TBD: Desktop or Cloud)
+2. Add Service Task with `taskType`
+3. TBD (ho we need this step?): Deploy Model (via Modeler) and see it in Operate ("hey - it works")
+4. Create Spring Boot Application (explain from scratch: plain Spring Boot app via https://start.spring.io/ + required dependencies ) and add
+  * process model, 
+  * Zeebe cluster/API properties,  
+  * @EnableZeebeClient Annotation
+  * @ZeebeDeployment Annotation
+5. Start application and see process deployed in Operate ("hey - this is connected")
+6. Add REST Endpoint to start a new process instance (MVN dependency + Code)
+7. Rest application and call REST endpoint, see process instance being started in Operate, waiting in Service Task
+8. Add Worker Code
+9. Restart application and see process instance has finished in Operate, Worker got called (SYSOUT is visible) ("Ah - this is how it works - that's cool - now I can add own code").
+10. Present some further links on how to move on...
+
+
+## How to run
 
 * Download/clone the code in this folder.
 * You need to set your Camunda cloud client connection details in the file `application.properties`. Simply replace the existing sample values.
