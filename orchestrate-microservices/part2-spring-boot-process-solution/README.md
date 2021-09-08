@@ -1,6 +1,6 @@
-# Orchestrate Microservices By Providing a Spring Boot Application as Process Solutions
+# Orchestrate Microservices By Providing a Spring Boot Application as Process Solution
 
-The process solution contains your microservices code alongside
+The self-contained process solution contains your microservices code alongside
 
 * The process model as BPMN (auto-deployed during startup)
 * Glue code for the service task
