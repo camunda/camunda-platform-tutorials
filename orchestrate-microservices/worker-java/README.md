@@ -21,6 +21,5 @@ Now you need to model and deploy a BPMN process that contains a service task of 
 
 Possible extensions:
 
-- [Extend the worker to a self-contained process solution (part 2 of this tutorial)](../part2-spring-boot-process-solution/)
 - Start the worker application multiple times and you will see that all of them serve some traffic
-- Create a worker in another programming language following one of the [Get Started Guides](https://github.com/camunda-cloud/camunda-cloud-get-started)
+- Create a comparable worker in another programming language following one of the [Get Started Guides](https://github.com/camunda-cloud/camunda-cloud-get-started)

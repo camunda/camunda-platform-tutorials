@@ -4,32 +4,26 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.berndruecker.cloud.tutorial</groupId>
-	<artifactId>part2-spring-boot-process-solution</artifactId>
+	<artifactId>part1-spring-boot-worker</artifactId>
+
 	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	
 	<dependencies>
-		<!-- Zeebe Client SDK -->
 		<dependency>
 			<groupId>io.camunda</groupId>
 			<artifactId>spring-zeebe-starter</artifactId>
 			<version>1.1.0</version>
 		</dependency>
-		<!-- Required to offer a REST API via Spring Webflux (of course you could use any other framework too) -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-			<version>2.3.12.RELEASE</version>
-		</dependency>
 	</dependencies>
 
 	<build>
-		<plugins>
+		<plugins>	
 			<plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-    				  <mainClass>io.berndruecker.oreilly.training.ProcessEnabledApplication</mainClass>
+                <artifactId>exec-maven-plugin</artifactId>              
+                <configuration>                         
+    				  <mainClass>io.camunda.getstarted.tutorial.Worker</mainClass>
                 </configuration>
             </plugin>			
 			<plugin>

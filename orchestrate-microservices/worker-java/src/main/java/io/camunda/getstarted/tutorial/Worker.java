@@ -1,4 +1,4 @@
-package io.berndruecker.oreilly.training;
+package io.camunda.getstarted.tutorial;
 
 import java.util.HashMap;
 

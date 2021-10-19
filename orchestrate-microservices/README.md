@@ -1,7 +1,5 @@
 # Orchestrate Microservices
 
-Contains the source code for the process solution developed in the step-by-step tutorital:
+Source code for the tutorial around orchestration of microservices:
 
-* Java
-  * [Part 1: A simple worker written in Java using Spring Boot](part1-spring-boot-worker/)
-  * [Part 2: A self-contained process solution as Spring Boot application](part2-spring-boot-process-solution/)
+* [Worker execuint code on BPMN service tasks, written in Java](worker-java/)
