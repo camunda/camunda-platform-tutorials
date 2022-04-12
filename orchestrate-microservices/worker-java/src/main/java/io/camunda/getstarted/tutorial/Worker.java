@@ -1,6 +1,7 @@
 package io.camunda.getstarted.tutorial;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,20 +19,16 @@ public class Worker {
     SpringApplication.run(Worker.class, args);
   }
   
-  @ZeebeWorker(type = "orchestrate-something")
-  public void orchestrateSomething(final JobClient client, final ActivatedJob job) {
-      // Do the business logic
-      System.out.println("Yeah, now you can orchestrate something :-)");
+  @ZeebeWorker(type = "orchestrate-something", autoComplete = true)
+  public Map<String, Object> orchestrateSomething(final ActivatedJob job) {
 
-      // Probably read some input/output
+      // Do the business logic
+      System.out.println("Yeah, now you can orchestrate something :-) You could use data from the process variables: " + job.getVariables());
+
+      // Probably add some process variables
       HashMap<String, Object> variables = new HashMap<>();
       variables.put("resultValue1", 42);
-
-      // complete the task in the workflow engine
-      client.newCompleteCommand(job.getKey())
-        .variables(variables) 
-        .send()
-        .exceptionally((throwable -> {throw new RuntimeException("Could not complete job", throwable);}));
+      return variables;
   }
 
 }
