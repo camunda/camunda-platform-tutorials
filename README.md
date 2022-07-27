@@ -1,4 +1,4 @@
-# Camunda Cloud Tutorials
+# Camunda Platform 8 Tutorials
 
 Step-by-step tutorials to guide users through Camunda Platform 8 use cases end-to-end.
 
