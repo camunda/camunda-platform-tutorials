@@ -3,6 +3,7 @@ package io.camunda.getstarted.tutorial;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -19,7 +20,7 @@ public class Worker {
     SpringApplication.run(Worker.class, args);
   }
   
-  @ZeebeWorker(type = "orchestrate-something", autoComplete = true)
+  @JobWorker(type = "orchestrate-something")
   public Map<String, Object> orchestrateSomething(final ActivatedJob job) {
 
       // Do the business logic
