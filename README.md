@@ -2,6 +2,21 @@
 
 Step-by-step tutorials to guide users through Camunda Platform 8 use cases end-to-end.
 
-Use Cases:
+Quick Starts:
 
-* [Orchestrate Microservices](orchestrate-microservices/)
+* [Microservices Orchestration](quick-start/microservice%20orchestration)
+* [Human Task Orchestration](quick-start/human-task-orchestration)
+* [API Orchestration](quick-start/api-orchestration)
+
+
+Solutions:
+ 
+* Level Easy:
+	
+* Level Medium
+	* [Absence Request](solutions/absence-request)
+	* [Enforcing SLA](solutions/enforcing-sla)
+	* [Error Handling](solutions/error-handling)
+	* [Expense Reimbursement](solutions/event-registration)
+	* [Order Fulfillment](solutions/order-fulfillment)
+	* [Ticket Booking](solutions/ticket-booking)
