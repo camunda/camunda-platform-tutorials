@@ -1,4 +1,4 @@
-# Expense Reimbursement
+# Event Registration
 **Technical level:** Medium 
 <br>
 **Industry:** Media & Entertainment 
