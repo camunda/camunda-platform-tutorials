@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="ffabaac" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0" camunda:diagramRelationId="3f4f46f7-e146-4fbe-91d6-cf2dac33a2a1">
+  <bpmn:process id="Process_0itncz9" name="Intelligent-routing-with-openai" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:userTaskForm id="UserTaskForm_1jtqu5f">{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.4.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "4cd09b3"
+  },
+  "schemaVersion": 15,
+  "id": "Form_hezkvru",
+  "components": [
+    {
+      "text": "# Customer Inquiry",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0yylpx9",
+        "columns": null
+      },
+      "id": "Field_0i24v3q"
+    },
+    {
+      "label": "Customer message",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_16c54sz",
+        "columns": null
+      },
+      "id": "Field_0wf2m58",
+      "key": "customer_message",
+      "description": "Free text that the customer sent.",
+      "validate": {
+        "required": true
+      },
+      "readonly": true
+    },
+    {
+      "text": "# Response",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_14nv3js",
+        "columns": null
+      },
+      "id": "Field_1faoqh7"
+    },
+    {
+      "values": [
+        {
+          "label": "Resolved",
+          "value": "resolved"
+        },
+        {
+          "label": "Retry with Feedback",
+          "value": "feedback"
+        },
+        {
+          "label": "Route to Engineering Team",
+          "value": "ENGINEERING_TEAM"
+        },
+        {
+          "label": "Route to Sales Team",
+          "value": "SALES_TEAM"
+        },
+        {
+          "label": "Route to Legal Team",
+          "value": "LEGAL_TEAM"
+        }
+      ],
+      "label": "Select",
+      "type": "select",
+      "layout": {
+        "row": "Row_1ys659x",
+        "columns": null
+      },
+      "id": "Field_0w3wry0",
+      "key": "select_route",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Feedback",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0s54ysl",
+        "columns": null
+      },
+      "id": "Field_13710np",
+      "key": "feedback"
+    }
+  ],
+  "type": "default"
+}</zeebe:userTaskForm>
+      <zeebe:userTaskForm id="UserTaskForm_2l872ik">{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.4.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "4cd09b3"
+  },
+  "schemaVersion": 15,
+  "id": "Form_hezkvru",
+  "components": [
+    {
+      "text": "# Customer Inquiry",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0yylpx9",
+        "columns": null
+      },
+      "id": "Field_0i24v3q"
+    },
+    {
+      "label": "Customer message",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_16c54sz",
+        "columns": null
+      },
+      "id": "Field_0wf2m58",
+      "key": "customer_message",
+      "description": "Free text that the customer sent.",
+      "validate": {
+        "required": true
+      },
+      "readonly": true
+    },
+    {
+      "text": "# Response",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_14nv3js",
+        "columns": null
+      },
+      "id": "Field_1faoqh7"
+    },
+    {
+      "values": [
+        {
+          "label": "Resolved",
+          "value": "resolved"
+        },
+        {
+          "label": "Retry with Feedback",
+          "value": "feedback"
+        },
+        {
+          "label": "Route to Engineering Team",
+          "value": "ENGINEERING_TEAM"
+        },
+        {
+          "label": "Route to Sales Team",
+          "value": "SALES_TEAM"
+        },
+        {
+          "label": "Route to Legal Team",
+          "value": "LEGAL_TEAM"
+        }
+      ],
+      "label": "Select",
+      "type": "select",
+      "layout": {
+        "row": "Row_1ys659x",
+        "columns": null
+      },
+      "id": "Field_0w3wry0",
+      "key": "select_route",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Feedback",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0s54ysl",
+        "columns": null
+      },
+      "id": "Field_13710np",
+      "key": "feedback"
+    }
+  ],
+  "type": "default"
+}</zeebe:userTaskForm>
+      <zeebe:userTaskForm id="UserTaskForm_17jodni">{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.4.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "4cd09b3"
+  },
+  "schemaVersion": 15,
+  "id": "Form_hezkvru",
+  "components": [
+    {
+      "text": "# Customer Inquiry",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0yylpx9",
+        "columns": null
+      },
+      "id": "Field_0i24v3q"
+    },
+    {
+      "label": "Customer message",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_16c54sz",
+        "columns": null
+      },
+      "id": "Field_0wf2m58",
+      "key": "customer_message",
+      "description": "Free text that the customer sent.",
+      "validate": {
+        "required": true
+      },
+      "readonly": true
+    },
+    {
+      "text": "# Response",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_14nv3js",
+        "columns": null
+      },
+      "id": "Field_1faoqh7"
+    },
+    {
+      "values": [
+        {
+          "label": "Resolved",
+          "value": "resolved"
+        },
+        {
+          "label": "Retry with Feedback",
+          "value": "feedback"
+        },
+        {
+          "label": "Route to Engineering Team",
+          "value": "ENGINEERING_TEAM"
+        },
+        {
+          "label": "Route to Sales Team",
+          "value": "SALES_TEAM"
+        },
+        {
+          "label": "Route to Legal Team",
+          "value": "LEGAL_TEAM"
+        }
+      ],
+      "label": "Select",
+      "type": "select",
+      "layout": {
+        "row": "Row_1ys659x",
+        "columns": null
+      },
+      "id": "Field_0w3wry0",
+      "key": "select_route",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Feedback",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0s54ysl",
+        "columns": null
+      },
+      "id": "Field_13710np",
+      "key": "feedback"
+    }
+  ],
+  "type": "default"
+}</zeebe:userTaskForm>
+      <zeebe:userTaskForm id="UserTaskForm_2o930gv">{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.4.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "4cd09b3"
+  },
+  "schemaVersion": 15,
+  "id": "Form_ogq5ow1",
+  "components": [
+    {
+      "text": "# Customer Inquiry",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0yylpx9",
+        "columns": null
+      },
+      "id": "Field_0i24v3q"
+    },
+    {
+      "label": "Customer message",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_16c54sz",
+        "columns": null
+      },
+      "id": "Field_0wf2m58",
+      "key": "customer_message",
+      "description": "Free text that the customer sent.",
+      "defaultValue": "How many units do we have to purchase to receive a volume discount?",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default"
+}</zeebe:userTaskForm>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0mqrso0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="happy-end" name="End">
+      <bpmn:incoming>Flow_1h01n0i</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="openai_call" name="AI" zeebe:modelerTemplate="io.camunda.connectors.OpenAI.v1" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjU2cHgiIGhlaWdodD0iMjYwcHgiIHZpZXdCb3g9IjAgMCAyNTYgMjYwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj4KICAgIDx0aXRsZT5PcGVuQUk8L3RpdGxlPgogICAgPGc+CiAgICAgICAgPHBhdGggZD0iTTIzOS4xODM5MTQsMTA2LjIwMjc4MyBDMjQ1LjA1NDMwNCw4OC41MjQyMDk2IDI0My4wMjIyOCw2OS4xNzMzODA1IDIzMy42MDc1OTksNTMuMDk5ODg2NCBDMjE5LjQ1MTY3OCwyOC40NTg4MDIxIDE5MC45OTk3MDMsMTUuNzgzNjEyOSAxNjMuMjEzMDA3LDIxLjczOTUwNSBDMTQ3LjU1NDA3Nyw0LjMyMTQ1ODgzIDEyMy43OTQ5MDksLTMuNDIzOTg1NTQgMTAwLjg3OTAxLDEuNDE4NzM4OTggQzc3Ljk2MzExMDUsNi4yNjE0NjM0OSA1OS4zNjkwMDkzLDIyLjk1NzI1MzYgNTIuMDk1OTYyMSw0NS4yMjE0MjE5IEMzMy44NDM2NDk0LDQ4Ljk2NDQ4NjcgMTguMDkwMTcyMSw2MC4zOTI3NDkgOC44NjY3MjUxMyw3Ni41ODE4MDMzIEMtNS40NDM0OTEsMTAxLjE4Mjk2MiAtMi4xOTU0NDQzMSwxMzIuMjE1MjU1IDE2Ljg5ODY2NjIsMTUzLjMyMDA5NCBDMTEuMDA2MDg2NSwxNzAuOTkwNjU2IDEzLjAxOTcyODMsMTkwLjM0Mzk5MSAyMi40MjM4MjMxLDIwNi40MjI5OTEgQzM2LjU5NzU1NTMsMjMxLjA3MjM0NCA2NS4wNjgwMzQyLDI0My43NDY1NjYgOTIuODY5NTczOCwyMzcuNzgzMzcyIEMxMDUuMjM1NjM5LDI1MS43MDgyNDkgMTIzLjAwMTExMywyNTkuNjMwOTQyIDE0MS42MjM5NjgsMjU5LjUyNjkyIEMxNzAuMTA1MzU5LDI1OS41NTIxNjkgMTk1LjMzNzYxMSwyNDEuMTY1NzE4IDIwNC4wMzc3NzcsMjE0LjA0NTY2MSBDMjIyLjI4NzM0LDIxMC4yOTYzNTYgMjM4LjAzODQ4OSwxOTguODY5NzgzIDI0Ny4yNjcwMTQsMTgyLjY4NTI4IEMyNjEuNDA0NDUzLDE1OC4xMjc1MTUgMjU4LjE0MjQ5NCwxMjcuMjYyNzc1IDIzOS4xODM5MTQsMTA2LjIwMjc4MyBMMjM5LjE4MzkxNCwxMDYuMjAyNzgzIFogTTE0MS42MjM5NjgsMjQyLjU0MTIwNyBDMTMwLjI1NTY4MiwyNDIuNTU5MTc3IDExOS4yNDM4NzYsMjM4LjU3NDY0MiAxMTAuNTE5MzgxLDIzMS4yODYxOTcgTDExMi4wNTQxNDYsMjMwLjQxNjQ5NiBMMTYzLjcyNDU5NSwyMDAuNTkwODgxIEMxNjYuMzQwNjQ4LDE5OS4wNTY0NDQgMTY3Ljk1NDMyMSwxOTYuMjU2ODE4IDE2Ny45NzA3ODEsMTkzLjIyNDAwNSBMMTY3Ljk3MDc4MSwxMjAuMzczNzg4IEwxODkuODE1NjE0LDEzMy4wMTAwMjYgQzE5MC4wMzQxMzIsMTMzLjEyMTQyMyAxOTAuMTg2MjM1LDEzMy4zMzA1NjQgMTkwLjIyNDg4NSwxMzMuNTcyNzc0IEwxOTAuMjI0ODg1LDE5My45NDAyMjkgQzE5MC4xNjg2MDMsMjIwLjc1ODQyNyAxNjguNDQyMTY2LDI0Mi40ODQ4NjQgMTQxLjYyMzk2OCwyNDIuNTQxMjA3IFogTTM3LjE1NzU3NDksMTk3LjkzMDYyIEMzMS40NTY0OTgsMTg4LjA4NjM1OSAyOS40MDk0ODE4LDE3Ni41NDY5ODQgMzEuMzc2NjIzNywxNjUuMzQyNDI2IEwzMi45MTEzODk1LDE2Ni4yNjMyODUgTDg0LjYzMjk5NzMsMTk2LjA4ODkwMSBDODcuMjM4OTM0OSwxOTcuNjE4MjA3IDkwLjQ2ODI3MTcsMTk3LjYxODIwNyA5My4wNzQyMDkzLDE5Ni4wODg5MDEgTDE1Ni4yNTU0MDIsMTU5LjY2Mzc5MyBMMTU2LjI1NTQwMiwxODQuODg1MTExIEMxNTYuMjQzNTU3LDE4NS4xNDk3NzEgMTU2LjExMTcyNSwxODUuMzk0NjAyIDE1NS44OTcyOSwxODUuNTUwMTc2IEwxMDMuNTYxNzc2LDIxNS43MzM5MDMgQzgwLjMwNTQ5NTMsMjI5LjEzMTYzMiA1MC41OTI0OTU0LDIyMS4xNjU0MzUgMzcuMTU3NTc0OSwxOTcuOTMwNjIgWiBNMjMuNTQ5MzE4MSw4NS4zODExMjczIEMyOS4yODk5ODYxLDc1LjQ3MzMwOTcgMzguMzUxMTkxMSw2Ny45MTYyNjQ4IDQ5LjEyODc0ODIsNjQuMDQ3ODgyNSBMNDkuMTI4NzQ4MiwxMjUuNDM4NTE1IEM0OS4wODkxNDkyLDEyOC40NTk0MjUgNTAuNjk2NTM4NiwxMzEuMjYyNTU2IDUzLjMyMzc3NDgsMTMyLjc1NDIzMiBMMTE2LjE5ODAxNCwxNjkuMDI1ODY0IEw5NC4zNTMxODA4LDE4MS42NjIxMDIgQzk0LjExMzIzMjUsMTgxLjc4OTQzNCA5My44MjU3NDYxLDE4MS43ODk0MzQgOTMuNTg1Nzk3OSwxODEuNjYyMTAyIEw0MS4zNTI2MDE1LDE1MS41Mjk1MzQgQzE4LjE0MTk0MjYsMTM4LjA3NjA5OCAxMC4xODE3NjgxLDEwOC4zODU1NjIgMjMuNTQ5MzE4MSw4NS4xMjUzMzMgTDIzLjU0OTMxODEsODUuMzgxMTI3MyBaIE0yMDMuMDE0NiwxMjcuMDc1NTk4IEwxMzkuOTM1NzI1LDkwLjQ0NTg1NDUgTDE2MS43Mjk0LDc3Ljg2MDc3NDggQzE2MS45NjkzNDgsNzcuNzMzNDQzNCAxNjIuMjU2ODM0LDc3LjczMzQ0MzQgMTYyLjQ5Njc4Myw3Ny44NjA3NzQ4IEwyMTQuNzI5OTc5LDEwOC4wNDQ1MDIgQzIzMS4wMzIzMjksMTE3LjQ1MTc0NyAyNDAuNDM3Mjk0LDEzNS40MjYxMDkgMjM4Ljg3MTUwNCwxNTQuMTgyNzM5IEMyMzcuMzA1NzE0LDE3Mi45MzkzNjggMjI1LjA1MDcxOSwxODkuMTA1NTcyIDIwNy40MTQyNjIsMTk1LjY3OTYzIEwyMDcuNDE0MjYyLDEzNC4yODg5OTggQzIwNy4zMjI1MjEsMTMxLjI3Njg2NyAyMDUuNjUwNjk3LDEyOC41MzU4NTMgMjAzLjAxNDYsMTI3LjA3NTU5OCBaIE0yMjQuNzU3MTE2LDk0LjM4NTA4NjcgTDIyMy4yMjIzNSw5My40NjQyMjcyIEwxNzEuNjAzMDYsNjMuMzgyODE3MyBDMTY4Ljk4MTI5Myw2MS44NDQzNzUxIDE2NS43MzI0NTYsNjEuODQ0Mzc1MSAxNjMuMTEwNjg5LDYzLjM4MjgxNzMgTDk5Ljk4MDY1NTQsOTkuODA3OTI1OSBMOTkuOTgwNjU1NCw3NC41ODY2MDc3IEM5OS45NTMzMDA0LDc0LjMyNTQwODggMTAwLjA3MTA5NSw3NC4wNzAxODY5IDEwMC4yODc2MDksNzMuOTIxNTQyNiBMMTUyLjUyMDgwNSw0My43ODg5NzM4IEMxNjguODYzMDk4LDM0LjM3NDM1MTggMTg5LjE3NDI1NiwzNS4yNTI5MDQzIDIwNC42NDI1NzksNDYuMDQzNDg0MSBDMjIwLjExMDkwMyw1Ni44MzQwNjM4IDIyNy45NDkyNjksNzUuNTkyMzk1OSAyMjQuNzU3MTE2LDk0LjE4MDQ1MTMgTDIyNC43NTcxMTYsOTQuMzg1MDg2NyBaIE04OC4wNjA2NDA5LDEzOS4wOTc5MzEgTDY2LjIxNTgwNzYsMTI2LjUxMjg1MSBDNjUuOTk1MDM5OSwxMjYuMzc5MDkxIDY1Ljg0NTA5NjUsMTI2LjE1NDE3NiA2NS44MDY1MzY3LDEyNS44OTg5NDUgTDY1LjgwNjUzNjcsNjUuNjg0OTY2IEM2NS44MzE0NDk1LDQ2LjgyODUzNjcgNzYuNzUwMDYwNSwyOS42ODQ2MDMyIDkzLjgyNzA4NTIsMjEuNjg4MzA1NSBDMTEwLjkwNDExLDEzLjY5MjAwNzkgMTMxLjA2MzgzMywxNi4yODM1NDYyIDE0NS41NjMyLDI4LjMzODk5OCBMMTQ0LjAyODQzNCwyOS4yMDg2OTg2IEw5Mi4zNTc5ODUyLDU5LjAzNDMxNDIgQzg5Ljc0MTkzMjcsNjAuNTY4NzUxMyA4OC4xMjgyNTk3LDYzLjM2ODM3NjcgODguMTExNzk5OCw2Ni40MDExOTAxIEw4OC4wNjA2NDA5LDEzOS4wOTc5MzEgWiBNOTkuOTI5NDk2NSwxMTMuNTE4NSBMMTI4LjA2Njg3LDk3LjMwMTE0MTcgTDE1Ni4yNTU0MDIsMTEzLjUxODUgTDE1Ni4yNTU0MDIsMTQ1Ljk1MzIxOCBMMTI4LjE2OTE4NywxNjIuMTcwNTc3IEw5OS45ODA2NTU0LDE0NS45NTMyMTggTDk5LjkyOTQ5NjUsMTEzLjUxODUgWiIgZmlsbD0iIzAwMDAwMCI+PC9wYXRoPgogICAgPC9nPgo8L3N2Zz4K">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="bearer" target="authentication.type" />
+          <zeebe:input source="=&#34;{{secrets.openApiKey}}&#34;" target="authentication.token" />
+          <zeebe:input source="=if is defined(internal_organization) and internal_organization != null then {&#34;Content-Type&#34;:&#34;application/json&#34;, &#34;OpenAI-Organization&#34;:internal_organization} else {&#34;Content-Type&#34;:&#34;application/json&#34;}" target="headers" />
+          <zeebe:input source="chat" target="operation" />
+          <zeebe:input source="post" target="method" />
+          <zeebe:input source="https://api.openai.com/v1/chat/completions" target="url" />
+          <zeebe:input source="gpt-3.5-turbo" target="internal_model" />
+          <zeebe:input source="1" target="internal_temperature" />
+          <zeebe:input source="=&#34;You are a bot that classifies incoming messages by urgency and department.&#34;" target="internal_systemMessage" />
+          <zeebe:input source="=[ &#10;    { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;You are a bot that classifies incoming messages by importance and department. You can route messages to these departments: &#39;LEGAL_TEAM&#39;, &#39;SALES_TEAM&#39;, &#39;ENGINEERING_TEAM&#39;. Under no circumstances should you use any other department names. Your responses can only contain department name.&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;Understood. My responses will only contain the importance and department name separated by a space.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Your product has bug and crashes on my computer.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;ENGINEERING_TEAM&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Your website breaks data privacy laws. I will report you to the authorities.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;LEGAL_TEAM&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;I need to speak to someone about my account.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES_TEAM&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;How do I install the software?&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;ENGINEERING_TEAM&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;We have advertisment space we want to sell you for your marketing campaigns. Contact us today and save 20%.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES_TEAM&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;I am your biggest customer and have a question about our commercial relationship.&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES_TEAM&#34;&#10;    } &#10;]" target="internal_chatHistory" />
+          <zeebe:input source="=if (select_route != null and select_route != &#34;&#34;) &#10;then&#10;  if (select_route = &#34;feedback&#34;)&#10;  then&#10;    customer_inquiry + &#34;\n\nImportant:\n&#34; + feedback&#10;  else&#10;    customer_inquiry + &#34;\n\nRoute to:\n&#34; + select_route&#10;else &#10;  customer_inquiry" target="internal_prompt" />
+          <zeebe:input source="1" target="internal_choices" />
+          <zeebe:input source="=append(concatenate(if is defined(internal_systemMessage) then [{&#34;role&#34;: &#34;system&#34;, &#34;content&#34;: internal_systemMessage}] else [], if is defined(internal_chatHistory) then internal_chatHistory else []), {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: internal_prompt})" target="internal_messages" />
+          <zeebe:input source="={&#34;model&#34;: if is defined(internal_custom_model) then internal_custom_model else internal_model, &#34;messages&#34;: internal_messages, &#34;n&#34;: number(internal_choices), &#34;temperature&#34;: number(internal_temperature)}" target="body" />
+          <zeebe:input source="30" target="connectionTimeoutInSeconds" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" value="ai_response_raw" />
+          <zeebe:header key="resultExpression" value="={ai_route: response.body.choices[1].message.content}" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0jp9ged</bpmn:incoming>
+      <bpmn:incoming>Flow_16ccfjo</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vcinh5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="gateway_routing">
+      <bpmn:incoming>Flow_0vcinh5</bpmn:incoming>
+      <bpmn:outgoing>flow_sales_inquiry</bpmn:outgoing>
+      <bpmn:outgoing>flow_technical_inquiry</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1gj1kgq</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="activity_sales_team" name="Sales Team">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=customer_inquiry" target="customer_message" />
+        </zeebe:ioMapping>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_1jtqu5f" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_sales_inquiry</bpmn:incoming>
+      <bpmn:outgoing>Flow_07h5nkp</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="activity_engineering_team" name="Engineering Team">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=customer_inquiry" target="customer_message" />
+        </zeebe:ioMapping>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_2l872ik" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_technical_inquiry</bpmn:incoming>
+      <bpmn:outgoing>Flow_088ove7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="gateway_sales_team" default="Flow_0jp9ged">
+      <bpmn:incoming>Flow_07h5nkp</bpmn:incoming>
+      <bpmn:incoming>Flow_088ove7</bpmn:incoming>
+      <bpmn:incoming>Flow_07c5po9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1h01n0i</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0jp9ged</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_04j3j7a" name="Legal Team">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=customer_inquiry" target="customer_message" />
+        </zeebe:ioMapping>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_17jodni" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gj1kgq</bpmn:incoming>
+      <bpmn:outgoing>Flow_07c5po9</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1h01n0i" sourceRef="gateway_sales_team" targetRef="happy-end">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(select_route, "resolved")</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0jp9ged" sourceRef="gateway_sales_team" targetRef="openai_call" />
+    <bpmn:sequenceFlow id="Flow_0vcinh5" sourceRef="openai_call" targetRef="gateway_routing" />
+    <bpmn:sequenceFlow id="flow_sales_inquiry" name="sales inquiry" sourceRef="gateway_routing" targetRef="activity_sales_team">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(ai_route, "SALES_TEAM")</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_technical_inquiry" name="technical inquiry" sourceRef="gateway_routing" targetRef="activity_engineering_team">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(ai_route, "ENGINEERING_TEAM")</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1gj1kgq" name="legeal inquiry" sourceRef="gateway_routing" targetRef="Activity_04j3j7a">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(ai_route, "LEGAL_TEAM")</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_07h5nkp" name="feedback" sourceRef="activity_sales_team" targetRef="gateway_sales_team" />
+    <bpmn:sequenceFlow id="Flow_088ove7" sourceRef="activity_engineering_team" targetRef="gateway_sales_team" />
+    <bpmn:sequenceFlow id="Flow_07c5po9" sourceRef="Activity_04j3j7a" targetRef="gateway_sales_team" />
+    <bpmn:userTask id="Activity_03z512o" name="Customer Inquiry">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_2o930gv" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0mqrso0</bpmn:incoming>
+      <bpmn:outgoing>Flow_16ccfjo</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0mqrso0" sourceRef="StartEvent_1" targetRef="Activity_03z512o" />
+    <bpmn:sequenceFlow id="Flow_16ccfjo" sourceRef="Activity_03z512o" targetRef="openai_call" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0itncz9">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="170" y="208" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dpj9tv_di" bpmnElement="happy-end">
+        <dc:Bounds x="1072" y="210" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1118" y="221" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12czb26_di" bpmnElement="openai_call">
+        <dc:Bounds x="500" y="186" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1gvpzh2_di" bpmnElement="gateway_routing" isMarkerVisible="true">
+        <dc:Bounds x="655" y="201" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zz07fg_di" bpmnElement="activity_sales_team">
+        <dc:Bounds x="790" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_17pljur_di" bpmnElement="activity_engineering_team">
+        <dc:Bounds x="790" y="248" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0gb55cj_di" bpmnElement="gateway_sales_team" isMarkerVisible="true">
+        <dc:Bounds x="995" y="201" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_067lsux" bpmnElement="Activity_04j3j7a">
+        <dc:Bounds x="790" y="348" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03z512o_di" bpmnElement="Activity_03z512o">
+        <dc:Bounds x="260" y="186" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1h01n0i_di" bpmnElement="Flow_1h01n0i">
+        <di:waypoint x="1045" y="226" />
+        <di:waypoint x="1059" y="226" />
+        <di:waypoint x="1059" y="228" />
+        <di:waypoint x="1072" y="228" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jp9ged_di" bpmnElement="Flow_0jp9ged">
+        <di:waypoint x="1020" y="201" />
+        <di:waypoint x="1020" y="78" />
+        <di:waypoint x="550" y="78" />
+        <di:waypoint x="550" y="186" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vcinh5_di" bpmnElement="Flow_0vcinh5">
+        <di:waypoint x="600" y="226" />
+        <di:waypoint x="655" y="226" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nnk4p1_di" bpmnElement="flow_sales_inquiry">
+        <di:waypoint x="680" y="201" />
+        <di:waypoint x="680" y="148" />
+        <di:waypoint x="790" y="148" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="705" y="130" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10bgsuo_di" bpmnElement="flow_technical_inquiry">
+        <di:waypoint x="680" y="251" />
+        <di:waypoint x="680" y="288" />
+        <di:waypoint x="790" y="288" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="705" y="271" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gj1kgq_di" bpmnElement="Flow_1gj1kgq">
+        <di:waypoint x="680" y="251" />
+        <di:waypoint x="680" y="388" />
+        <di:waypoint x="790" y="388" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="703" y="371" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07h5nkp_di" bpmnElement="Flow_07h5nkp">
+        <di:waypoint x="890" y="148" />
+        <di:waypoint x="920" y="148" />
+        <di:waypoint x="920" y="226" />
+        <di:waypoint x="995" y="226" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="936" y="208" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_088ove7_di" bpmnElement="Flow_088ove7">
+        <di:waypoint x="890" y="288" />
+        <di:waypoint x="920" y="288" />
+        <di:waypoint x="920" y="226" />
+        <di:waypoint x="995" y="226" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07c5po9_di" bpmnElement="Flow_07c5po9">
+        <di:waypoint x="890" y="388" />
+        <di:waypoint x="920" y="388" />
+        <di:waypoint x="920" y="226" />
+        <di:waypoint x="995" y="226" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mqrso0_di" bpmnElement="Flow_0mqrso0">
+        <di:waypoint x="206" y="226" />
+        <di:waypoint x="260" y="226" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16ccfjo_di" bpmnElement="Flow_16ccfjo">
+        <di:waypoint x="360" y="226" />
+        <di:waypoint x="500" y="226" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

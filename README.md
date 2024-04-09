@@ -12,6 +12,7 @@ Quick Starts:
 Solutions:
  
 * Level Easy:
+   * [Intelligent Routing](solutions/ai-intelligent-routing) 
 	
 * Level Medium
 	* [Absence Request](solutions/absence-request)
