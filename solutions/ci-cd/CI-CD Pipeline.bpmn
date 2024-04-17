@@ -13,10 +13,29 @@
   "id": "gitlabStartForm",
   "components": [
     {
+      "text": "You can start the blueprint by filling out this form.\nRefer to the [README file](https://github.com/camunda/camunda-platform-tutorials/blob/main/solutions/ci-cd/README.md) to learn more about how to use this blueprint.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row1",
+        "columns": null
+      },
+      "id": "gitlabStartFormIntroduction"
+    },
+    {
+      "label": "Separator",
+      "type": "separator",
+      "layout": {
+        "row": "Row2",
+        "columns": null
+      },
+      "id": "gitlabStartFormSeparator"
+    },
+    {
       "label": "Folder ID",
       "type": "textfield",
       "layout": {
-        "row": "Row1",
+        "row": "Row3",
         "columns": null
       },
       "id": "inputFolderId",
@@ -30,7 +49,7 @@
       "label": "Target base branch",
       "type": "textfield",
       "layout": {
-        "row": "Row2",
+        "row": "Row4",
         "columns": null
       },
       "id": "fieldGitlabBranch",
@@ -38,13 +57,13 @@
       "validate": {
         "required": true
       },
-      "description": "Branch to open the merge request against"
+      "description": "Branch to open the merge request against."
     },
     {
-      "label": "Target GitLab Base URL",
+      "label": "Target GitLab instance base URL",
       "type": "textfield",
       "layout": {
-        "row": "Row3",
+        "row": "Row5",
         "columns": null
       },
       "id": "fieldGitlabBaseUrl",
@@ -55,7 +74,7 @@
       "label": "Target GitLab project id",
       "type": "textfield",
       "layout": {
-        "row": "Row3",
+        "row": "Row5",
         "columns": null
       },
       "id": "fieldGitlabProjectId",
@@ -72,16 +91,35 @@
   "executionPlatformVersion": "8.4.0",
   "exporter": {
     "name": "Camunda Web Modeler",
-    "version": "ffabaac"
+    "version": "8c03b57"
   },
   "schemaVersion": 16,
   "id": "manualQaForm",
   "components": [
     {
+      "text": "This is an example of a user task for a manual QA test after deploying to the development stage and should be adapted to your individual use case.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row1",
+        "columns": null
+      },
+      "id": "manualQaFormIntroduction"
+    },
+    {
+      "label": "Separator",
+      "type": "separator",
+      "layout": {
+        "row": "Row2",
+        "columns": null
+      },
+      "id": "manualQaFormSeparator"
+    },
+    {
       "label": "QA successful",
       "type": "checkbox",
       "layout": {
-        "row": "Row1",
+        "row": "Row3",
         "columns": null
       },
       "id": "fieldQaSuccessfulCheck",
@@ -1048,12 +1086,6 @@
         <dc:Bounds x="390" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1qoa64a_di" bpmnElement="endFileMetadata">
-        <dc:Bounds x="1472" y="142" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1447" y="188" width="85" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1nqnhp6_di" bpmnElement="getFileDetails" isExpanded="true">
         <dc:Bounds x="530" y="80" width="900" height="460" />
         <bpmndi:BPMNLabel />
@@ -1177,6 +1209,12 @@
         <di:waypoint x="820" y="310" />
         <di:waypoint x="855" y="310" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1qoa64a_di" bpmnElement="endFileMetadata">
+        <dc:Bounds x="1472" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1447" y="188" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_07vb2t3_di" bpmnElement="Flow_07vb2t3">
         <di:waypoint x="208" y="160" />
         <di:waypoint x="250" y="160" />
