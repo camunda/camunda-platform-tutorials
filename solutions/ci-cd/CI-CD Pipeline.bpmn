@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="8c03b57" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
   <bpmn:process id="cicdGitlabBlueprint" name="CI/CD Blueprint: GitLab" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="UserTaskForm_22jqpc9">{
@@ -7,7 +7,7 @@
   "executionPlatformVersion": "8.4.0",
   "exporter": {
     "name": "Camunda Web Modeler",
-    "version": "9d86a0d"
+    "version": "8c03b57"
   },
   "schemaVersion": 16,
   "id": "gitlabStartForm",
@@ -16,10 +16,10 @@
       "label": "Folder ID",
       "type": "textfield",
       "layout": {
-        "row": "Row_0gch4mq",
+        "row": "Row1",
         "columns": null
       },
-      "id": "Field_1ng3kqk",
+      "id": "inputFolderId",
       "key": "folderId",
       "description": "Web Modeler ID of the folder to start the CI/CD pipeline for. All files within the root of the folder (i.e. not in subfolders) will be included in the pipeline.",
       "validate": {
@@ -30,10 +30,10 @@
       "label": "Target base branch",
       "type": "textfield",
       "layout": {
-        "row": "Row_04nk8ib",
+        "row": "Row2",
         "columns": null
       },
-      "id": "Field_0cq883y",
+      "id": "fieldGitlabBranch",
       "key": "gitlabBranch",
       "validate": {
         "required": true
@@ -44,10 +44,10 @@
       "label": "Target GitLab Base URL",
       "type": "textfield",
       "layout": {
-        "row": "Row_0eci6ae",
+        "row": "Row3",
         "columns": null
       },
-      "id": "Field_11sqh8c",
+      "id": "fieldGitlabBaseUrl",
       "key": "gitlabBaseUrl",
       "defaultValue": "https://gitlab.com"
     },
@@ -55,10 +55,10 @@
       "label": "Target GitLab project id",
       "type": "textfield",
       "layout": {
-        "row": "Row_0eci6ae",
+        "row": "Row3",
         "columns": null
       },
-      "id": "Field_12y4npd",
+      "id": "fieldGitlabProjectId",
       "key": "gitlabProjectId",
       "validate": {
         "required": true
@@ -69,22 +69,22 @@
 }</zeebe:userTaskForm>
       <zeebe:userTaskForm id="UserTaskForm_2vanl4a">{
   "executionPlatform": "Camunda Cloud",
-  "executionPlatformVersion": "8.5.0",
+  "executionPlatformVersion": "8.4.0",
   "exporter": {
     "name": "Camunda Web Modeler",
     "version": "ffabaac"
   },
   "schemaVersion": 16,
-  "id": "Form_18a4krv",
+  "id": "manualQaForm",
   "components": [
     {
       "label": "QA successful",
       "type": "checkbox",
       "layout": {
-        "row": "Row_1kqo3ge",
+        "row": "Row1",
         "columns": null
       },
-      "id": "Field_1jvxpgn",
+      "id": "fieldQaSuccessfulCheck",
       "key": "qaSuccessfulCheck",
       "defaultValue": true
     }
