@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="f140ca4" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
   <bpmn:process id="cicdGitlabBlueprint" name="CI/CD Blueprint: GitLab" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="UserTaskForm_22jqpc9">{
@@ -446,47 +446,38 @@
           <bpmn:incoming>Flow_0zp499b</bpmn:incoming>
           <bpmn:outgoing>Flow_1vv9nsa</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:parallelGateway id="joinCallWebModeler">
-          <bpmn:incoming>Flow_1jonoiv</bpmn:incoming>
-          <bpmn:incoming>Flow_1of1i29</bpmn:incoming>
-          <bpmn:outgoing>Flow_01pesa7</bpmn:outgoing>
-        </bpmn:parallelGateway>
-        <bpmn:endEvent id="endFileMetadataSubprocess" name="End retrieve file metadata">
-          <bpmn:incoming>Flow_01pesa7</bpmn:incoming>
-        </bpmn:endEvent>
         <bpmn:sequenceFlow id="Flow_0t26nvw" sourceRef="splitCallWebModeler" targetRef="splitIsDmn" />
         <bpmn:sequenceFlow id="Flow_0lx0ky8" sourceRef="splitCallWebModeler" targetRef="getFileContent" />
-        <bpmn:sequenceFlow id="Flow_1jonoiv" sourceRef="getFileContent" targetRef="joinCallWebModeler" />
+        <bpmn:sequenceFlow id="Flow_1jonoiv" sourceRef="getFileContent" targetRef="Event_0wplddb" />
         <bpmn:sequenceFlow id="Flow_1v6w4kw" sourceRef="getLatestMilestone" targetRef="createMilestone" />
         <bpmn:sequenceFlow id="Flow_1ee4vw9" sourceRef="createMilestone" targetRef="splitHasMilestone" />
         <bpmn:sequenceFlow id="Flow_0zp499b" name="yes" sourceRef="splitHasMilestone" targetRef="getDiffingLink">
           <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=latestMilestoneId != null</bpmn:conditionExpression>
         </bpmn:sequenceFlow>
         <bpmn:sequenceFlow id="Flow_1hdkuop" sourceRef="startFileMetadataSubprocess" targetRef="splitCallWebModeler" />
-        <bpmn:exclusiveGateway id="joinHasMilestone">
-          <bpmn:incoming>Flow_1vv9nsa</bpmn:incoming>
-          <bpmn:incoming>Flow_12k5ck5</bpmn:incoming>
-          <bpmn:outgoing>Flow_18uc0kv</bpmn:outgoing>
-        </bpmn:exclusiveGateway>
-        <bpmn:sequenceFlow id="Flow_18uc0kv" sourceRef="joinHasMilestone" targetRef="joinIsDmn" />
-        <bpmn:sequenceFlow id="Flow_1vv9nsa" sourceRef="getDiffingLink" targetRef="joinHasMilestone" />
-        <bpmn:sequenceFlow id="Flow_12k5ck5" name="no" sourceRef="splitHasMilestone" targetRef="joinHasMilestone" />
+        <bpmn:sequenceFlow id="Flow_1vv9nsa" sourceRef="getDiffingLink" targetRef="Event_115unk9" />
+        <bpmn:sequenceFlow id="Flow_12k5ck5" name="no" sourceRef="splitHasMilestone" targetRef="Event_1iom3n8" />
         <bpmn:exclusiveGateway id="splitIsDmn" name="is DMN?" default="Flow_0y214bj">
           <bpmn:incoming>Flow_0t26nvw</bpmn:incoming>
           <bpmn:outgoing>Flow_0y214bj</bpmn:outgoing>
           <bpmn:outgoing>Flow_1hf73xs</bpmn:outgoing>
         </bpmn:exclusiveGateway>
         <bpmn:sequenceFlow id="Flow_0y214bj" name="no" sourceRef="splitIsDmn" targetRef="getLatestMilestone" />
-        <bpmn:sequenceFlow id="Flow_1hf73xs" name="yes" sourceRef="splitIsDmn" targetRef="joinIsDmn">
+        <bpmn:sequenceFlow id="Flow_1hf73xs" name="yes" sourceRef="splitIsDmn" targetRef="Event_0xsq3ll">
           <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=file.type = "DMN"</bpmn:conditionExpression>
         </bpmn:sequenceFlow>
-        <bpmn:exclusiveGateway id="joinIsDmn">
-          <bpmn:incoming>Flow_18uc0kv</bpmn:incoming>
+        <bpmn:endEvent id="Event_0wplddb" name="Retrieved file content">
+          <bpmn:incoming>Flow_1jonoiv</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:endEvent id="Event_1iom3n8" name="first milestone created">
+          <bpmn:incoming>Flow_12k5ck5</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:endEvent id="Event_115unk9" name="new milestone created">
+          <bpmn:incoming>Flow_1vv9nsa</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:endEvent id="Event_0xsq3ll" name="no milestone created for DMN">
           <bpmn:incoming>Flow_1hf73xs</bpmn:incoming>
-          <bpmn:outgoing>Flow_1of1i29</bpmn:outgoing>
-        </bpmn:exclusiveGateway>
-        <bpmn:sequenceFlow id="Flow_1of1i29" sourceRef="joinIsDmn" targetRef="joinCallWebModeler" />
-        <bpmn:sequenceFlow id="Flow_01pesa7" sourceRef="joinCallWebModeler" targetRef="endFileMetadataSubprocess" />
+        </bpmn:endEvent>
       </bpmn:subProcess>
       <bpmn:endEvent id="endFileMetadata" name="Done with getting all files">
         <bpmn:incoming>Flow_10audoq</bpmn:incoming>
@@ -560,10 +551,10 @@
         <bpmn:outgoing>Flow_0yjny1x</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:endEvent id="deployEnd" name="End of deployment pipeline">
-        <bpmn:incoming>Flow_0x42khi</bpmn:incoming>
+        <bpmn:incoming>Flow_15e4m4s</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:parallelGateway id="splitAdditionalTasks" name="Additional tasks required?">
-        <bpmn:incoming>Flow_0e4muu3</bpmn:incoming>
+        <bpmn:incoming>Flow_1gxd4to</bpmn:incoming>
         <bpmn:outgoing>Flow_05bdmhh</bpmn:outgoing>
         <bpmn:outgoing>Flow_0z9yizb</bpmn:outgoing>
         <bpmn:outgoing>Flow_1qols7b</bpmn:outgoing>
@@ -667,8 +658,6 @@
       <bpmn:sequenceFlow id="Flow_0z9yizb" sourceRef="splitAdditionalTasks" targetRef="optionalBusinessOwnerVerification" />
       <bpmn:sequenceFlow id="Flow_041vriv" sourceRef="optionalBusinessOwnerVerification" targetRef="joinadditionalTasks" />
       <bpmn:sequenceFlow id="Flow_0yjny1x" sourceRef="deployStart" targetRef="joinCheckDevDeployment" />
-      <bpmn:sequenceFlow id="Flow_0x42khi" sourceRef="createMilestoneProdSubprocess" targetRef="deployEnd" />
-      <bpmn:sequenceFlow id="Flow_0e4muu3" sourceRef="createMilestoneStageSubprocess" targetRef="splitAdditionalTasks" />
       <bpmn:sequenceFlow id="Flow_1qols7b" sourceRef="splitAdditionalTasks" targetRef="joinadditionalTasks" />
       <bpmn:sequenceFlow id="Flow_0j6wp0j" sourceRef="joinadditionalTasks" targetRef="joinCheckProdDeployment" />
       <bpmn:sequenceFlow id="Flow_1wg2044" name="no" sourceRef="splitCheckDevDeployment" targetRef="joinCheckDevDeployment" />
@@ -680,127 +669,22 @@
       <bpmn:sequenceFlow id="Flow_0ht3gql" name="error" sourceRef="splitCheckDevDeployment" targetRef="devDeploymentError">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=devDeploymentWebhookPayload.deployedFolder = folder.metadata.name and devDeploymentWebhookPayload.status = "failure"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_1eg56os" name="yes" sourceRef="splitCheckStageDeployment" targetRef="createMilestoneStageSubprocess">
+      <bpmn:sequenceFlow id="Flow_1eg56os" name="yes" sourceRef="splitCheckStageDeployment" targetRef="Activity_11b2wp3">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=stageDeploymentWebhookPayload.deployedFolder = folder.metadata.name and stageDeploymentWebhookPayload.status = "success"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_15djk0w" name="error" sourceRef="splitCheckStageDeployment" targetRef="stageDeploymentError">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=stageDeploymentWebhookPayload.deployedFolder = folder.metadata.name and stageDeploymentWebhookPayload.status = "failure"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_16kotpf" name="yes" sourceRef="splitCheckProdDeployment" targetRef="createMilestoneProdSubprocess">
+      <bpmn:sequenceFlow id="Flow_16kotpf" name="yes" sourceRef="splitCheckProdDeployment" targetRef="Activity_16ftm5w">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=prodDeploymentWebhookPayload.deployedFolder = folder.metadata.name and prodDeploymentWebhookPayload.status = "success"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_0jdb4pa" name="error" sourceRef="splitCheckProdDeployment" targetRef="prodDeploymentError">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=prodDeploymentWebhookPayload.deployedFolder = folder.metadata.name and prodDeploymentWebhookPayload.status = "failure"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:subProcess id="createMilestoneDevProcess" name="Create milestone for successful dev deployment">
-        <bpmn:incoming>Flow_07jvmtr</bpmn:incoming>
-        <bpmn:outgoing>Flow_00xavty</bpmn:outgoing>
-        <bpmn:multiInstanceLoopCharacteristics>
-          <bpmn:extensionElements>
-            <zeebe:loopCharacteristics inputCollection="=fileDetailList" inputElement="file" />
-          </bpmn:extensionElements>
-        </bpmn:multiInstanceLoopCharacteristics>
-        <bpmn:startEvent id="startCreateMilestoneDev" name="Start create milestone">
-          <bpmn:outgoing>Flow_1fmipag</bpmn:outgoing>
-        </bpmn:startEvent>
-        <bpmn:serviceTask id="createMilestoneDev" name="Create Web Modeler milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
-          <bpmn:extensionElements>
-            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
-            <zeebe:ioMapping>
-              <zeebe:input source="bearer" target="authentication.type" />
-              <zeebe:input source="=webModelerToken" target="authentication.token" />
-              <zeebe:input source="POST" target="method" />
-              <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
-              <zeebe:input source="20" target="connectionTimeoutInSeconds" />
-              <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to dev&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
-            </zeebe:ioMapping>
-            <zeebe:taskHeaders>
-              <zeebe:header key="retryBackoff" value="PT0S" />
-            </zeebe:taskHeaders>
-          </bpmn:extensionElements>
-          <bpmn:incoming>Flow_1fmipag</bpmn:incoming>
-          <bpmn:outgoing>Flow_1qtvpxp</bpmn:outgoing>
-        </bpmn:serviceTask>
-        <bpmn:sequenceFlow id="Flow_1fmipag" sourceRef="startCreateMilestoneDev" targetRef="createMilestoneDev" />
-        <bpmn:endEvent id="endCreateMilestoneDev" name="End create milestone">
-          <bpmn:incoming>Flow_1qtvpxp</bpmn:incoming>
-        </bpmn:endEvent>
-        <bpmn:sequenceFlow id="Flow_1qtvpxp" sourceRef="createMilestoneDev" targetRef="endCreateMilestoneDev" />
-      </bpmn:subProcess>
-      <bpmn:sequenceFlow id="Flow_00xavty" sourceRef="createMilestoneDevProcess" targetRef="manualQaTest" />
-      <bpmn:sequenceFlow id="Flow_07jvmtr" name="yes" sourceRef="splitCheckDevDeployment" targetRef="createMilestoneDevProcess">
+      <bpmn:sequenceFlow id="Flow_00xavty" sourceRef="Activity_1x2wune" targetRef="manualQaTest" />
+      <bpmn:sequenceFlow id="Flow_07jvmtr" name="yes" sourceRef="splitCheckDevDeployment" targetRef="Activity_1x2wune">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=devDeploymentWebhookPayload.deployedFolder = folder.metadata.name and devDeploymentWebhookPayload.status = "success"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:subProcess id="createMilestoneStageSubprocess" name="Create milestone for successful stage deployment">
-        <bpmn:incoming>Flow_1eg56os</bpmn:incoming>
-        <bpmn:outgoing>Flow_0e4muu3</bpmn:outgoing>
-        <bpmn:multiInstanceLoopCharacteristics>
-          <bpmn:extensionElements>
-            <zeebe:loopCharacteristics inputCollection="=fileDetailList" inputElement="file" />
-          </bpmn:extensionElements>
-        </bpmn:multiInstanceLoopCharacteristics>
-        <bpmn:startEvent id="startCreateMilestoneStage" name="Start create milestone">
-          <bpmn:outgoing>Flow_1p75nl3</bpmn:outgoing>
-        </bpmn:startEvent>
-        <bpmn:serviceTask id="createMilestoneStage" name="Create Web Modeler milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
-          <bpmn:extensionElements>
-            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
-            <zeebe:ioMapping>
-              <zeebe:input source="bearer" target="authentication.type" />
-              <zeebe:input source="=webModelerToken" target="authentication.token" />
-              <zeebe:input source="POST" target="method" />
-              <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
-              <zeebe:input source="20" target="connectionTimeoutInSeconds" />
-              <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to stage&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
-            </zeebe:ioMapping>
-            <zeebe:taskHeaders>
-              <zeebe:header key="retryBackoff" value="PT0S" />
-            </zeebe:taskHeaders>
-          </bpmn:extensionElements>
-          <bpmn:incoming>Flow_1p75nl3</bpmn:incoming>
-          <bpmn:outgoing>Flow_1qx9htc</bpmn:outgoing>
-        </bpmn:serviceTask>
-        <bpmn:endEvent id="endCreateMilestoneStage" name="End create milestone">
-          <bpmn:incoming>Flow_1qx9htc</bpmn:incoming>
-        </bpmn:endEvent>
-        <bpmn:sequenceFlow id="Flow_1p75nl3" sourceRef="startCreateMilestoneStage" targetRef="createMilestoneStage" />
-        <bpmn:sequenceFlow id="Flow_1qx9htc" sourceRef="createMilestoneStage" targetRef="endCreateMilestoneStage" />
-      </bpmn:subProcess>
-      <bpmn:subProcess id="createMilestoneProdSubprocess" name="Create milestone for successful prod deployment">
-        <bpmn:incoming>Flow_16kotpf</bpmn:incoming>
-        <bpmn:outgoing>Flow_0x42khi</bpmn:outgoing>
-        <bpmn:multiInstanceLoopCharacteristics>
-          <bpmn:extensionElements>
-            <zeebe:loopCharacteristics inputCollection="=fileDetailList" inputElement="file" />
-          </bpmn:extensionElements>
-        </bpmn:multiInstanceLoopCharacteristics>
-        <bpmn:startEvent id="startCreateMilestoneProd" name="Start create milestone">
-          <bpmn:outgoing>Flow_1mg9qtl</bpmn:outgoing>
-        </bpmn:startEvent>
-        <bpmn:serviceTask id="createMilestoneProd" name="Create Web Modeler milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
-          <bpmn:extensionElements>
-            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
-            <zeebe:ioMapping>
-              <zeebe:input source="bearer" target="authentication.type" />
-              <zeebe:input source="=webModelerToken" target="authentication.token" />
-              <zeebe:input source="POST" target="method" />
-              <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
-              <zeebe:input source="20" target="connectionTimeoutInSeconds" />
-              <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to stage&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
-            </zeebe:ioMapping>
-            <zeebe:taskHeaders>
-              <zeebe:header key="retryBackoff" value="PT0S" />
-            </zeebe:taskHeaders>
-          </bpmn:extensionElements>
-          <bpmn:incoming>Flow_1mg9qtl</bpmn:incoming>
-          <bpmn:outgoing>Flow_0fnfv7e</bpmn:outgoing>
-        </bpmn:serviceTask>
-        <bpmn:endEvent id="endCreateMilestoneProd" name="End create milestone">
-          <bpmn:incoming>Flow_0fnfv7e</bpmn:incoming>
-        </bpmn:endEvent>
-        <bpmn:sequenceFlow id="Flow_1mg9qtl" sourceRef="startCreateMilestoneProd" targetRef="createMilestoneProd" />
-        <bpmn:sequenceFlow id="Flow_0fnfv7e" sourceRef="createMilestoneProd" targetRef="endCreateMilestoneProd" />
-      </bpmn:subProcess>
       <bpmn:exclusiveGateway id="joinCheckDevDeployment">
         <bpmn:incoming>Flow_0yjny1x</bpmn:incoming>
         <bpmn:incoming>Flow_1wg2044</bpmn:incoming>
@@ -819,6 +703,77 @@
         <bpmn:outgoing>Flow_1nkwpv4</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_1nkwpv4" sourceRef="joinCheckProdDeployment" targetRef="prodDeployment" />
+      <bpmn:serviceTask id="Activity_1x2wune" name="Create Web Modeler milestone (dev)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+          <zeebe:ioMapping>
+            <zeebe:input source="bearer" target="authentication.type" />
+            <zeebe:input source="=webModelerToken" target="authentication.token" />
+            <zeebe:input source="POST" target="method" />
+            <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
+            <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to dev&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="retryBackoff" value="PT0S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_07jvmtr</bpmn:incoming>
+        <bpmn:outgoing>Flow_00xavty</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics>
+          <bpmn:extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=fileDetailList" inputElement="file" />
+          </bpmn:extensionElements>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Activity_11b2wp3" name="Create Web Modeler milestone (stage)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+          <zeebe:ioMapping>
+            <zeebe:input source="bearer" target="authentication.type" />
+            <zeebe:input source="=webModelerToken" target="authentication.token" />
+            <zeebe:input source="POST" target="method" />
+            <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
+            <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to stage&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="retryBackoff" value="PT0S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1eg56os</bpmn:incoming>
+        <bpmn:outgoing>Flow_1gxd4to</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics>
+          <bpmn:extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=fileDetailList" inputElement="file" />
+          </bpmn:extensionElements>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1gxd4to" sourceRef="Activity_11b2wp3" targetRef="splitAdditionalTasks" />
+      <bpmn:serviceTask id="Activity_16ftm5w" name="Create Web Modeler milestone (production)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+          <zeebe:ioMapping>
+            <zeebe:input source="bearer" target="authentication.type" />
+            <zeebe:input source="=webModelerToken" target="authentication.token" />
+            <zeebe:input source="POST" target="method" />
+            <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
+            <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to stage&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="retryBackoff" value="PT0S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_16kotpf</bpmn:incoming>
+        <bpmn:outgoing>Flow_15e4m4s</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics>
+          <bpmn:extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=fileDetailList" inputElement="file" />
+          </bpmn:extensionElements>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_15e4m4s" sourceRef="Activity_16ftm5w" targetRef="deployEnd" />
       <bpmn:group id="Group_0gjl7n4" categoryValueRef="CategoryValue_0sd9kfi" />
       <bpmn:group id="Group_0s0at9u" categoryValueRef="CategoryValue_1rwqdsj" />
       <bpmn:group id="Group_0leofmi" categoryValueRef="CategoryValue_0oej3al" />
@@ -866,713 +821,635 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="cicdGitlabBlueprint">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startCicd">
-        <dc:Bounds x="192" y="160" width="36" height="36" />
+        <dc:Bounds x="172" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="177" y="203" width="67" height="14" />
+          <dc:Bounds x="157" y="165" width="68" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_02ba74o" bpmnElement="openMergeRequestSubprocess">
-        <dc:Bounds x="450" y="138" width="100" height="80" />
+        <dc:Bounds x="390" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1vd7wrb_di" bpmnElement="getFileMetadata">
-        <dc:Bounds x="280" y="138" width="100" height="80" />
+        <dc:Bounds x="250" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_00xt4bb_di" bpmnElement="endCicd">
-        <dc:Bounds x="1122" y="160" width="36" height="36" />
+        <dc:Bounds x="942" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1115" y="203" width="51" height="14" />
+          <dc:Bounds x="935" y="165" width="52" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0f6tzhp_di" bpmnElement="checkMergeRequestStatus">
-        <dc:Bounds x="712" y="160" width="36" height="36" />
+        <dc:Bounds x="612" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="695" y="203" width="70" height="27" />
+          <dc:Bounds x="595" y="165" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0bng4eh_di" bpmnElement="joinCheckMergeRequestStatus" isMarkerVisible="true">
-        <dc:Bounds x="795" y="153" width="50" height="50" />
+        <dc:Bounds x="685" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="818" y="143" width="84" height="14" />
+          <dc:Bounds x="667" y="93" width="85" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_119l7yw_di" bpmnElement="mergeRequestClosedError">
-        <dc:Bounds x="802" y="282" width="36" height="36" />
+        <dc:Bounds x="802" y="222" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="785" y="325" width="71" height="27" />
+          <dc:Bounds x="785" y="265" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0u65wmd_di" bpmnElement="deployFile">
-        <dc:Bounds x="950" y="138" width="100" height="80" />
+        <dc:Bounds x="800" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1886x4m_di" bpmnElement="splitCheckMergeRequestStatus" isMarkerVisible="true">
-        <dc:Bounds x="615" y="153" width="50" height="50" />
+        <dc:Bounds x="525" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_14ymik0_di" bpmnElement="Flow_14ymik0">
-        <di:waypoint x="228" y="178" />
-        <di:waypoint x="280" y="178" />
+        <di:waypoint x="208" y="140" />
+        <di:waypoint x="250" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0i10vtb_di" bpmnElement="Flow_0i10vtb">
-        <di:waypoint x="380" y="178" />
-        <di:waypoint x="450" y="178" />
+        <di:waypoint x="350" y="140" />
+        <di:waypoint x="390" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cray7s_di" bpmnElement="Flow_0cray7s">
-        <di:waypoint x="550" y="178" />
-        <di:waypoint x="615" y="178" />
+        <di:waypoint x="490" y="140" />
+        <di:waypoint x="525" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ovwani_di" bpmnElement="Flow_0ovwani">
-        <di:waypoint x="748" y="178" />
-        <di:waypoint x="795" y="178" />
+        <di:waypoint x="648" y="140" />
+        <di:waypoint x="685" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_034n41h_di" bpmnElement="Flow_034n41h">
-        <di:waypoint x="845" y="178" />
-        <di:waypoint x="950" y="178" />
+        <di:waypoint x="735" y="140" />
+        <di:waypoint x="800" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="875" y="160" width="38" height="14" />
+          <dc:Bounds x="741" y="122" width="38" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1y21gn7_di" bpmnElement="Flow_1y21gn7">
-        <di:waypoint x="820" y="203" />
-        <di:waypoint x="820" y="282" />
+        <di:waypoint x="710" y="165" />
+        <di:waypoint x="710" y="240" />
+        <di:waypoint x="802" y="240" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="824" y="233" width="32" height="14" />
+          <dc:Bounds x="744" y="223" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14hk1y4_di" bpmnElement="Flow_14hk1y4">
-        <di:waypoint x="820" y="153" />
-        <di:waypoint x="820" y="100" />
-        <di:waypoint x="640" y="100" />
-        <di:waypoint x="640" y="153" />
+        <di:waypoint x="710" y="165" />
+        <di:waypoint x="710" y="330" />
+        <di:waypoint x="550" y="330" />
+        <di:waypoint x="550" y="165" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="721" y="82" width="21" height="14" />
+          <dc:Bounds x="686" y="312" width="21" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01e3v4d_di" bpmnElement="Flow_01e3v4d">
-        <di:waypoint x="1050" y="178" />
-        <di:waypoint x="1122" y="178" />
+        <di:waypoint x="900" y="140" />
+        <di:waypoint x="942" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0qvo88i_di" bpmnElement="Flow_0qvo88i">
-        <di:waypoint x="665" y="178" />
-        <di:waypoint x="712" y="178" />
+        <di:waypoint x="575" y="140" />
+        <di:waypoint x="612" y="140" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_0re4a5l">
     <bpmndi:BPMNPlane id="BPMNPlane_03hxhbm" bpmnElement="openMergeRequestSubprocess">
       <bpmndi:BPMNShape id="BPMNShape_13m134z" bpmnElement="startOpenMergeRequest">
-        <dc:Bounds x="172" y="212" width="36" height="36" />
+        <dc:Bounds x="172" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="159" y="255" width="70" height="40" />
+          <dc:Bounds x="159" y="185" width="70" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1jbgvju" bpmnElement="endOpenMergeRequest">
-        <dc:Bounds x="1492" y="212" width="36" height="36" />
+        <dc:Bounds x="1142" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1482" y="255" width="67" height="40" />
+          <dc:Bounds x="1132" y="185" width="67" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0n2zuzn_di" bpmnElement="checkFileStatus" isExpanded="true">
-        <dc:Bounds x="470" y="90" width="750" height="280" />
+        <dc:Bounds x="390" y="80" width="570" height="280" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_19xn7c4_di" bpmnElement="startRepositoryFileModification">
-        <dc:Bounds x="514" y="212" width="36" height="36" />
+        <dc:Bounds x="434" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="495" y="255" width="76" height="27" />
+          <dc:Bounds x="415" y="185" width="76" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0hvr0eu_di" bpmnElement="checkFileExists">
-        <dc:Bounds x="632" y="190" width="100" height="80" />
+        <dc:Bounds x="510" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_167lhbv_di" bpmnElement="createRepositoryFile">
-        <dc:Bounds x="820" y="260" width="100" height="80" />
+        <dc:Bounds x="650" y="240" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0jgumt6_di" bpmnElement="updateRepositoryFile">
-        <dc:Bounds x="820" y="120" width="100" height="80" />
+        <dc:Bounds x="650" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0x7cic6_di" bpmnElement="joinRepositofyFile" isMarkerVisible="true">
-        <dc:Bounds x="1017" y="205" width="50" height="50" />
+        <dc:Bounds x="795" y="135" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0230c2i_di" bpmnElement="endRepositoryFileModification">
-        <dc:Bounds x="1132" y="212" width="36" height="36" />
+        <dc:Bounds x="882" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1106" y="255" width="89" height="27" />
+          <dc:Bounds x="856" y="185" width="89" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0i3igde_di" bpmnElement="fileNotFoundBoundaryEvent">
-        <dc:Bounds x="684" y="252" width="36" height="36" />
+        <dc:Bounds x="562" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="541" y="173" width="78" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_14c5u53_di" bpmnElement="Flow_14c5u53">
-        <di:waypoint x="682" y="190" />
-        <di:waypoint x="682" y="160" />
-        <di:waypoint x="820" y="160" />
+        <di:waypoint x="610" y="160" />
+        <di:waypoint x="650" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1xy4jx8_di" bpmnElement="Flow_1xy4jx8">
-        <di:waypoint x="702" y="288" />
-        <di:waypoint x="702" y="300" />
-        <di:waypoint x="820" y="300" />
+        <di:waypoint x="580" y="218" />
+        <di:waypoint x="580" y="280" />
+        <di:waypoint x="650" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_13bxw1h_di" bpmnElement="Flow_13bxw1h">
-        <di:waypoint x="920" y="300" />
-        <di:waypoint x="1042" y="300" />
-        <di:waypoint x="1042" y="255" />
+        <di:waypoint x="750" y="280" />
+        <di:waypoint x="820" y="280" />
+        <di:waypoint x="820" y="185" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1eyxbym_di" bpmnElement="Flow_1eyxbym">
-        <di:waypoint x="920" y="160" />
-        <di:waypoint x="1042" y="160" />
-        <di:waypoint x="1042" y="205" />
+        <di:waypoint x="750" y="160" />
+        <di:waypoint x="795" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1yesxbr_di" bpmnElement="Flow_1yesxbr">
-        <di:waypoint x="550" y="230" />
-        <di:waypoint x="632" y="230" />
+        <di:waypoint x="470" y="160" />
+        <di:waypoint x="510" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_11yblik_di" bpmnElement="Flow_11yblik">
-        <di:waypoint x="1067" y="230" />
-        <di:waypoint x="1132" y="230" />
+        <di:waypoint x="845" y="160" />
+        <di:waypoint x="882" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="BPMNShape_03aydne" bpmnElement="openMergeRequest">
-        <dc:Bounds x="1310" y="190" width="100" height="80" />
+        <dc:Bounds x="1000" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0q60d74_di" bpmnElement="createBranch">
-        <dc:Bounds x="290" y="190" width="100" height="80" />
+        <dc:Bounds x="250" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1p2kaz7_di" bpmnElement="Flow_1p2kaz7">
-        <di:waypoint x="208" y="230" />
-        <di:waypoint x="290" y="230" />
+        <di:waypoint x="208" y="160" />
+        <di:waypoint x="250" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1g3f3an_di" bpmnElement="Flow_1g3f3an">
-        <di:waypoint x="1220" y="230" />
-        <di:waypoint x="1310" y="230" />
+        <di:waypoint x="960" y="160" />
+        <di:waypoint x="1000" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1l9thor_di" bpmnElement="Flow_1l9thor">
-        <di:waypoint x="1410" y="230" />
-        <di:waypoint x="1492" y="230" />
+        <di:waypoint x="1100" y="160" />
+        <di:waypoint x="1142" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0oj7qx9_di" bpmnElement="Flow_0oj7qx9">
-        <di:waypoint x="390" y="230" />
-        <di:waypoint x="470" y="230" />
+        <di:waypoint x="350" y="160" />
+        <di:waypoint x="390" y="160" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1y3o0je">
     <bpmndi:BPMNPlane id="BPMNPlane_05q6q0l" bpmnElement="getFileMetadata">
       <bpmndi:BPMNShape id="BPMNShape_0q61a2r" bpmnElement="getWebModelerToken">
-        <dc:Bounds x="290" y="210" width="100" height="80" />
+        <dc:Bounds x="250" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0qtsz1b_di" bpmnElement="startFileMetadata">
-        <dc:Bounds x="172" y="232" width="36" height="36" />
+        <dc:Bounds x="172" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="151" y="275" width="81" height="27" />
+          <dc:Bounds x="151" y="185" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_10n5e5f" bpmnElement="getFolderDetails">
-        <dc:Bounds x="450" y="210" width="100" height="80" />
+        <dc:Bounds x="390" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1qoa64a_di" bpmnElement="endFileMetadata">
+        <dc:Bounds x="1462" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1437" y="188" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1nqnhp6_di" bpmnElement="getFileDetails" isExpanded="true">
-        <dc:Bounds x="620" y="70" width="1380" height="450" />
+        <dc:Bounds x="530" y="80" width="880" height="460" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0szwipv_di" bpmnElement="startFileMetadataSubprocess">
-        <dc:Bounds x="660" y="192" width="36" height="36" />
+        <dc:Bounds x="570" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="655" y="235" width="46" height="40" />
+          <dc:Bounds x="565" y="185" width="46" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_059ttp8_di" bpmnElement="splitCallWebModeler">
-        <dc:Bounds x="825" y="185" width="50" height="50" />
+        <dc:Bounds x="635" y="135" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_01tccci" bpmnElement="getFileContent">
-        <dc:Bounds x="1270" y="100" width="100" height="80" />
+        <dc:Bounds x="720" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1uv4pn5" bpmnElement="getLatestMilestone">
-        <dc:Bounds x="1020" y="250" width="100" height="80" />
+        <dc:Bounds x="820" y="270" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1tzczc7" bpmnElement="createMilestone">
-        <dc:Bounds x="1180" y="250" width="100" height="80" />
+        <dc:Bounds x="960" y="270" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_13tb6kh_di" bpmnElement="splitHasMilestone" isMarkerVisible="true">
-        <dc:Bounds x="1345" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_1x0vzh1_di" bpmnElement="splitIsDmn" isMarkerVisible="true">
+        <dc:Bounds x="715" y="285" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1333" y="243" width="74" height="14" />
+          <dc:Bounds x="718" y="261" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_13tb6kh_di" bpmnElement="splitHasMilestone" isMarkerVisible="true">
+        <dc:Bounds x="1095" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1083" y="261" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0wplddb_di" bpmnElement="Event_0wplddb">
+        <dc:Bounds x="862" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848" y="185" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_07u50bx" bpmnElement="getDiffingLink">
-        <dc:Bounds x="1470" y="330" width="100" height="80" />
+        <dc:Bounds x="1193" y="390" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1fke7mp_di" bpmnElement="joinCallWebModeler">
-        <dc:Bounds x="1805" y="185" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0muts2w_di" bpmnElement="endFileMetadataSubprocess">
-        <dc:Bounds x="1902" y="192" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_115unk9_di" bpmnElement="Event_115unk9">
+        <dc:Bounds x="1332" y="412" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1883" y="235" width="77" height="27" />
+          <dc:Bounds x="1315" y="455" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_04e5c79_di" bpmnElement="joinHasMilestone" isMarkerVisible="true">
-        <dc:Bounds x="1635" y="265" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1x0vzh1_di" bpmnElement="splitIsDmn" isMarkerVisible="true">
-        <dc:Bounds x="915" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Event_0xsq3ll_di" bpmnElement="Event_0xsq3ll">
+        <dc:Bounds x="822" y="412" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="918" y="241" width="43" height="14" />
+          <dc:Bounds x="800" y="455" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0wsmkk7_di" bpmnElement="joinIsDmn" isMarkerVisible="true">
-        <dc:Bounds x="1725" y="265" width="50" height="50" />
+      <bpmndi:BPMNShape id="Event_1iom3n8_di" bpmnElement="Event_1iom3n8">
+        <dc:Bounds x="1332" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1317" y="335" width="67" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0t26nvw_di" bpmnElement="Flow_0t26nvw">
-        <di:waypoint x="850" y="235" />
-        <di:waypoint x="850" y="290" />
-        <di:waypoint x="915" y="290" />
+        <di:waypoint x="660" y="185" />
+        <di:waypoint x="660" y="310" />
+        <di:waypoint x="715" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0lx0ky8_di" bpmnElement="Flow_0lx0ky8">
-        <di:waypoint x="850" y="185" />
-        <di:waypoint x="850" y="140" />
-        <di:waypoint x="1270" y="140" />
+        <di:waypoint x="685" y="160" />
+        <di:waypoint x="720" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jonoiv_di" bpmnElement="Flow_1jonoiv">
-        <di:waypoint x="1370" y="140" />
-        <di:waypoint x="1830" y="140" />
-        <di:waypoint x="1830" y="185" />
+        <di:waypoint x="820" y="160" />
+        <di:waypoint x="862" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1v6w4kw_di" bpmnElement="Flow_1v6w4kw">
-        <di:waypoint x="1120" y="290" />
-        <di:waypoint x="1180" y="290" />
+        <di:waypoint x="920" y="310" />
+        <di:waypoint x="960" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ee4vw9_di" bpmnElement="Flow_1ee4vw9">
-        <di:waypoint x="1280" y="290" />
-        <di:waypoint x="1345" y="290" />
+        <di:waypoint x="1060" y="310" />
+        <di:waypoint x="1095" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0zp499b_di" bpmnElement="Flow_0zp499b">
-        <di:waypoint x="1370" y="315" />
-        <di:waypoint x="1370" y="370" />
-        <di:waypoint x="1470" y="370" />
+        <di:waypoint x="1120" y="335" />
+        <di:waypoint x="1120" y="430" />
+        <di:waypoint x="1193" y="430" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1376" y="340" width="18" height="14" />
+          <dc:Bounds x="1155" y="413" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hdkuop_di" bpmnElement="Flow_1hdkuop">
-        <di:waypoint x="696" y="210" />
-        <di:waypoint x="825" y="210" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_18uc0kv_di" bpmnElement="Flow_18uc0kv">
-        <di:waypoint x="1685" y="290" />
-        <di:waypoint x="1725" y="290" />
+        <di:waypoint x="606" y="160" />
+        <di:waypoint x="635" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1vv9nsa_di" bpmnElement="Flow_1vv9nsa">
-        <di:waypoint x="1570" y="370" />
-        <di:waypoint x="1660" y="370" />
-        <di:waypoint x="1660" y="315" />
+        <di:waypoint x="1293" y="430" />
+        <di:waypoint x="1332" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_12k5ck5_di" bpmnElement="Flow_12k5ck5">
-        <di:waypoint x="1395" y="290" />
-        <di:waypoint x="1635" y="290" />
+        <di:waypoint x="1145" y="310" />
+        <di:waypoint x="1332" y="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1503" y="263" width="13" height="14" />
+          <dc:Bounds x="1157" y="292" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0y214bj_di" bpmnElement="Flow_0y214bj">
-        <di:waypoint x="965" y="290" />
-        <di:waypoint x="1020" y="290" />
+        <di:waypoint x="765" y="310" />
+        <di:waypoint x="820" y="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="986" y="272" width="13" height="14" />
+          <dc:Bounds x="786" y="292" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hf73xs_di" bpmnElement="Flow_1hf73xs">
-        <di:waypoint x="940" y="315" />
-        <di:waypoint x="940" y="480" />
-        <di:waypoint x="1750" y="480" />
-        <di:waypoint x="1750" y="315" />
+        <di:waypoint x="740" y="335" />
+        <di:waypoint x="740" y="430" />
+        <di:waypoint x="822" y="430" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1337" y="462" width="18" height="14" />
+          <dc:Bounds x="772" y="412" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1of1i29_di" bpmnElement="Flow_1of1i29">
-        <di:waypoint x="1775" y="290" />
-        <di:waypoint x="1830" y="290" />
-        <di:waypoint x="1830" y="235" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_01pesa7_di" bpmnElement="Flow_01pesa7">
-        <di:waypoint x="1855" y="210" />
-        <di:waypoint x="1902" y="210" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_1qoa64a_di" bpmnElement="endFileMetadata">
-        <dc:Bounds x="2082" y="272" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2057" y="318" width="85" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_07vb2t3_di" bpmnElement="Flow_07vb2t3">
-        <di:waypoint x="208" y="250" />
-        <di:waypoint x="290" y="250" />
+        <di:waypoint x="208" y="160" />
+        <di:waypoint x="250" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_02a2jk2_di" bpmnElement="Flow_02a2jk2">
-        <di:waypoint x="390" y="250" />
-        <di:waypoint x="450" y="250" />
+        <di:waypoint x="350" y="160" />
+        <di:waypoint x="390" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_10audoq_di" bpmnElement="Flow_10audoq">
-        <di:waypoint x="2000" y="290" />
-        <di:waypoint x="2082" y="290" />
+        <di:waypoint x="1410" y="160" />
+        <di:waypoint x="1462" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_03kaw3v_di" bpmnElement="Flow_03kaw3v">
-        <di:waypoint x="550" y="250" />
-        <di:waypoint x="620" y="250" />
+        <di:waypoint x="490" y="160" />
+        <di:waypoint x="530" y="160" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_0jhacf7">
     <bpmndi:BPMNPlane id="BPMNPlane_0ejjsxx" bpmnElement="deployFile">
       <bpmndi:BPMNShape id="BPMNShape_0cbqxlw" bpmnElement="optionalTests">
-        <dc:Bounds x="1915" y="240" width="100" height="80" />
+        <dc:Bounds x="1310" y="270" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1q9aet9" bpmnElement="manualQaTest">
-        <dc:Bounds x="927" y="240" width="100" height="80" />
+        <dc:Bounds x="600" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1jstnvj" bpmnElement="optionalBusinessOwnerVerification">
-        <dc:Bounds x="1915" y="110" width="100" height="80" />
+        <dc:Bounds x="1310" y="150" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1himvow_di" bpmnElement="deployStart">
-        <dc:Bounds x="142" y="262" width="36" height="36" />
+        <dc:Bounds x="122" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="133" y="305" width="57" height="40" />
+          <dc:Bounds x="113" y="215" width="58" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1dlgpl4_di" bpmnElement="deployEnd">
-        <dc:Bounds x="2959" y="262" width="36" height="36" />
+        <dc:Bounds x="1982" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2949" y="305" width="57" height="40" />
+          <dc:Bounds x="1972" y="215" width="58" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1n6xgph_di" bpmnElement="splitAdditionalTasks">
-        <dc:Bounds x="1770" y="255" width="50" height="50" />
+        <dc:Bounds x="1225" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1811" y="236" width="78" height="27" />
+          <dc:Bounds x="1211" y="126" width="77" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_12v78xb_di" bpmnElement="joinadditionalTasks">
-        <dc:Bounds x="2100" y="255" width="50" height="50" />
+        <dc:Bounds x="1445" y="165" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1103vni_di" bpmnElement="devDeployment">
-        <dc:Bounds x="339" y="262" width="36" height="36" />
+        <dc:Bounds x="292" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="316" y="308" width="82" height="27" />
+          <dc:Bounds x="269" y="218" width="83" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1aixe2f" bpmnElement="stageDeployment">
-        <dc:Bounds x="1179" y="262" width="36" height="36" />
+        <dc:Bounds x="872" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1162" y="305" width="71" height="40" />
+          <dc:Bounds x="855" y="215" width="71" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1id9vis" bpmnElement="prodDeployment">
-        <dc:Bounds x="2339" y="262" width="36" height="36" />
+        <dc:Bounds x="1639" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2314" y="305" width="86" height="27" />
+          <dc:Bounds x="1614" y="215" width="87" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0soqit1_di" bpmnElement="splitCheckDevDeployment" isMarkerVisible="true">
-        <dc:Bounds x="422" y="255" width="50" height="50" />
+        <dc:Bounds x="365" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="455" y="236" width="70" height="27" />
+          <dc:Bounds x="355" y="136" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1grmved" bpmnElement="splitCheckStageDeployment" isMarkerVisible="true">
-        <dc:Bounds x="1262" y="255" width="50" height="50" />
+        <dc:Bounds x="945" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1300" y="246" width="70" height="27" />
+          <dc:Bounds x="935" y="136" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1yrmvrj" bpmnElement="splitCheckProdDeployment" isMarkerVisible="true">
-        <dc:Bounds x="2432" y="255" width="50" height="50" />
+        <dc:Bounds x="1712" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2475" y="236" width="70" height="27" />
+          <dc:Bounds x="1702" y="136" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0eas0ui_di" bpmnElement="devDeploymentError">
-        <dc:Bounds x="429" y="362" width="36" height="36" />
+        <dc:Bounds x="462" y="272" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="408" y="405" width="79" height="27" />
+          <dc:Bounds x="441" y="315" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0hfhztv" bpmnElement="stageDeploymentError">
-        <dc:Bounds x="1269" y="362" width="36" height="36" />
+        <dc:Bounds x="1052" y="272" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1244" y="405" width="87" height="27" />
+          <dc:Bounds x="1027" y="315" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1f0pdag" bpmnElement="prodDeploymentError">
-        <dc:Bounds x="2439" y="362" width="36" height="36" />
+        <dc:Bounds x="1822" y="272" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2417" y="405" width="84" height="27" />
+          <dc:Bounds x="1800" y="315" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1qugwy5_di" bpmnElement="createMilestoneDevProcess" isExpanded="true">
-        <dc:Bounds x="540" y="220" width="321" height="135" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0peja6t_di" bpmnElement="startCreateMilestoneDev">
-        <dc:Bounds x="563" y="267" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="553" y="310" width="57" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1ybxomy" bpmnElement="createMilestoneDev">
-        <dc:Bounds x="648" y="245" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0q94vof_di" bpmnElement="endCreateMilestoneDev">
-        <dc:Bounds x="803" y="267" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="794" y="310" width="54" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1fmipag_di" bpmnElement="Flow_1fmipag">
-        <di:waypoint x="599" y="285" />
-        <di:waypoint x="648" y="285" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1qtvpxp_di" bpmnElement="Flow_1qtvpxp">
-        <di:waypoint x="748" y="285" />
-        <di:waypoint x="803" y="285" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="BPMNShape_1sliz3r" bpmnElement="createMilestoneStageSubprocess" isExpanded="true">
-        <dc:Bounds x="1380" y="212" width="340" height="135" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0c4m7rp" bpmnElement="startCreateMilestoneStage">
-        <dc:Bounds x="1403" y="259" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1393" y="302" width="57" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_037n2pc" bpmnElement="createMilestoneStage">
-        <dc:Bounds x="1488" y="237" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1b9xwhp" bpmnElement="endCreateMilestoneStage">
-        <dc:Bounds x="1642" y="259" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1633" y="302" width="54" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_0qpicxt" bpmnElement="Flow_1p75nl3">
-        <di:waypoint x="1439" y="277" />
-        <di:waypoint x="1488" y="277" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_0ck392a" bpmnElement="Flow_1qx9htc">
-        <di:waypoint x="1588" y="277" />
-        <di:waypoint x="1642" y="277" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="BPMNShape_1d4zlrq" bpmnElement="createMilestoneProdSubprocess" isExpanded="true">
-        <dc:Bounds x="2570" y="212" width="330" height="135" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_01fprxm" bpmnElement="startCreateMilestoneProd">
-        <dc:Bounds x="2593" y="259" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2583" y="302" width="57" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0v2tj0o" bpmnElement="createMilestoneProd">
-        <dc:Bounds x="2678" y="237" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_103apur" bpmnElement="endCreateMilestoneProd">
-        <dc:Bounds x="2832" y="259" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2823" y="302" width="54" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_1h7wbwk" bpmnElement="Flow_1mg9qtl">
-        <di:waypoint x="2629" y="277" />
-        <di:waypoint x="2678" y="277" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_1o83m3n" bpmnElement="Flow_0fnfv7e">
-        <di:waypoint x="2778" y="277" />
-        <di:waypoint x="2832" y="277" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Gateway_1ri8umu_di" bpmnElement="joinCheckDevDeployment" isMarkerVisible="true">
-        <dc:Bounds x="255" y="255" width="50" height="50" />
+        <dc:Bounds x="205" y="165" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0p2ros4_di" bpmnElement="joinCheckStageDeployment" isMarkerVisible="true">
-        <dc:Bounds x="1085" y="255" width="50" height="50" />
+        <dc:Bounds x="785" y="165" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_00johqw_di" bpmnElement="joinCheckProdDeployment" isMarkerVisible="true">
-        <dc:Bounds x="2235" y="255" width="50" height="50" />
+        <dc:Bounds x="1555" y="165" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_09rtde1" bpmnElement="Activity_1x2wune">
+        <dc:Bounds x="460" y="150" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1429e2s" bpmnElement="Activity_11b2wp3">
+        <dc:Bounds x="1050" y="150" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_11u9lgp" bpmnElement="Activity_16ftm5w">
+        <dc:Bounds x="1820" y="150" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Group_0gjl7n4_di" bpmnElement="Group_0gjl7n4">
-        <dc:Bounds x="230" y="80" width="827" height="360" />
+        <dc:Bounds x="180" y="80" width="550" height="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="612" y="87" width="65" height="27" />
+          <dc:Bounds x="423" y="87" width="66" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Group_0s0at9u_di" bpmnElement="Group_0s0at9u">
-        <dc:Bounds x="1067" y="80" width="1120" height="360" />
+        <dc:Bounds x="760" y="80" width="420" height="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1597" y="87" width="61" height="27" />
+          <dc:Bounds x="939" y="87" width="62" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Group_0leofmi_di" bpmnElement="Group_0leofmi">
-        <dc:Bounds x="2207" y="80" width="720" height="360" />
+        <dc:Bounds x="1530" y="80" width="420" height="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2538" y="87" width="61" height="27" />
+          <dc:Bounds x="1710" y="87" width="62" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_0s3m1fl" bpmnElement="Flow_05bdmhh">
-        <di:waypoint x="1820" y="280" />
-        <di:waypoint x="1915" y="280" />
+        <di:waypoint x="1250" y="215" />
+        <di:waypoint x="1250" y="310" />
+        <di:waypoint x="1310" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1t544or" bpmnElement="Flow_12mf28b">
-        <di:waypoint x="2015" y="280" />
-        <di:waypoint x="2100" y="280" />
+        <di:waypoint x="1410" y="310" />
+        <di:waypoint x="1470" y="310" />
+        <di:waypoint x="1470" y="215" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1abuvps" bpmnElement="Flow_08g4fny">
-        <di:waypoint x="1027" y="280" />
-        <di:waypoint x="1085" y="280" />
+        <di:waypoint x="700" y="190" />
+        <di:waypoint x="785" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_0pq0uym" bpmnElement="Flow_0z9yizb">
-        <di:waypoint x="1795" y="255" />
-        <di:waypoint x="1795" y="150" />
-        <di:waypoint x="1915" y="150" />
+        <di:waypoint x="1275" y="190" />
+        <di:waypoint x="1310" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1fc19rz" bpmnElement="Flow_041vriv">
-        <di:waypoint x="2015" y="150" />
-        <di:waypoint x="2125" y="150" />
-        <di:waypoint x="2125" y="255" />
+        <di:waypoint x="1410" y="190" />
+        <di:waypoint x="1445" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0yjny1x_di" bpmnElement="Flow_0yjny1x">
-        <di:waypoint x="178" y="280" />
-        <di:waypoint x="255" y="280" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0x42khi_di" bpmnElement="Flow_0x42khi">
-        <di:waypoint x="2900" y="280" />
-        <di:waypoint x="2959" y="280" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0e4muu3_di" bpmnElement="Flow_0e4muu3">
-        <di:waypoint x="1720" y="280" />
-        <di:waypoint x="1770" y="280" />
+        <di:waypoint x="158" y="190" />
+        <di:waypoint x="205" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1lpxic8" bpmnElement="Flow_1qols7b">
-        <di:waypoint x="1795" y="305" />
-        <di:waypoint x="1795" y="412" />
-        <di:waypoint x="2125" y="412" />
-        <di:waypoint x="2125" y="305" />
+        <di:waypoint x="1250" y="215" />
+        <di:waypoint x="1250" y="430" />
+        <di:waypoint x="1470" y="430" />
+        <di:waypoint x="1470" y="215" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1nomhuq" bpmnElement="Flow_0j6wp0j">
-        <di:waypoint x="2150" y="280" />
-        <di:waypoint x="2235" y="280" />
+        <di:waypoint x="1495" y="190" />
+        <di:waypoint x="1555" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wg2044_di" bpmnElement="Flow_1wg2044">
-        <di:waypoint x="447" y="255" />
-        <di:waypoint x="447" y="210" />
-        <di:waypoint x="280" y="210" />
-        <di:waypoint x="280" y="255" />
+        <di:waypoint x="390" y="215" />
+        <di:waypoint x="390" y="340" />
+        <di:waypoint x="230" y="340" />
+        <di:waypoint x="230" y="215" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="358" y="192" width="13" height="14" />
+          <dc:Bounds x="373" y="322" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0z1gikx_di" bpmnElement="Flow_0z1gikx">
-        <di:waypoint x="375" y="280" />
-        <di:waypoint x="422" y="280" />
+        <di:waypoint x="328" y="190" />
+        <di:waypoint x="365" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ikio56_di" bpmnElement="Flow_0ikio56">
-        <di:waypoint x="1287" y="255" />
-        <di:waypoint x="1287" y="210" />
-        <di:waypoint x="1110" y="210" />
-        <di:waypoint x="1110" y="255" />
+        <di:waypoint x="970" y="215" />
+        <di:waypoint x="970" y="340" />
+        <di:waypoint x="810" y="340" />
+        <di:waypoint x="810" y="215" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1193" y="192" width="13" height="14" />
+          <dc:Bounds x="953" y="322" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0y8nm4o_di" bpmnElement="Flow_0y8nm4o">
-        <di:waypoint x="1215" y="280" />
-        <di:waypoint x="1262" y="280" />
+        <di:waypoint x="908" y="190" />
+        <di:waypoint x="945" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1cwvepm_di" bpmnElement="Flow_1cwvepm">
-        <di:waypoint x="2457" y="255" />
-        <di:waypoint x="2457" y="210" />
-        <di:waypoint x="2260" y="210" />
-        <di:waypoint x="2260" y="255" />
+        <di:waypoint x="1737" y="215" />
+        <di:waypoint x="1737" y="340" />
+        <di:waypoint x="1580" y="340" />
+        <di:waypoint x="1580" y="215" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2353" y="192" width="13" height="14" />
+          <dc:Bounds x="1713" y="322" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0zhzv70_di" bpmnElement="Flow_0zhzv70">
-        <di:waypoint x="2375" y="280" />
-        <di:waypoint x="2432" y="280" />
+        <di:waypoint x="1675" y="190" />
+        <di:waypoint x="1712" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ht3gql_di" bpmnElement="Flow_0ht3gql">
-        <di:waypoint x="447" y="305" />
-        <di:waypoint x="447" y="362" />
+        <di:waypoint x="390" y="215" />
+        <di:waypoint x="390" y="290" />
+        <di:waypoint x="462" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="450" y="331" width="24" height="14" />
+          <dc:Bounds x="417" y="273" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1eg56os_di" bpmnElement="Flow_1eg56os">
-        <di:waypoint x="1312" y="280" />
-        <di:waypoint x="1380" y="280" />
+        <di:waypoint x="995" y="190" />
+        <di:waypoint x="1050" y="190" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1341" y="281" width="18" height="14" />
+          <dc:Bounds x="1001" y="173" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_15djk0w_di" bpmnElement="Flow_15djk0w">
-        <di:waypoint x="1287" y="305" />
-        <di:waypoint x="1287" y="362" />
+        <di:waypoint x="970" y="215" />
+        <di:waypoint x="970" y="290" />
+        <di:waypoint x="1052" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1290" y="331" width="24" height="14" />
+          <dc:Bounds x="997" y="273" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_16kotpf_di" bpmnElement="Flow_16kotpf">
-        <di:waypoint x="2482" y="280" />
-        <di:waypoint x="2570" y="280" />
+        <di:waypoint x="1762" y="190" />
+        <di:waypoint x="1820" y="190" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2531" y="293" width="18" height="14" />
+          <dc:Bounds x="1769" y="173" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0jdb4pa_di" bpmnElement="Flow_0jdb4pa">
-        <di:waypoint x="2457" y="305" />
-        <di:waypoint x="2457" y="362" />
+        <di:waypoint x="1737" y="215" />
+        <di:waypoint x="1737" y="290" />
+        <di:waypoint x="1822" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2460" y="331" width="24" height="14" />
+          <dc:Bounds x="1765" y="273" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_00xavty_di" bpmnElement="Flow_00xavty">
-        <di:waypoint x="861" y="280" />
-        <di:waypoint x="927" y="280" />
+        <di:waypoint x="560" y="190" />
+        <di:waypoint x="600" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_07jvmtr_di" bpmnElement="Flow_07jvmtr">
-        <di:waypoint x="472" y="280" />
-        <di:waypoint x="540" y="280" />
+        <di:waypoint x="415" y="190" />
+        <di:waypoint x="460" y="190" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="501" y="281" width="18" height="14" />
+          <dc:Bounds x="421" y="173" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_18ymcs4_di" bpmnElement="Flow_18ymcs4">
-        <di:waypoint x="305" y="280" />
-        <di:waypoint x="339" y="280" />
+        <di:waypoint x="255" y="190" />
+        <di:waypoint x="292" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1poyrpq_di" bpmnElement="Flow_1poyrpq">
-        <di:waypoint x="1135" y="280" />
-        <di:waypoint x="1179" y="280" />
+        <di:waypoint x="835" y="190" />
+        <di:waypoint x="872" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1nkwpv4_di" bpmnElement="Flow_1nkwpv4">
-        <di:waypoint x="2285" y="280" />
-        <di:waypoint x="2339" y="280" />
+        <di:waypoint x="1605" y="190" />
+        <di:waypoint x="1639" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gxd4to_di" bpmnElement="Flow_1gxd4to">
+        <di:waypoint x="1150" y="190" />
+        <di:waypoint x="1225" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15e4m4s_di" bpmnElement="Flow_15e4m4s">
+        <di:waypoint x="1920" y="190" />
+        <di:waypoint x="1982" y="190" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
