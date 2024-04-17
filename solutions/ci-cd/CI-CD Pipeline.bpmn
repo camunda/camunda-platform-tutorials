@@ -113,7 +113,7 @@
         <bpmn:outgoing>Flow_1p2kaz7</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:endEvent id="endOpenMergeRequest" name="End of merge request generation">
-        <bpmn:incoming>Flow_1l9thor</bpmn:incoming>
+        <bpmn:incoming>Flow_0ilq3am</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:subProcess id="checkFileStatus" name="Check file status">
         <bpmn:extensionElements>
@@ -163,33 +163,6 @@
           <bpmn:incoming>Flow_1yesxbr</bpmn:incoming>
           <bpmn:outgoing>Flow_14c5u53</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:serviceTask id="createRepositoryFile" name="Create new repository file" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
-          <bpmn:extensionElements>
-            <zeebe:taskDefinition type="io.camunda:http-json:1" />
-            <zeebe:ioMapping>
-              <zeebe:input source="noAuth" target="authentication.type" />
-              <zeebe:input source="=gitlabBaseUrl" target="baseUrl" />
-              <zeebe:input source="{{ secrets.GITLAB_PAT }}" target="gitlabAccessToken" />
-              <zeebe:input source="={&#34;PRIVATE-TOKEN&#34;:gitlabAccessToken, &#34;Content-Type&#34;:&#34;application/json&#34;}" target="headers" />
-              <zeebe:input source="repositoryFiles" target="operationGroup" />
-              <zeebe:input source="createRepositoryFile" target="operation" />
-              <zeebe:input source="post" target="method" />
-              <zeebe:input source="=gitlabProjectId" target="projectId" />
-              <zeebe:input source="=newBranchName" target="branchName" />
-              <zeebe:input source="=&#34;Camunda Web Modeler CI/CD: &#34; + fileDetail.metadata.name" target="commitMessage" />
-              <zeebe:input source="=fileDetail.content" target="content" />
-              <zeebe:input source="=sanitizedFilePath" target="filePath" />
-              <zeebe:input source="=false" target="executeFilemode" />
-              <zeebe:input source="=baseUrl + &#34;/api/v4/projects/&#34;+ projectId +&#34;/repository/files/&#34; + filePath" target="url" />
-              <zeebe:input source="={&#34;branch&#34;: if branchName = null then null else branchName, &#34;commit_message&#34;: if commitMessage = null then null else commitMessage, &#34;content&#34;: if content = null then null else content, &#34;author_email&#34;: if authorEmail = null then null else authorEmail, &#34;author_name&#34;: if authorName = null then null else authorName, &#34;encoding&#34;: if encoding = null then null else encoding, &#34;execute_filemode&#34;: if executeFilemode = null then null else executeFilemode, &#34;start_branch&#34;: if startBranch = null then null else startBranch}" target="body" />
-              <zeebe:input source="=false" target="allowCollaboration" />
-              <zeebe:input source="20" target="connectionTimeoutInSeconds" />
-            </zeebe:ioMapping>
-            <zeebe:taskHeaders />
-          </bpmn:extensionElements>
-          <bpmn:incoming>Flow_1xy4jx8</bpmn:incoming>
-          <bpmn:outgoing>Flow_13bxw1h</bpmn:outgoing>
-        </bpmn:serviceTask>
         <bpmn:serviceTask id="updateRepositoryFile" name="Update repository file" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="5" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
           <bpmn:extensionElements>
             <zeebe:taskDefinition type="io.camunda:http-json:1" />
@@ -217,8 +190,8 @@
           <bpmn:outgoing>Flow_1eyxbym</bpmn:outgoing>
         </bpmn:serviceTask>
         <bpmn:exclusiveGateway id="joinRepositofyFile">
-          <bpmn:incoming>Flow_13bxw1h</bpmn:incoming>
           <bpmn:incoming>Flow_1eyxbym</bpmn:incoming>
+          <bpmn:incoming>Flow_16ry3vq</bpmn:incoming>
           <bpmn:outgoing>Flow_11yblik</bpmn:outgoing>
         </bpmn:exclusiveGateway>
         <bpmn:boundaryEvent id="fileNotFoundBoundaryEvent" attachedToRef="checkFileExists">
@@ -227,15 +200,68 @@
         </bpmn:boundaryEvent>
         <bpmn:sequenceFlow id="Flow_14c5u53" sourceRef="checkFileExists" targetRef="updateRepositoryFile" />
         <bpmn:sequenceFlow id="Flow_1xy4jx8" sourceRef="fileNotFoundBoundaryEvent" targetRef="createRepositoryFile" />
-        <bpmn:sequenceFlow id="Flow_13bxw1h" sourceRef="createRepositoryFile" targetRef="joinRepositofyFile" />
         <bpmn:sequenceFlow id="Flow_1eyxbym" sourceRef="updateRepositoryFile" targetRef="joinRepositofyFile" />
         <bpmn:sequenceFlow id="Flow_1yesxbr" sourceRef="startRepositoryFileModification" targetRef="checkFileExists" />
         <bpmn:endEvent id="endRepositoryFileModification" name="End repository file modification">
           <bpmn:incoming>Flow_11yblik</bpmn:incoming>
         </bpmn:endEvent>
         <bpmn:sequenceFlow id="Flow_11yblik" sourceRef="joinRepositofyFile" targetRef="endRepositoryFileModification" />
+        <bpmn:serviceTask id="createRepositoryFile" name="Create new repository file" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="5" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="io.camunda:http-json:1" />
+            <zeebe:ioMapping>
+              <zeebe:input source="noAuth" target="authentication.type" />
+              <zeebe:input source="=gitlabBaseUrl" target="baseUrl" />
+              <zeebe:input source="{{ secrets.GITLAB_PAT }}" target="gitlabAccessToken" />
+              <zeebe:input source="={&#34;PRIVATE-TOKEN&#34;:gitlabAccessToken, &#34;Content-Type&#34;:&#34;application/json&#34;}" target="headers" />
+              <zeebe:input source="repositoryFiles" target="operationGroup" />
+              <zeebe:input source="createRepositoryFile" target="operation" />
+              <zeebe:input source="post" target="method" />
+              <zeebe:input source="=gitlabProjectId" target="projectId" />
+              <zeebe:input source="=newBranchName" target="branchName" />
+              <zeebe:input source="=&#34;Camunda Web Modeler CI/CD: &#34; + fileDetail.metadata.name" target="commitMessage" />
+              <zeebe:input source="=fileDetail.content" target="content" />
+              <zeebe:input source="=sanitizedFilePath" target="filePath" />
+              <zeebe:input source="=false" target="executeFilemode" />
+              <zeebe:input source="=baseUrl + &#34;/api/v4/projects/&#34;+ projectId +&#34;/repository/files/&#34; + filePath" target="url" />
+              <zeebe:input source="={&#34;branch&#34;: if branchName = null then null else branchName, &#34;commit_message&#34;: if commitMessage = null then null else commitMessage, &#34;content&#34;: if content = null then null else content, &#34;author_email&#34;: if authorEmail = null then null else authorEmail, &#34;author_name&#34;: if authorName = null then null else authorName, &#34;encoding&#34;: if encoding = null then null else encoding, &#34;execute_filemode&#34;: if executeFilemode = null then null else executeFilemode, &#34;start_branch&#34;: if startBranch = null then null else startBranch}" target="body" />
+              <zeebe:input source="=false" target="allowCollaboration" />
+              <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            </zeebe:ioMapping>
+            <zeebe:taskHeaders />
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1xy4jx8</bpmn:incoming>
+          <bpmn:outgoing>Flow_16ry3vq</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Flow_16ry3vq" sourceRef="createRepositoryFile" targetRef="joinRepositofyFile" />
       </bpmn:subProcess>
-      <bpmn:serviceTask id="openMergeRequest" name="Open merge request for branch" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
+      <bpmn:sequenceFlow id="Flow_1p2kaz7" sourceRef="startOpenMergeRequest" targetRef="createBranch" />
+      <bpmn:sequenceFlow id="Flow_1g3f3an" sourceRef="checkFileStatus" targetRef="openMergeRequest" />
+      <bpmn:serviceTask id="createBranch" name="Create branch" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="5" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" />
+          <zeebe:ioMapping>
+            <zeebe:input source="noAuth" target="authentication.type" />
+            <zeebe:input source="=gitlabBaseUrl" target="baseUrl" />
+            <zeebe:input source="{{ secrets.GITLAB_PAT }}" target="gitlabAccessToken" />
+            <zeebe:input source="={&#34;PRIVATE-TOKEN&#34;:gitlabAccessToken, &#34;Content-Type&#34;:&#34;application/json&#34;}" target="headers" />
+            <zeebe:input source="branches" target="operationGroup" />
+            <zeebe:input source="createRepositoryBranch" target="operation" />
+            <zeebe:input source="post" target="method" />
+            <zeebe:input source="=gitlabProjectId" target="projectId" />
+            <zeebe:input source="=baseUrl + &#34;/api/v4/projects/&#34;+ projectId +&#34;/repository/branches&#34;" target="url" />
+            <zeebe:input source="=newBranchName" target="branchName" />
+            <zeebe:input source="=gitlabBranch" target="ref" />
+            <zeebe:input source="={&#34;branch&#34;: if branchName = null then null else branchName, &#34;ref&#34;: if ref = null then null else ref}" target="body" />
+            <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1p2kaz7</bpmn:incoming>
+        <bpmn:outgoing>Flow_0oj7qx9</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0oj7qx9" sourceRef="createBranch" targetRef="checkFileStatus" />
+      <bpmn:serviceTask id="openMergeRequest" name="Open merge request for branch" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="5" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" />
           <zeebe:ioMapping>
@@ -262,41 +288,15 @@
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1g3f3an</bpmn:incoming>
-        <bpmn:outgoing>Flow_1l9thor</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0ilq3am</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_1p2kaz7" sourceRef="startOpenMergeRequest" targetRef="createBranch" />
-      <bpmn:sequenceFlow id="Flow_1g3f3an" sourceRef="checkFileStatus" targetRef="openMergeRequest" />
-      <bpmn:sequenceFlow id="Flow_1l9thor" sourceRef="openMergeRequest" targetRef="endOpenMergeRequest" />
-      <bpmn:serviceTask id="createBranch" name="Create branch" zeebe:modelerTemplate="io.camunda.connectors.GitLab.v1" zeebe:modelerTemplateVersion="5" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg width=&#39;18px&#39; height=&#39;18px&#39; viewBox=&#39;0 -10 256 256&#39; version=&#39;1.1&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; xmlns:xlink=&#39;http://www.w3.org/1999/xlink&#39; preserveAspectRatio=&#39;xMidYMid&#39;%3E%3Cg%3E%3Cpath d=&#39;M128.07485,236.074667 L128.07485,236.074667 L175.17885,91.1043048 L80.9708495,91.1043048 L128.07485,236.074667 L128.07485,236.074667 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L80.9708495,91.104061 L14.9557638,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1044267 L14.9558857,91.1044267 L0.641828571,135.159589 C-0.663771429,139.17757 0.766171429,143.57955 4.18438095,146.06275 L128.074971,236.074789 L14.9558857,91.1044267 L14.9558857,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M14.9558857,91.1045486 L80.9709714,91.1045486 L52.6000762,3.79026286 C51.1408762,-0.703146667 44.7847619,-0.701927619 43.3255619,3.79026286 L14.9558857,91.1045486 L14.9558857,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3Cpath d=&#39;M128.07485,236.074423 L175.17885,91.104061 L241.193935,91.104061 L128.07485,236.074423 L128.07485,236.074423 Z&#39; fill=&#39;%23FC6D26&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1044267 L241.193935,91.1044267 L255.507992,135.159589 C256.813592,139.17757 255.38365,143.57955 251.96544,146.06275 L128.07485,236.074789 L241.193935,91.1044267 L241.193935,91.1044267 Z&#39; fill=&#39;%23FCA326&#39;%3E%3C/path%3E%3Cpath d=&#39;M241.193935,91.1045486 L175.17885,91.1045486 L203.549745,3.79026286 C205.008945,-0.703146667 211.365059,-0.701927619 212.824259,3.79026286 L241.193935,91.1045486 L241.193935,91.1045486 Z&#39; fill=&#39;%23E24329&#39;%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
-        <bpmn:extensionElements>
-          <zeebe:taskDefinition type="io.camunda:http-json:1" />
-          <zeebe:ioMapping>
-            <zeebe:input source="noAuth" target="authentication.type" />
-            <zeebe:input source="=gitlabBaseUrl" target="baseUrl" />
-            <zeebe:input source="{{ secrets.GITLAB_PAT }}" target="gitlabAccessToken" />
-            <zeebe:input source="={&#34;PRIVATE-TOKEN&#34;:gitlabAccessToken, &#34;Content-Type&#34;:&#34;application/json&#34;}" target="headers" />
-            <zeebe:input source="branches" target="operationGroup" />
-            <zeebe:input source="createRepositoryBranch" target="operation" />
-            <zeebe:input source="post" target="method" />
-            <zeebe:input source="=gitlabProjectId" target="projectId" />
-            <zeebe:input source="=baseUrl + &#34;/api/v4/projects/&#34;+ projectId +&#34;/repository/branches&#34;" target="url" />
-            <zeebe:input source="=newBranchName" target="branchName" />
-            <zeebe:input source="=gitlabBranch" target="ref" />
-            <zeebe:input source="={&#34;branch&#34;: if branchName = null then null else branchName, &#34;ref&#34;: if ref = null then null else ref}" target="body" />
-            <zeebe:input source="20" target="connectionTimeoutInSeconds" />
-          </zeebe:ioMapping>
-          <zeebe:taskHeaders />
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_1p2kaz7</bpmn:incoming>
-        <bpmn:outgoing>Flow_0oj7qx9</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_0oj7qx9" sourceRef="createBranch" targetRef="checkFileStatus" />
+      <bpmn:sequenceFlow id="Flow_0ilq3am" sourceRef="openMergeRequest" targetRef="endOpenMergeRequest" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_14ymik0" sourceRef="startCicd" targetRef="getFileMetadata" />
     <bpmn:subProcess id="getFileMetadata" name="Retrieve file metadata from Web Modeler API">
       <bpmn:incoming>Flow_14ymik0</bpmn:incoming>
       <bpmn:outgoing>Flow_0i10vtb</bpmn:outgoing>
-      <bpmn:serviceTask id="getWebModelerToken" name="Get Web Modeler API token" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:serviceTask id="getWebModelerToken" name="Get Web Modeler API token" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
           <zeebe:ioMapping>
@@ -304,6 +304,8 @@
             <zeebe:input source="POST" target="method" />
             <zeebe:input source="https://login.cloud.camunda.io/oauth/token" target="url" />
             <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="20" target="readTimeoutInSeconds" />
+            <zeebe:input source="0" target="writeTimeoutInSeconds" />
             <zeebe:input source="{&#34;grant_type&#34;:&#34;client_credentials&#34;, &#34;audience&#34;:&#34;api.cloud.camunda.io&#34;, &#34;client_id&#34;:&#34;{{ secrets.WEB_MODELER_CLIENT_ID }}&#34;, &#34;client_secret&#34;:&#34;{{ secrets.WEB_MODELER_CLIENT_SECRET }}&#34;}" target="body" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -324,7 +326,7 @@
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="Flow_07vb2t3" sourceRef="startFileMetadata" targetRef="getWebModelerToken" />
       <bpmn:sequenceFlow id="Flow_02a2jk2" sourceRef="getWebModelerToken" targetRef="getFolderDetails" />
-      <bpmn:serviceTask id="getFolderDetails" name="Get folder detail" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:serviceTask id="getFolderDetails" name="Get folder detail" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
           <zeebe:ioMapping>
@@ -333,6 +335,7 @@
             <zeebe:input source="GET" target="method" />
             <zeebe:input source="=&#34;https://modeler.cloud.camunda.io/api/v1/folders/&#34; + folderId" target="url" />
             <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="20" target="readTimeoutInSeconds" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
             <zeebe:header key="resultExpression" value="={folder: response.body}" />
@@ -367,7 +370,7 @@
           <bpmn:outgoing>Flow_0t26nvw</bpmn:outgoing>
           <bpmn:outgoing>Flow_0lx0ky8</bpmn:outgoing>
         </bpmn:parallelGateway>
-        <bpmn:serviceTask id="getFileContent" name="Get file content" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:serviceTask id="getFileContent" name="Get file content" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
           <bpmn:extensionElements>
             <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
             <zeebe:ioMapping>
@@ -376,6 +379,7 @@
               <zeebe:input source="GET" target="method" />
               <zeebe:input source="=&#34;https://modeler.cloud.camunda.io/api/v1/files/&#34; + file.id" target="url" />
               <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+              <zeebe:input source="20" target="readTimeoutInSeconds" />
             </zeebe:ioMapping>
             <zeebe:taskHeaders>
               <zeebe:header key="resultExpression" value="={content: response.body.content}" />
@@ -385,7 +389,7 @@
           <bpmn:incoming>Flow_0lx0ky8</bpmn:incoming>
           <bpmn:outgoing>Flow_1jonoiv</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:serviceTask id="getLatestMilestone" name="Get latest milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:serviceTask id="getLatestMilestone" name="Get latest milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
           <bpmn:extensionElements>
             <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
             <zeebe:ioMapping>
@@ -394,6 +398,8 @@
               <zeebe:input source="POST" target="method" />
               <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones/search" target="url" />
               <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+              <zeebe:input source="20" target="readTimeoutInSeconds" />
+              <zeebe:input source="0" target="writeTimeoutInSeconds" />
               <zeebe:input source="={&#34;filter&#34;: { &#34;fileId&#34;: &#34;&#34; + file.id + &#34;&#34;}, &#34;sort&#34;: [{&#34;field&#34;: &#34;created&#34;, &#34;direction&#34;: &#34;DESC&#34;}], &#34;size&#34;: 1}" target="body" />
             </zeebe:ioMapping>
             <zeebe:taskHeaders>
@@ -409,7 +415,7 @@
           <bpmn:outgoing>Flow_0zp499b</bpmn:outgoing>
           <bpmn:outgoing>Flow_12k5ck5</bpmn:outgoing>
         </bpmn:exclusiveGateway>
-        <bpmn:serviceTask id="getMilestoneComparisonLink" name="Get milestone comparison link" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:serviceTask id="getMilestoneComparisonLink" name="Get milestone comparison link" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
           <bpmn:extensionElements>
             <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
             <zeebe:ioMapping>
@@ -418,6 +424,7 @@
               <zeebe:input source="GET" target="method" />
               <zeebe:input source="=&#34;https://modeler.cloud.camunda.io/api/v1/milestones/compare/&#34; + latestMilestoneId + &#34;...&#34; + createdMilestoneId" target="url" />
               <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+              <zeebe:input source="20" target="readTimeoutInSeconds" />
             </zeebe:ioMapping>
             <zeebe:taskHeaders>
               <zeebe:header key="resultExpression" value="={diffingLink: response.body.url}" />
@@ -458,7 +465,7 @@
           <bpmn:incoming>Flow_1hf73xs</bpmn:incoming>
         </bpmn:endEvent>
         <bpmn:sequenceFlow id="Flow_0mnyxys" sourceRef="getLatestMilestone" targetRef="splitHasMilestone" />
-        <bpmn:serviceTask id="createMilestone" name="Create milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:serviceTask id="createMilestone" name="Create milestone" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
           <bpmn:extensionElements>
             <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
             <zeebe:ioMapping>
@@ -467,6 +474,8 @@
               <zeebe:input source="POST" target="method" />
               <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
               <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+              <zeebe:input source="20" target="readTimeoutInSeconds" />
+              <zeebe:input source="0" target="writeTimeoutInSeconds" />
               <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD Kick-Off&#34;, &#34;fileId&#34;: &#34;&#34; + file.id + &#34;&#34; }" target="body" />
             </zeebe:ioMapping>
             <zeebe:taskHeaders>
@@ -490,28 +499,8 @@
       <bpmn:incoming>Flow_01e3v4d</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0cray7s" sourceRef="openMergeRequestSubprocess" targetRef="splitCheckMergeRequestStatus" />
-    <bpmn:intermediateCatchEvent id="checkMergeRequestStatus" name="Check merge request status" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml,%3Csvg id=&#39;icon&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;18&#39; height=&#39;18&#39; viewBox=&#39;0 0 32 32&#39;%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: none; %7D %3C/style%3E%3C/defs%3E%3Cpath d=&#39;M24,26a3,3,0,1,0-2.8164-4H13v1a5,5,0,1,1-5-5V16a7,7,0,1,0,6.9287,8h6.2549A2.9914,2.9914,0,0,0,24,26Z&#39;/%3E%3Cpath d=&#39;M24,16a7.024,7.024,0,0,0-2.57.4873l-3.1656-5.5395a3.0469,3.0469,0,1,0-1.7326.9985l4.1189,7.2085.8686-.4976a5.0006,5.0006,0,1,1-1.851,6.8418L17.937,26.501A7.0005,7.0005,0,1,0,24,16Z&#39;/%3E%3Cpath d=&#39;M8.532,20.0537a3.03,3.03,0,1,0,1.7326.9985C11.74,18.47,13.86,14.7607,13.89,14.708l.4976-.8682-.8677-.497a5,5,0,1,1,6.812-1.8438l1.7315,1.002a7.0008,7.0008,0,1,0-10.3462,2.0356c-.457.7427-1.1021,1.8716-2.0737,3.5728Z&#39;/%3E%3Crect id=&#39;_Transparent_Rectangle_&#39; data-name=&#39;&#38;lt;Transparent Rectangle&#38;gt;&#39; class=&#39;cls-1&#39; width=&#39;32&#39; height=&#39;32&#39;/%3E%3C/svg%3E">
-      <bpmn:extensionElements>
-        <zeebe:properties>
-          <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
-          <zeebe:property name="inbound.subtype" value="ConfigurableInboundWebhook" />
-          <zeebe:property name="inbound.method" value="post" />
-          <zeebe:property name="inbound.context" value="checkMergeRequestStatus" />
-          <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
-          <zeebe:property name="inbound.auth.type" value="APIKEY" />
-          <zeebe:property name="inbound.auth.apiKey" value="{{ secrets.GITLAB_WEBHOOK_SECRET }}" />
-          <zeebe:property name="inbound.auth.apiKeyLocator" value="=get value(request.headers, &#34;x-gitlab-token&#34;)" />
-          <zeebe:property name="correlationKeyExpression" value="=request.body.object_attributes.id" />
-          <zeebe:property name="resultExpression" value="={mergeRequestWebhookPayload: request.body}" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0qvo88i</bpmn:incoming>
-      <bpmn:outgoing>Flow_0ovwani</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1j62160" messageRef="Message_1p6y9he" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:sequenceFlow id="Flow_0ovwani" sourceRef="checkMergeRequestStatus" targetRef="joinCheckMergeRequestStatus" />
     <bpmn:exclusiveGateway id="joinCheckMergeRequestStatus" name="Check MR status">
-      <bpmn:incoming>Flow_0ovwani</bpmn:incoming>
+      <bpmn:incoming>Flow_1bohcmb</bpmn:incoming>
       <bpmn:outgoing>Flow_034n41h</bpmn:outgoing>
       <bpmn:outgoing>Flow_1y21gn7</bpmn:outgoing>
       <bpmn:outgoing>Flow_14hk1y4</bpmn:outgoing>
@@ -565,11 +554,10 @@
         <bpmn:incoming>Flow_1qols7b</bpmn:incoming>
         <bpmn:outgoing>Flow_0j6wp0j</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:intermediateCatchEvent id="devDeployment" name="Deployment to dev environment" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml,%3Csvg id=&#39;icon&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;18&#39; height=&#39;18&#39; viewBox=&#39;0 0 32 32&#39;%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: none; %7D %3C/style%3E%3C/defs%3E%3Cpath d=&#39;M24,26a3,3,0,1,0-2.8164-4H13v1a5,5,0,1,1-5-5V16a7,7,0,1,0,6.9287,8h6.2549A2.9914,2.9914,0,0,0,24,26Z&#39;/%3E%3Cpath d=&#39;M24,16a7.024,7.024,0,0,0-2.57.4873l-3.1656-5.5395a3.0469,3.0469,0,1,0-1.7326.9985l4.1189,7.2085.8686-.4976a5.0006,5.0006,0,1,1-1.851,6.8418L17.937,26.501A7.0005,7.0005,0,1,0,24,16Z&#39;/%3E%3Cpath d=&#39;M8.532,20.0537a3.03,3.03,0,1,0,1.7326.9985C11.74,18.47,13.86,14.7607,13.89,14.708l.4976-.8682-.8677-.497a5,5,0,1,1,6.812-1.8438l1.7315,1.002a7.0008,7.0008,0,1,0-10.3462,2.0356c-.457.7427-1.1021,1.8716-2.0737,3.5728Z&#39;/%3E%3Crect id=&#39;_Transparent_Rectangle_&#39; data-name=&#39;&#38;lt;Transparent Rectangle&#38;gt;&#39; class=&#39;cls-1&#39; width=&#39;32&#39; height=&#39;32&#39;/%3E%3C/svg%3E">
+      <bpmn:intermediateCatchEvent id="devDeployment" name="Deployment to dev environment" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
         <bpmn:extensionElements>
           <zeebe:properties>
             <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
-            <zeebe:property name="inbound.subtype" value="ConfigurableInboundWebhook" />
             <zeebe:property name="inbound.method" value="post" />
             <zeebe:property name="inbound.context" value="devDeploymentWebhook" />
             <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
@@ -577,6 +565,7 @@
             <zeebe:property name="inbound.auth.apiKey" value="{{ secrets.GITLAB_WEBHOOK_SECRET }}" />
             <zeebe:property name="inbound.auth.apiKeyLocator" value="=get value(request.headers, &#34;x-gitlab-token&#34;)" />
             <zeebe:property name="correlationKeyExpression" value="=request.body.environment" />
+            <zeebe:property name="resultVariable" value="" />
             <zeebe:property name="resultExpression" value="={devDeploymentWebhookPayload: request.body}" />
           </zeebe:properties>
         </bpmn:extensionElements>
@@ -584,11 +573,10 @@
         <bpmn:outgoing>Flow_0z1gikx</bpmn:outgoing>
         <bpmn:messageEventDefinition id="MessageEventDefinition_1jj8xw7" messageRef="Message_178ifkh" />
       </bpmn:intermediateCatchEvent>
-      <bpmn:intermediateCatchEvent id="stageDeployment" name="Deployment to stage environment" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml,%3Csvg id=&#39;icon&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;18&#39; height=&#39;18&#39; viewBox=&#39;0 0 32 32&#39;%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: none; %7D %3C/style%3E%3C/defs%3E%3Cpath d=&#39;M24,26a3,3,0,1,0-2.8164-4H13v1a5,5,0,1,1-5-5V16a7,7,0,1,0,6.9287,8h6.2549A2.9914,2.9914,0,0,0,24,26Z&#39;/%3E%3Cpath d=&#39;M24,16a7.024,7.024,0,0,0-2.57.4873l-3.1656-5.5395a3.0469,3.0469,0,1,0-1.7326.9985l4.1189,7.2085.8686-.4976a5.0006,5.0006,0,1,1-1.851,6.8418L17.937,26.501A7.0005,7.0005,0,1,0,24,16Z&#39;/%3E%3Cpath d=&#39;M8.532,20.0537a3.03,3.03,0,1,0,1.7326.9985C11.74,18.47,13.86,14.7607,13.89,14.708l.4976-.8682-.8677-.497a5,5,0,1,1,6.812-1.8438l1.7315,1.002a7.0008,7.0008,0,1,0-10.3462,2.0356c-.457.7427-1.1021,1.8716-2.0737,3.5728Z&#39;/%3E%3Crect id=&#39;_Transparent_Rectangle_&#39; data-name=&#39;&#38;lt;Transparent Rectangle&#38;gt;&#39; class=&#39;cls-1&#39; width=&#39;32&#39; height=&#39;32&#39;/%3E%3C/svg%3E">
+      <bpmn:intermediateCatchEvent id="stageDeployment" name="Deployment to stage environment" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
         <bpmn:extensionElements>
           <zeebe:properties>
             <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
-            <zeebe:property name="inbound.subtype" value="ConfigurableInboundWebhook" />
             <zeebe:property name="inbound.method" value="post" />
             <zeebe:property name="inbound.context" value="stageDeploymentWebhook" />
             <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
@@ -596,6 +584,7 @@
             <zeebe:property name="inbound.auth.apiKey" value="{{ secrets.GITLAB_WEBHOOK_SECRET }}" />
             <zeebe:property name="inbound.auth.apiKeyLocator" value="=get value(request.headers, &#34;x-gitlab-token&#34;)" />
             <zeebe:property name="correlationKeyExpression" value="=request.body.environment" />
+            <zeebe:property name="resultVariable" value="" />
             <zeebe:property name="resultExpression" value="={stageDeploymentWebhookPayload: request.body}" />
           </zeebe:properties>
         </bpmn:extensionElements>
@@ -603,11 +592,10 @@
         <bpmn:outgoing>Flow_0y8nm4o</bpmn:outgoing>
         <bpmn:messageEventDefinition id="MessageEventDefinition_0zzt7ji" messageRef="Message_1638dju" />
       </bpmn:intermediateCatchEvent>
-      <bpmn:intermediateCatchEvent id="prodDeployment" name="Deployment to prod environment" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml,%3Csvg id=&#39;icon&#39; xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;18&#39; height=&#39;18&#39; viewBox=&#39;0 0 32 32&#39;%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: none; %7D %3C/style%3E%3C/defs%3E%3Cpath d=&#39;M24,26a3,3,0,1,0-2.8164-4H13v1a5,5,0,1,1-5-5V16a7,7,0,1,0,6.9287,8h6.2549A2.9914,2.9914,0,0,0,24,26Z&#39;/%3E%3Cpath d=&#39;M24,16a7.024,7.024,0,0,0-2.57.4873l-3.1656-5.5395a3.0469,3.0469,0,1,0-1.7326.9985l4.1189,7.2085.8686-.4976a5.0006,5.0006,0,1,1-1.851,6.8418L17.937,26.501A7.0005,7.0005,0,1,0,24,16Z&#39;/%3E%3Cpath d=&#39;M8.532,20.0537a3.03,3.03,0,1,0,1.7326.9985C11.74,18.47,13.86,14.7607,13.89,14.708l.4976-.8682-.8677-.497a5,5,0,1,1,6.812-1.8438l1.7315,1.002a7.0008,7.0008,0,1,0-10.3462,2.0356c-.457.7427-1.1021,1.8716-2.0737,3.5728Z&#39;/%3E%3Crect id=&#39;_Transparent_Rectangle_&#39; data-name=&#39;&#38;lt;Transparent Rectangle&#38;gt;&#39; class=&#39;cls-1&#39; width=&#39;32&#39; height=&#39;32&#39;/%3E%3C/svg%3E">
+      <bpmn:intermediateCatchEvent id="prodDeployment" name="Deployment to prod environment" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
         <bpmn:extensionElements>
           <zeebe:properties>
             <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
-            <zeebe:property name="inbound.subtype" value="ConfigurableInboundWebhook" />
             <zeebe:property name="inbound.method" value="post" />
             <zeebe:property name="inbound.context" value="prodDeploymentWebhook" />
             <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
@@ -615,6 +603,7 @@
             <zeebe:property name="inbound.auth.apiKey" value="{{ secrets.GITLAB_WEBHOOK_SECRET }}" />
             <zeebe:property name="inbound.auth.apiKeyLocator" value="=get value(request.headers, &#34;x-gitlab-token&#34;)" />
             <zeebe:property name="correlationKeyExpression" value="=request.body.environment" />
+            <zeebe:property name="resultVariable" value="" />
             <zeebe:property name="resultExpression" value="={prodDeploymentWebhookPayload: request.body}" />
           </zeebe:properties>
         </bpmn:extensionElements>
@@ -703,7 +692,7 @@
         <bpmn:outgoing>Flow_1nkwpv4</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_1nkwpv4" sourceRef="joinCheckProdDeployment" targetRef="prodDeployment" />
-      <bpmn:serviceTask id="createMilestoneForDevDeployment" name="Create Web Modeler milestone (dev)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:serviceTask id="createMilestoneForDevDeployment" name="Create Web Modeler milestone (dev)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
           <zeebe:ioMapping>
@@ -712,6 +701,8 @@
             <zeebe:input source="POST" target="method" />
             <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
             <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="20" target="readTimeoutInSeconds" />
+            <zeebe:input source="0" target="writeTimeoutInSeconds" />
             <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to dev&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -726,7 +717,7 @@
           </bpmn:extensionElements>
         </bpmn:multiInstanceLoopCharacteristics>
       </bpmn:serviceTask>
-      <bpmn:serviceTask id="createMilestoneForStageDeployment" name="Create Web Modeler milestone (stage)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:serviceTask id="createMilestoneForStageDeployment" name="Create Web Modeler milestone (stage)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
           <zeebe:ioMapping>
@@ -735,6 +726,8 @@
             <zeebe:input source="POST" target="method" />
             <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
             <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="20" target="readTimeoutInSeconds" />
+            <zeebe:input source="0" target="writeTimeoutInSeconds" />
             <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to stage&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -750,7 +743,7 @@
         </bpmn:multiInstanceLoopCharacteristics>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_1gxd4to" sourceRef="createMilestoneForStageDeployment" targetRef="splitAdditionalTasks" />
-      <bpmn:serviceTask id="createMilestoneForProdDeployment" name="Create Web Modeler milestone (production)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:serviceTask id="createMilestoneForProdDeployment" name="Create Web Modeler milestone (production)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
           <zeebe:ioMapping>
@@ -759,6 +752,8 @@
             <zeebe:input source="POST" target="method" />
             <zeebe:input source="https://modeler.cloud.camunda.io/api/v1/milestones" target="url" />
             <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="20" target="readTimeoutInSeconds" />
+            <zeebe:input source="0" target="writeTimeoutInSeconds" />
             <zeebe:input source="={ &#34;name&#34;: &#34;CI/CD: Deployed to stage&#34;, &#34;fileId&#34;: &#34;&#34; + file.metadata.id + &#34;&#34; }" target="body" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -785,26 +780,41 @@
       <bpmn:outgoing>Flow_0qvo88i</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0qvo88i" sourceRef="splitCheckMergeRequestStatus" targetRef="checkMergeRequestStatus" />
+    <bpmn:intermediateCatchEvent id="checkMergeRequestStatus" name="Check merge request status" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
+      <bpmn:extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
+          <zeebe:property name="inbound.method" value="post" />
+          <zeebe:property name="inbound.context" value="checkMergeRequestStatus" />
+          <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
+          <zeebe:property name="inbound.auth.type" value="APIKEY" />
+          <zeebe:property name="inbound.auth.apiKey" value="{{ secrets.GITLAB_WEBHOOK_SECRET }}" />
+          <zeebe:property name="inbound.auth.apiKeyLocator" value="=get value(request.headers, &#34;x-gitlab-token&#34;)" />
+          <zeebe:property name="correlationKeyExpression" value="=request.body.object_attributes.id" />
+          <zeebe:property name="resultVariable" value="" />
+          <zeebe:property name="resultExpression" value="={mergeRequestWebhookPayload: request.body}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qvo88i</bpmn:incoming>
+      <bpmn:outgoing>Flow_1bohcmb</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1oiu7f4" messageRef="Message_1bqnvxo" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1bohcmb" sourceRef="checkMergeRequestStatus" targetRef="joinCheckMergeRequestStatus" />
   </bpmn:process>
   <bpmn:error id="Error_0u4w06y" name="fileNotFoundError" errorCode="404" />
-  <bpmn:message id="Message_1p6y9he" name="bbd63b66-580d-465e-9c96-77c63163580b" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
-    <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=createdMergeRequest.id" />
-    </bpmn:extensionElements>
-  </bpmn:message>
   <bpmn:error id="Error_0ue4so7" name="deployError" errorCode="500" />
   <bpmn:error id="Error_1pt8lth" name="mergeRequestClosed" errorCode="500" />
-  <bpmn:message id="Message_178ifkh" name="f3f7c5c0-c73f-483b-8dfa-e3c1eb9b3b94" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
+  <bpmn:message id="Message_178ifkh" name="cbe375f3-ee90-483e-a3e0-803641904bb0" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=&#34;dev&#34;" />
     </bpmn:extensionElements>
   </bpmn:message>
-  <bpmn:message id="Message_1638dju" name="791a0590-cfdc-4b5b-9fd8-66cf0b3732fc" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
+  <bpmn:message id="Message_1638dju" name="9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=&#34;stage&#34;" />
     </bpmn:extensionElements>
   </bpmn:message>
-  <bpmn:message id="Message_1sdi9vt" name="bed4c80c-123c-462a-a23e-e303eb3e163f" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
+  <bpmn:message id="Message_1sdi9vt" name="66da4b0d-b541-4de4-9ad0-436f2fd7f2c5" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=&#34;prod&#34;" />
     </bpmn:extensionElements>
@@ -818,99 +828,104 @@
   <bpmn:category id="Category_0gi6oac">
     <bpmn:categoryValue id="CategoryValue_0oej3al" value="Production environment" />
   </bpmn:category>
+  <bpmn:message id="Message_1bqnvxo" name="977b3fd3-9a57-4fb3-8a93-c81f48f99622" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=createdMergeRequest.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="cicdGitlabBlueprint">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startCicd">
-        <dc:Bounds x="172" y="122" width="36" height="36" />
+        <dc:Bounds x="172" y="112" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="157" y="165" width="68" height="14" />
+          <dc:Bounds x="157" y="155" width="68" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_02ba74o" bpmnElement="openMergeRequestSubprocess">
-        <dc:Bounds x="390" y="100" width="100" height="80" />
+        <dc:Bounds x="390" y="90" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1vd7wrb_di" bpmnElement="getFileMetadata">
-        <dc:Bounds x="250" y="100" width="100" height="80" />
+        <dc:Bounds x="250" y="90" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_00xt4bb_di" bpmnElement="endCicd">
-        <dc:Bounds x="942" y="122" width="36" height="36" />
+        <dc:Bounds x="942" y="112" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="935" y="165" width="52" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0f6tzhp_di" bpmnElement="checkMergeRequestStatus">
-        <dc:Bounds x="612" y="122" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="595" y="165" width="70" height="27" />
+          <dc:Bounds x="935" y="155" width="52" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0bng4eh_di" bpmnElement="joinCheckMergeRequestStatus" isMarkerVisible="true">
-        <dc:Bounds x="685" y="115" width="50" height="50" />
+        <dc:Bounds x="685" y="105" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="667" y="93" width="85" height="14" />
+          <dc:Bounds x="668" y="83" width="84" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_119l7yw_di" bpmnElement="mergeRequestClosedError">
-        <dc:Bounds x="802" y="222" width="36" height="36" />
+        <dc:Bounds x="802" y="212" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="785" y="265" width="72" height="27" />
+          <dc:Bounds x="786" y="255" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0u65wmd_di" bpmnElement="deployFile">
-        <dc:Bounds x="800" y="100" width="100" height="80" />
+        <dc:Bounds x="800" y="90" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1886x4m_di" bpmnElement="splitCheckMergeRequestStatus" isMarkerVisible="true">
-        <dc:Bounds x="525" y="115" width="50" height="50" />
+        <dc:Bounds x="525" y="105" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0qofbp8" bpmnElement="checkMergeRequestStatus">
+        <dc:Bounds x="612" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="595" y="155" width="70" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_14ymik0_di" bpmnElement="Flow_14ymik0">
-        <di:waypoint x="208" y="140" />
-        <di:waypoint x="250" y="140" />
+        <di:waypoint x="208" y="130" />
+        <di:waypoint x="250" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0i10vtb_di" bpmnElement="Flow_0i10vtb">
-        <di:waypoint x="350" y="140" />
-        <di:waypoint x="390" y="140" />
+        <di:waypoint x="350" y="130" />
+        <di:waypoint x="390" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cray7s_di" bpmnElement="Flow_0cray7s">
-        <di:waypoint x="490" y="140" />
-        <di:waypoint x="525" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ovwani_di" bpmnElement="Flow_0ovwani">
-        <di:waypoint x="648" y="140" />
-        <di:waypoint x="685" y="140" />
+        <di:waypoint x="490" y="130" />
+        <di:waypoint x="525" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_034n41h_di" bpmnElement="Flow_034n41h">
-        <di:waypoint x="735" y="140" />
-        <di:waypoint x="800" y="140" />
+        <di:waypoint x="735" y="130" />
+        <di:waypoint x="800" y="130" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="741" y="122" width="38" height="14" />
+          <dc:Bounds x="741" y="112" width="38" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1y21gn7_di" bpmnElement="Flow_1y21gn7">
-        <di:waypoint x="710" y="165" />
-        <di:waypoint x="710" y="240" />
-        <di:waypoint x="802" y="240" />
+        <di:waypoint x="710" y="155" />
+        <di:waypoint x="710" y="230" />
+        <di:waypoint x="802" y="230" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="744" y="223" width="32" height="14" />
+          <dc:Bounds x="744" y="213" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14hk1y4_di" bpmnElement="Flow_14hk1y4">
-        <di:waypoint x="710" y="165" />
-        <di:waypoint x="710" y="330" />
-        <di:waypoint x="550" y="330" />
-        <di:waypoint x="550" y="165" />
+        <di:waypoint x="710" y="155" />
+        <di:waypoint x="710" y="320" />
+        <di:waypoint x="550" y="320" />
+        <di:waypoint x="550" y="155" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="686" y="312" width="21" height="14" />
+          <dc:Bounds x="686" y="302" width="21" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01e3v4d_di" bpmnElement="Flow_01e3v4d">
-        <di:waypoint x="900" y="140" />
-        <di:waypoint x="942" y="140" />
+        <di:waypoint x="900" y="130" />
+        <di:waypoint x="942" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0qvo88i_di" bpmnElement="Flow_0qvo88i">
-        <di:waypoint x="575" y="140" />
-        <di:waypoint x="612" y="140" />
+        <di:waypoint x="575" y="130" />
+        <di:waypoint x="612" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bohcmb_di" bpmnElement="Flow_1bohcmb">
+        <di:waypoint x="648" y="130" />
+        <di:waypoint x="685" y="130" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -942,10 +957,6 @@
         <dc:Bounds x="510" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_167lhbv_di" bpmnElement="createRepositoryFile">
-        <dc:Bounds x="650" y="240" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0jgumt6_di" bpmnElement="updateRepositoryFile">
         <dc:Bounds x="650" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -958,6 +969,10 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="856" y="185" width="89" height="27" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0oc77nu" bpmnElement="createRepositoryFile">
+        <dc:Bounds x="650" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0i3igde_di" bpmnElement="fileNotFoundBoundaryEvent">
         <dc:Bounds x="562" y="182" width="36" height="36" />
@@ -974,11 +989,6 @@
         <di:waypoint x="580" y="280" />
         <di:waypoint x="650" y="280" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_13bxw1h_di" bpmnElement="Flow_13bxw1h">
-        <di:waypoint x="750" y="280" />
-        <di:waypoint x="820" y="280" />
-        <di:waypoint x="820" y="185" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1eyxbym_di" bpmnElement="Flow_1eyxbym">
         <di:waypoint x="750" y="160" />
         <di:waypoint x="795" y="160" />
@@ -991,12 +1001,17 @@
         <di:waypoint x="845" y="160" />
         <di:waypoint x="882" y="160" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="BPMNShape_03aydne" bpmnElement="openMergeRequest">
-        <dc:Bounds x="1000" y="120" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_16ry3vq_di" bpmnElement="Flow_16ry3vq">
+        <di:waypoint x="750" y="280" />
+        <di:waypoint x="820" y="280" />
+        <di:waypoint x="820" y="185" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Activity_0q60d74_di" bpmnElement="createBranch">
         <dc:Bounds x="250" y="120" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1vibowb" bpmnElement="openMergeRequest">
+        <dc:Bounds x="1000" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1p2kaz7_di" bpmnElement="Flow_1p2kaz7">
@@ -1007,13 +1022,13 @@
         <di:waypoint x="960" y="160" />
         <di:waypoint x="1000" y="160" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1l9thor_di" bpmnElement="Flow_1l9thor">
-        <di:waypoint x="1100" y="160" />
-        <di:waypoint x="1142" y="160" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0oj7qx9_di" bpmnElement="Flow_0oj7qx9">
         <di:waypoint x="350" y="160" />
         <di:waypoint x="390" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ilq3am_di" bpmnElement="Flow_0ilq3am">
+        <di:waypoint x="1100" y="160" />
+        <di:waypoint x="1142" y="160" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1050,27 +1065,8 @@
         <dc:Bounds x="720" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0wplddb_di" bpmnElement="endRetrieveFileContent">
-        <dc:Bounds x="862" y="142" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="848" y="185" width="65" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1tzczc7" bpmnElement="createMilestone">
-        <dc:Bounds x="720" y="270" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1x0vzh1_di" bpmnElement="splitIsDmn" isMarkerVisible="true">
-        <dc:Bounds x="855" y="285" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="858" y="261" width="43" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0xsq3ll_di" bpmnElement="endNoDmnMilestoneComparison">
-        <dc:Bounds x="962" y="412" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="944" y="455" width="73" height="40" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="BPMNShape_1uv4pn5" bpmnElement="getLatestMilestone">
+        <dc:Bounds x="960" y="270" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_13tb6kh_di" bpmnElement="splitHasMilestone" isMarkerVisible="true">
         <dc:Bounds x="1115" y="285" width="50" height="50" />
@@ -1082,10 +1078,16 @@
         <dc:Bounds x="1213" y="390" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_115unk9_di" bpmnElement="endNoMilestoneC">
-        <dc:Bounds x="1352" y="412" width="36" height="36" />
+      <bpmndi:BPMNShape id="Gateway_1x0vzh1_di" bpmnElement="splitIsDmn" isMarkerVisible="true">
+        <dc:Bounds x="855" y="285" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1330" y="455" width="82" height="27" />
+          <dc:Bounds x="858" y="261" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0wplddb_di" bpmnElement="endRetrieveFileContent">
+        <dc:Bounds x="862" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848" y="185" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1iom3n8_di" bpmnElement="endMilestoneComparison">
@@ -1094,8 +1096,21 @@
           <dc:Bounds x="1343" y="335" width="57" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1uv4pn5" bpmnElement="getLatestMilestone">
-        <dc:Bounds x="960" y="270" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_115unk9_di" bpmnElement="endNoMilestoneC">
+        <dc:Bounds x="1352" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1330" y="455" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0xsq3ll_di" bpmnElement="endNoDmnMilestoneComparison">
+        <dc:Bounds x="962" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="944" y="455" width="73" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1tzczc7" bpmnElement="createMilestone">
+        <dc:Bounds x="720" y="270" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0t26nvw_di" bpmnElement="Flow_0t26nvw">
         <di:waypoint x="660" y="185" />
@@ -1110,13 +1125,28 @@
         <di:waypoint x="820" y="160" />
         <di:waypoint x="862" y="160" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zp499b_di" bpmnElement="Flow_0zp499b">
+        <di:waypoint x="1140" y="335" />
+        <di:waypoint x="1140" y="430" />
+        <di:waypoint x="1213" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1175" y="413" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hdkuop_di" bpmnElement="Flow_1hdkuop">
         <di:waypoint x="606" y="160" />
         <di:waypoint x="635" y="160" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0qwhjkc_di" bpmnElement="Flow_0qwhjkc">
-        <di:waypoint x="820" y="310" />
-        <di:waypoint x="855" y="310" />
+      <bpmndi:BPMNEdge id="Flow_1vv9nsa_di" bpmnElement="Flow_1vv9nsa">
+        <di:waypoint x="1313" y="430" />
+        <di:waypoint x="1352" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12k5ck5_di" bpmnElement="Flow_12k5ck5">
+        <di:waypoint x="1165" y="310" />
+        <di:waypoint x="1352" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1177" y="292" width="13" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0y214bj_di" bpmnElement="Flow_0y214bj">
         <di:waypoint x="905" y="310" />
@@ -1137,24 +1167,9 @@
         <di:waypoint x="1060" y="310" />
         <di:waypoint x="1115" y="310" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0zp499b_di" bpmnElement="Flow_0zp499b">
-        <di:waypoint x="1140" y="335" />
-        <di:waypoint x="1140" y="430" />
-        <di:waypoint x="1213" y="430" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1175" y="413" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_12k5ck5_di" bpmnElement="Flow_12k5ck5">
-        <di:waypoint x="1165" y="310" />
-        <di:waypoint x="1352" y="310" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1177" y="292" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1vv9nsa_di" bpmnElement="Flow_1vv9nsa">
-        <di:waypoint x="1313" y="430" />
-        <di:waypoint x="1352" y="430" />
+      <bpmndi:BPMNEdge id="Flow_0qwhjkc_di" bpmnElement="Flow_0qwhjkc">
+        <di:waypoint x="820" y="310" />
+        <di:waypoint x="855" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1qoa64a_di" bpmnElement="endFileMetadata">
         <dc:Bounds x="1462" y="142" width="36" height="36" />
