@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="f22cba6" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="dd3bb858-30cd-4f85-8d20-0b75762fbdf6">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="dd3bb858-30cd-4f85-8d20-0b75762fbdf6">
   <bpmn:process id="template-human-task-tutorial-074nxxb" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="userTaskForm_0pjtr0l">{
@@ -88,75 +88,73 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="template-human-task-tutorial-074nxxb">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="150" y="150" width="36" height="36" />
+        <dc:Bounds x="192" y="132" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="150" y="193" width="36" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0wuwes6_di" bpmnElement="meal-gateway" isMarkerVisible="true">
-        <dc:Bounds x="395" y="143" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="377" y="136" width="30" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0ve5rnc_di" bpmnElement="Gateway_0ve5rnc" isMarkerVisible="true">
-        <dc:Bounds x="655" y="143" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0dpj9tv_di" bpmnElement="happy-end">
-        <dc:Bounds x="762" y="150" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="764" y="193" width="32" height="14" />
+          <dc:Bounds x="192" y="175" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_06qp7v3_di" bpmnElement="decide-dinner">
-        <dc:Bounds x="240" y="128" width="100" height="80" />
+        <dc:Bounds x="270" y="110" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0wuwes6_di" bpmnElement="meal-gateway" isMarkerVisible="true">
+        <dc:Bounds x="405" y="125" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="415" y="103" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_174hh3g_di" bpmnElement="prepare-chicken">
-        <dc:Bounds x="500" y="78" width="100" height="80" />
+        <dc:Bounds x="520" y="110" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0edtwui_di" bpmnElement="prepare-salad">
-        <dc:Bounds x="500" y="190" width="100" height="80" />
+        <dc:Bounds x="520" y="230" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ve5rnc_di" bpmnElement="Gateway_0ve5rnc" isMarkerVisible="true">
+        <dc:Bounds x="655" y="125" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dpj9tv_di" bpmnElement="happy-end">
+        <dc:Bounds x="742" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="744" y="175" width="33" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_11y9y90_di" bpmnElement="Flow_11y9y90">
-        <di:waypoint x="186" y="168" />
-        <di:waypoint x="240" y="168" />
+        <di:waypoint x="228" y="150" />
+        <di:waypoint x="270" y="150" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06ss774_di" bpmnElement="Flow_06ss774">
-        <di:waypoint x="340" y="168" />
-        <di:waypoint x="395" y="168" />
+        <di:waypoint x="370" y="150" />
+        <di:waypoint x="405" y="150" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_10fo3iz_di" bpmnElement="chicken-path">
-        <di:waypoint x="420" y="143" />
-        <di:waypoint x="420" y="118" />
-        <di:waypoint x="500" y="118" />
+        <di:waypoint x="455" y="150" />
+        <di:waypoint x="520" y="150" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="426" y="98" width="40" height="14" />
+          <dc:Bounds x="460" y="133" width="40" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mlcqv2_di" bpmnElement="salad-path">
-        <di:waypoint x="420" y="193" />
-        <di:waypoint x="420" y="230" />
-        <di:waypoint x="500" y="230" />
+        <di:waypoint x="430" y="175" />
+        <di:waypoint x="430" y="270" />
+        <di:waypoint x="520" y="270" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="426" y="236" width="29" height="14" />
+          <dc:Bounds x="465" y="253" width="29" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fdmm0c_di" bpmnElement="chicken-prepared">
-        <di:waypoint x="600" y="118" />
-        <di:waypoint x="680" y="118" />
-        <di:waypoint x="680" y="143" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1yifmzt_di" bpmnElement="Flow_1yifmzt">
-        <di:waypoint x="705" y="168" />
-        <di:waypoint x="762" y="168" />
+        <di:waypoint x="620" y="150" />
+        <di:waypoint x="655" y="150" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1k2rps2_di" bpmnElement="salad-prepared">
-        <di:waypoint x="600" y="230" />
-        <di:waypoint x="680" y="230" />
-        <di:waypoint x="680" y="193" />
+        <di:waypoint x="620" y="270" />
+        <di:waypoint x="680" y="270" />
+        <di:waypoint x="680" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yifmzt_di" bpmnElement="Flow_1yifmzt">
+        <di:waypoint x="705" y="150" />
+        <di:waypoint x="742" y="150" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
