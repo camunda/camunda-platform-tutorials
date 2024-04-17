@@ -11,6 +11,7 @@ Camunda can also be used to orchestrate your process development life cycle (PDL
 This blueprint demonstrates a customizable CI/CD pipeline for deploying a file to different environments using GitLab and Camunda Platform 8.
 During the process, a pull request is created in the target repository, which, when merged, triggers the deployment to the development environment.
 For deploying to the stage and production environments, custom pipeline runs have to be triggered.
+The blueprint is designed to be used with GitLab, but can be adapted to work with other CI/CD tools.
 
 ## How to use
 
@@ -124,5 +125,9 @@ For deploying to the production environment, pass a variable `ENVIRONMENT` with 
 
 ## Known Limitations
 
-* Concurrent runs of the blueprint are not supported. This means that if you start the blueprint while another instance is still running, deployment information might be mixed between the two instances.
-* Changes to the created branch are not tracked. This means that if you change the content of a synced file within the git repository, the blueprint will not update the file content within Web Modeler.
+* Concurrent runs of the blueprint are not supported.
+  This means that if you start the blueprint while another instance is still running, deployment information might be mixed between the two instances.
+* Changes to the created branch are not tracked.
+  This means that if you change the content of a synced file within the git repository, the blueprint will not update the file content within Web Modeler.
+* Adapting the blueprint to work with GitHub is currently not supported.
+  The Connectors Framework at the moment doesn't support `Base64` encoding for process variables which is required by [GitHub's "Create or update file contents" API](https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents).
