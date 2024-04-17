@@ -7,7 +7,8 @@
 
 ## Summary
 
-This blueprint demonstrates a CI/CD pipeline for deploying a file to different environments using GitLab and Camunda Platform 8.
+Camunda can also be used to orchestrate your process development life cycle (PDLC), covering all steps from change reviews to release activities.
+This blueprint demonstrates a customizable CI/CD pipeline for deploying a file to different environments using GitLab and Camunda Platform 8.
 During the process, a pull request is created in the target repository, which, when merged, triggers the deployment to the development environment.
 For deploying to the stage and production environments, custom pipeline runs have to be triggered.
 
@@ -17,13 +18,12 @@ For deploying to the stage and production environments, custom pipeline runs hav
 
 #### SaaS
 
-1. In [Console](https://console.cloud.camunda.io), navigate to the "Organization" > "Administration API".
-2. Click on "Create new credentials" and check the "Web Modeler API" box (this should automatically check at least "Get" and "Create" below "Web Modeler API").
-3. Click on "Create" and create a connector secret `WEB_MODELER_CLIENT_ID` and `WEB_MODELER_CLIENT_SECRET` in the cluster you want to use the blueprint in and set the values to the "Client ID" and "Client Secret" respectively.
+1. Create an API client [as described in the documentation](https://docs.camunda.io/docs/next/apis-tools/web-modeler-api/authentication/?authentication=saas) (with at least "Get" and "Create" scopes for "Web Modeler API").
+2Camunda can also be used to orchestrate your process development lifecycle (PDLC), covering all steps from change reviews to release activities.. Click on "Create" and create a connector secret `WEB_MODELER_CLIENT_ID` and `WEB_MODELER_CLIENT_SECRET` in the cluster you want to use the blueprint in and set the values to the "Client ID" and "Client Secret" respectively.
 
 #### Self-Managed
 
-1. Create an M2M application for the Web Modeler API [as described in the documentation](https://docs.camunda.io/docs/apis-tools/web-modeler-api/authentication/) with at least `create:*` and `read:*` permissions.
+1. Create an M2M application for the Web Modeler API [as described in the documentation](https://docs.camunda.io/docs/apis-tools/web-modeler-api/authentication/?authentication=self-managed) with at least `create:*` and `read:*` permissions.
 2. [Follow the documentation](https://docs.camunda.io/docs/self-managed/connectors-deployment/connectors-configuration/#secrets) to create the connector secrets `WEB_MODELER_CLIENT_ID` and `WEB_MODELER_CLIENT_SECRET` in the cluster you want to use the blueprint in and set the values to the "Client ID" and "Client Secret" respectively.
 
 ### Set up the CI/CD blueprint in Web Modeler
@@ -95,7 +95,19 @@ After setting up the GitLab repository, create a new connector secret `GITLAB_WE
 ### Run the blueprint
 
 You can either [start the blueprint via Camunda Tasklist](https://docs.camunda.io/docs/next/components/modeler/web-modeler/run-or-publish-your-process/#publish-to-tasklist) or via running it [directly in Web Modeler](https://docs.camunda.io/docs/next/components/modeler/web-modeler/run-or-publish-your-process/#run-manually-from-modeler).
-Additionally, on Camunda 8 SaaS, you can use[ the public link of the blueprint's start event](https://docs.camunda.io/docs/next/components/modeler/web-modeler/run-or-publish-your-process/#publish-via-a-public-form) to start a new instance of the blueprint.
+Additionally, on Camunda 8 SaaS, you can use [the public link of the blueprint's start event](https://docs.camunda.io/docs/next/components/modeler/web-modeler/run-or-publish-your-process/#publish-via-a-public-form) to start a new instance of the blueprint.
+
+The form will ask you for the following information:
+- **Folder ID:** The ID of the folder you want to deploy to the target repository.
+  You can find the ID in the URL of the folder in Web Modeler:
+  ![Folder ID](./readme-screenshots/folder-id.png)
+- **Repository URL:** The URL of the target repository.
+- **Target Base Branch:** In the course of the blueprint, a new branch will be created in the target repository.
+  This field specifies the base branch for the new branch.
+- **Target GitLab Base URL:** The base URL of the GitLab instance. Defaults to `https://gitlab.com`.
+- **Target GitLab Project ID:** The ID of the target project in GitLab.
+  You can find the ID in the URL of the project in GitLab:
+  ![Project ID](./readme-screenshots/project-id.png)
 
 After starting a process instance, it will create a pull request with the contents of the target folder in the target repository.
 When you merge the pull request, the folder contents will be deployed to the development environment via [the `deploy_to_dev` job within the pipeline](./gitlab-pipeline/.gitlab-ci.yml).
