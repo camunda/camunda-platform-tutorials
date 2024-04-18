@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0" camunda:diagramRelationId="3f4f46f7-e146-4fbe-91d6-cf2dac33a2a1">
-  <bpmn:process id="Process_0itncz9" name="Intelligent-routing-with-openai" isExecutable="true">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="8c03b57" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="3f4f46f7-e146-4fbe-91d6-cf2dac33a2a1">
+  <bpmn:process id="Process_xn7dhhd" name="Intelligent-routing-with-openai" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="UserTaskForm_1jtqu5f">{
   "executionPlatform": "Camunda Cloud",
@@ -309,7 +309,7 @@
         "columns": null
       },
       "id": "Field_0wf2m58",
-      "key": "customer_message",
+      "key": "customer_inquiry",
       "description": "Free text that the customer sent.",
       "defaultValue": "How many units do we have to purchase to receive a volume discount?",
       "validate": {
@@ -431,17 +431,16 @@
           <zeebe:input source="https://api.openai.com/v1/chat/completions" target="url" />
           <zeebe:input source="gpt-3.5-turbo" target="internal_model" />
           <zeebe:input source="1" target="internal_temperature" />
-          <zeebe:input source="=&#34;You are a bot that classifies incoming messages by urgency and department.&#34;" target="internal_systemMessage" />
-          <zeebe:input source="=[ &#10;    { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;You are a bot that classifies incoming messages by importance and department. You can route messages to these departments: &#39;LEGAL_TEAM&#39;, &#39;SALES_TEAM&#39;, &#39;ENGINEERING_TEAM&#39;. Under no circumstances should you use any other department names. Your responses can only contain department name.&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;Understood. My responses will only contain the importance and department name separated by a space.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Your product has bug and crashes on my computer.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;ENGINEERING_TEAM&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Your website breaks data privacy laws. I will report you to the authorities.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;LEGAL_TEAM&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;I need to speak to someone about my account.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES_TEAM&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;How do I install the software?&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;ENGINEERING_TEAM&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;We have advertisment space we want to sell you for your marketing campaigns. Contact us today and save 20%.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES_TEAM&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;I am your biggest customer and have a question about our commercial relationship.&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES_TEAM&#34;&#10;    } &#10;]" target="internal_chatHistory" />
-          <zeebe:input source="=customer_inquiry + if is defined(feedback) then feedback else &#34;&#34;" target="internal_prompt" />
+          <zeebe:input source="=&#34;You are a routing classifier.&#34; " target="internal_systemMessage" />
+          <zeebe:input source="=[&#10;    { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Route messages to these departments: &#39;LEGAL&#39;, &#39;SALES&#39;, &#39;ENGINEERING&#39;, &#39;OTHER&#39;. &#39;OTHER&#39; is the last resort try hard to match it to &#39;LEGAL&#39;, &#39;SALES&#39;, &#39;ENGINEERING&#39; first. Your response must only contain one of the existing department names.&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;Understood. My responses will only contain the importance and department name separated by a space.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Your product has bug and crashes on my computer.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;ENGINEERING&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;Your website breaks data privacy laws. I will report you to the authorities.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;LEGAL&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;I need to speak to someone about my account.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;How do I install the software?&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;ENGINEERING&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;We have advertisment space we want to sell you for your marketing campaigns. Contact us today and save 20%.&#34; &#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;user&#34;, &#10;        &#34;content&#34;: &#34;I am your biggest customer and have a question about our commercial relationship.&#34;&#10;    }, { &#10;        &#34;role&#34;: &#34;assistant&#34;, &#10;        &#34;content&#34;: &#34;SALES&#34;&#10;    }&#10;]" target="internal_chatHistory" />
+          <zeebe:input source="=if is defined(feedback) then feedback else customer_inquiry" target="internal_prompt" />
           <zeebe:input source="1" target="internal_choices" />
           <zeebe:input source="=append(concatenate(if is defined(internal_systemMessage) then [{&#34;role&#34;: &#34;system&#34;, &#34;content&#34;: internal_systemMessage}] else [], if is defined(internal_chatHistory) then internal_chatHistory else []), {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: internal_prompt})" target="internal_messages" />
           <zeebe:input source="={&#34;model&#34;: if is defined(internal_custom_model) then internal_custom_model else internal_model, &#34;messages&#34;: internal_messages, &#34;n&#34;: number(internal_choices), &#34;temperature&#34;: number(internal_temperature)}" target="body" />
           <zeebe:input source="30" target="connectionTimeoutInSeconds" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="resultVariable" value="route" />
-          <zeebe:header key="resultExpression" value="=response.body.choices[1].message.content" />
+          <zeebe:header key="resultExpression" value="={route: response.body.choices[1].message.content}" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_024pys7</bpmn:incoming>
@@ -492,18 +491,16 @@
       <bpmn:outgoing>Flow_07c5po9</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_1h01n0i" sourceRef="gateway_sales_team" targetRef="Gateway_0wwrp47" />
-    <bpmn:sequenceFlow id="Flow_0jp9ged" name="retry with feedback" sourceRef="Gateway_0wwrp47" targetRef="Event_0zpq0qj">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=select_route = "feedback"</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0jp9ged" name="retry with&#10;feedback" sourceRef="Gateway_0wwrp47" targetRef="Event_0zpq0qj" />
     <bpmn:sequenceFlow id="Flow_0vcinh5" sourceRef="openai_call" targetRef="Gateway_1m3zdr2" />
     <bpmn:sequenceFlow id="flow_sales_inquiry" name="sales" sourceRef="gateway_routing" targetRef="activity_sales_team">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=route = "SALES_TEAM"</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(route, "SALES", "i")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="flow_technical_inquiry" name="technical" sourceRef="gateway_routing" targetRef="activity_engineering_team">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=route = "ENGINEERING_TEAM"</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(route, "ENGINEERING", "i")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1gj1kgq" name="legal" sourceRef="gateway_routing" targetRef="Activity_04j3j7a">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=route = "LEGAL_TEAM"</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(route, "LEGAL", "i")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_07h5nkp" sourceRef="activity_sales_team" targetRef="gateway_sales_team" />
     <bpmn:sequenceFlow id="Flow_088ove7" sourceRef="activity_engineering_team" targetRef="gateway_sales_team" />
@@ -523,14 +520,14 @@
       <bpmn:outgoing>Flow_024pys7</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_024pys7" sourceRef="Gateway_01n9u1n" targetRef="openai_call" />
-    <bpmn:exclusiveGateway id="Gateway_0wwrp47" name="inquiry response">
+    <bpmn:exclusiveGateway id="Gateway_0wwrp47" name="inquiry response" default="Flow_0jp9ged">
       <bpmn:incoming>Flow_1h01n0i</bpmn:incoming>
       <bpmn:outgoing>Flow_005lakp</bpmn:outgoing>
       <bpmn:outgoing>Flow_0jp9ged</bpmn:outgoing>
       <bpmn:outgoing>Flow_0cd6m1o</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_005lakp" name="resolved" sourceRef="Gateway_0wwrp47" targetRef="happy-end">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=select_route = "resolved"</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(route, "RESOLVED", "i")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_0zpq0qj" name="retry with feedback">
       <bpmn:incoming>Flow_0jp9ged</bpmn:incoming>
@@ -541,14 +538,14 @@
       <bpmn:linkEventDefinition id="LinkEventDefinition_145q5xu" name="retry_with_feedback" />
     </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="Flow_1uzs4p3" sourceRef="Event_0ch7pk5" targetRef="Gateway_01n9u1n" />
-    <bpmn:sequenceFlow id="Flow_0cd6m1o" name="other" sourceRef="Gateway_0wwrp47" targetRef="Event_0ac11qa">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=select_route = "ENGINEERING_TEAM" or select_route = "SALES_TEAM" or select_route = "LEGAL_TEAM"</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="Flow_0cd6m1o" name="specific&#10;team" sourceRef="Gateway_0wwrp47" targetRef="Event_0ac11qa">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=matches(route, "LEGAL|ENGINEERING|SALES")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_0ac11qa" name="route to different team">
       <bpmn:incoming>Flow_0cd6m1o</bpmn:incoming>
       <bpmn:linkEventDefinition id="LinkEventDefinition_10ue4ni" name="route_to_different_team" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:intermediateCatchEvent id="Event_057ugz2" name="route to different team">
+    <bpmn:intermediateCatchEvent id="Event_057ugz2" name="specific team">
       <bpmn:outgoing>Flow_1k0acsx</bpmn:outgoing>
       <bpmn:linkEventDefinition id="LinkEventDefinition_0zqhcq1" name="route_to_different_team" />
     </bpmn:intermediateCatchEvent>
@@ -570,38 +567,22 @@
     </bpmn:userTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0itncz9">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_xn7dhhd">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="212" y="112" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="193" y="155" width="75" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0og2zv6_di" bpmnElement="Event_0ch7pk5">
-        <dc:Bounds x="352" y="232" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0dpj9tv_di" bpmnElement="happy-end">
+        <dc:Bounds x="1212" y="292" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="348" y="275" width="45" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_03z512o_di" bpmnElement="Activity_03z512o">
-        <dc:Bounds x="290" y="90" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_01n9u1n_di" bpmnElement="Gateway_01n9u1n" isMarkerVisible="true">
-        <dc:Bounds x="425" y="105" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1oscv13_di" bpmnElement="Event_057ugz2">
-        <dc:Bounds x="572" y="352" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="550" y="395" width="81" height="27" />
+          <dc:Bounds x="1191" y="335" width="78" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_12czb26_di" bpmnElement="openai_call">
         <dc:Bounds x="510" y="90" width="100" height="80" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1m3zdr2_di" bpmnElement="Gateway_1m3zdr2" isMarkerVisible="true">
-        <dc:Bounds x="645" y="105" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1gvpzh2_di" bpmnElement="gateway_routing" isMarkerVisible="true">
         <dc:Bounds x="737" y="105" width="50" height="50" />
@@ -617,22 +598,19 @@
         <dc:Bounds x="850" y="330" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0gb55cj_di" bpmnElement="gateway_sales_team" isMarkerVisible="true">
+        <dc:Bounds x="985" y="105" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_067lsux" bpmnElement="Activity_04j3j7a">
         <dc:Bounds x="850" y="450" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1dnc2x1_di" bpmnElement="Activity_1ltiek0">
-        <dc:Bounds x="850" y="90" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_03z512o_di" bpmnElement="Activity_03z512o">
+        <dc:Bounds x="290" y="90" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0gb55cj_di" bpmnElement="gateway_sales_team" isMarkerVisible="true">
-        <dc:Bounds x="985" y="105" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0dpj9tv_di" bpmnElement="happy-end">
-        <dc:Bounds x="1212" y="112" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1191" y="155" width="78" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Gateway_01n9u1n_di" bpmnElement="Gateway_01n9u1n" isMarkerVisible="true">
+        <dc:Bounds x="425" y="105" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0wwrp47_di" bpmnElement="Gateway_0wwrp47" isMarkerVisible="true">
         <dc:Bounds x="1075" y="105" width="50" height="50" />
@@ -640,28 +618,46 @@
           <dc:Bounds x="1059" y="83" width="81" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1u45oom_di" bpmnElement="Event_0ac11qa">
-        <dc:Bounds x="1212" y="352" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0ldjf3e_di" bpmnElement="Event_0zpq0qj">
+        <dc:Bounds x="1212" y="112" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1190" y="395" width="81" height="27" />
+          <dc:Bounds x="1208" y="155" width="45" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0ldjf3e_di" bpmnElement="Event_0zpq0qj">
-        <dc:Bounds x="1212" y="232" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0og2zv6_di" bpmnElement="Event_0ch7pk5">
+        <dc:Bounds x="352" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1208" y="275" width="45" height="27" />
+          <dc:Bounds x="348" y="275" width="45" height="27" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1u45oom_di" bpmnElement="Event_0ac11qa">
+        <dc:Bounds x="1212" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1191" y="245" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1oscv13_di" bpmnElement="Event_057ugz2">
+        <dc:Bounds x="572" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="559" y="395" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1m3zdr2_di" bpmnElement="Gateway_1m3zdr2" isMarkerVisible="true">
+        <dc:Bounds x="645" y="105" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dnc2x1_di" bpmnElement="Activity_1ltiek0">
+        <dc:Bounds x="850" y="90" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1h01n0i_di" bpmnElement="Flow_1h01n0i">
         <di:waypoint x="1035" y="130" />
         <di:waypoint x="1075" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0jp9ged_di" bpmnElement="Flow_0jp9ged">
-        <di:waypoint x="1100" y="155" />
-        <di:waypoint x="1100" y="250" />
-        <di:waypoint x="1212" y="250" />
+        <di:waypoint x="1125" y="130" />
+        <di:waypoint x="1212" y="130" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1146" y="216" width="45" height="27" />
+          <dc:Bounds x="1150" y="117" width="45" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0vcinh5_di" bpmnElement="Flow_0vcinh5">
@@ -673,7 +669,7 @@
         <di:waypoint x="762" y="250" />
         <di:waypoint x="850" y="250" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="799" y="232" width="27" height="14" />
+          <dc:Bounds x="800" y="232" width="26" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_10bgsuo_di" bpmnElement="flow_technical_inquiry">
@@ -681,7 +677,7 @@
         <di:waypoint x="762" y="370" />
         <di:waypoint x="850" y="370" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="791" y="353" width="43" height="14" />
+          <dc:Bounds x="791" y="353" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1gj1kgq_di" bpmnElement="Flow_1gj1kgq">
@@ -723,10 +719,11 @@
         <di:waypoint x="510" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_005lakp_di" bpmnElement="Flow_005lakp">
-        <di:waypoint x="1125" y="130" />
-        <di:waypoint x="1212" y="130" />
+        <di:waypoint x="1100" y="155" />
+        <di:waypoint x="1100" y="310" />
+        <di:waypoint x="1212" y="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1148" y="112" width="42" height="14" />
+          <dc:Bounds x="1136" y="292" width="42" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uzs4p3_di" bpmnElement="Flow_1uzs4p3">
@@ -736,10 +733,10 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cd6m1o_di" bpmnElement="Flow_0cd6m1o">
         <di:waypoint x="1100" y="155" />
-        <di:waypoint x="1100" y="370" />
-        <di:waypoint x="1212" y="370" />
+        <di:waypoint x="1100" y="220" />
+        <di:waypoint x="1212" y="220" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1155" y="353" width="27" height="14" />
+          <dc:Bounds x="1151" y="206" width="37" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1b1rhvq_di" bpmnElement="Flow_1b1rhvq">
