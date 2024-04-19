@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="8c03b57" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
   <bpmn:process id="cicdGitlabBlueprint" name="CI/CD Blueprint: GitLab" isExecutable="true">
+    <bpmn:documentation>A customizable process development lifecycle that begins when Web Modeler changes are complete and ends when the process and all other dependencies in the Web Modeler folder is released to production. 
+
+For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/integrate-web-modeler-in-ci-cd/</bpmn:documentation>
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="UserTaskForm_22jqpc9">{
   "executionPlatform": "Camunda Cloud",
@@ -140,6 +143,7 @@
       <bpmn:outgoing>Flow_14ymik0</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:subProcess id="openMergeRequestSubprocess" name="Open GitLab MR">
+      <bpmn:documentation>Creates a branch, adds or updates the files collected the previous steps, and creates a merge request. </bpmn:documentation>
       <bpmn:incoming>Flow_0i10vtb</bpmn:incoming>
       <bpmn:outgoing>Flow_0cray7s</bpmn:outgoing>
       <bpmn:startEvent id="startOpenMergeRequest" name="Start of merge request generation">
@@ -332,6 +336,7 @@
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_14ymik0" sourceRef="startCicd" targetRef="getFileMetadata" />
     <bpmn:subProcess id="getFileMetadata" name="Retrieve file metadata from Web Modeler API">
+      <bpmn:documentation>Uses the Web Modeler API to retrieve the contents of a given folder, creating milestones, and creating milestone comparison links for easier review</bpmn:documentation>
       <bpmn:incoming>Flow_14ymik0</bpmn:incoming>
       <bpmn:outgoing>Flow_0i10vtb</bpmn:outgoing>
       <bpmn:serviceTask id="getWebModelerToken" name="Get Web Modeler API token" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="7" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
@@ -557,6 +562,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=not (list contains(["merge", "close"], mergeRequestWebhookPayload.object_attributes.action))</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:subProcess id="deployFile" name="Deploy file">
+      <bpmn:documentation>Simulates a deployment pipeline across 3 stages, including a manual review and additional testing. After each successful deployment, a milestone is created to track deployment status.</bpmn:documentation>
       <bpmn:incoming>Flow_034n41h</bpmn:incoming>
       <bpmn:outgoing>Flow_01e3v4d</bpmn:outgoing>
       <bpmn:task id="optionalTests" name="Optional: tests (e.g. load testing)">
@@ -819,6 +825,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0qvo88i" sourceRef="splitCheckMergeRequestStatus" targetRef="checkMergeRequestStatus" />
     <bpmn:intermediateCatchEvent id="checkMergeRequestStatus" name="Check merge request status" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorIntermediate.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
+      <bpmn:documentation>Listen for an update in the merge request status and proceed to the appropriate branch</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:properties>
           <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
