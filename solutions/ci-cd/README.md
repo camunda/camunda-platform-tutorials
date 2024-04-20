@@ -9,6 +9,7 @@
 
 Camunda can also be used to orchestrate your process development life cycle (PDLC), covering all steps from change reviews to release activities.
 This blueprint demonstrates a customizable CI/CD pipeline for deploying a file to different environments using GitLab and Camunda Platform 8.
+To learn more about the topic, review [Integrate Web Modeler into CI/CD](https://docs.camunda.io/docs/guides/devops-lifecycle/integrate-web-modeler-in-ci-cd/).
 During the process, a pull request is created in the target repository, which, when merged, triggers the deployment to the development environment.
 For deploying to the stage and production environments, custom pipeline runs have to be triggered.
 The blueprint is designed to be used with GitLab, but can be adapted to work with other CI/CD tools.
@@ -20,7 +21,7 @@ The blueprint is designed to be used with GitLab, but can be adapted to work wit
 #### SaaS
 
 1. Create an API client [as described in the documentation](https://docs.camunda.io/docs/next/apis-tools/web-modeler-api/authentication/?authentication=saas) (with at least "Get" and "Create" scopes for "Web Modeler API").
-2Camunda can also be used to orchestrate your process development lifecycle (PDLC), covering all steps from change reviews to release activities.. Click on "Create" and create a connector secret `WEB_MODELER_CLIENT_ID` and `WEB_MODELER_CLIENT_SECRET` in the cluster you want to use the blueprint in and set the values to the "Client ID" and "Client Secret" respectively.
+2. Camunda can also be used to orchestrate your process development lifecycle (PDLC), covering all steps from change reviews to release activities.. Click on "Create" and create a connector secret `WEB_MODELER_CLIENT_ID` and `WEB_MODELER_CLIENT_SECRET` in the cluster you want to use the blueprint in and set the values to the "Client ID" and "Client Secret" respectively.
 
 #### Self-Managed
 
@@ -112,8 +113,8 @@ The form will ask you for the following information:
 
 After starting a process instance, it will create a pull request with the contents of the target folder in the target repository.
 When you merge the pull request, the folder contents will be deployed to the development environment via [the `deploy_to_dev` job within the pipeline](./gitlab-pipeline/.gitlab-ci.yml).
-To check the status of the process, you can always use [Camunda Operate](https://docs.camunda.io/docs/next/components/operate/operate-introduction/) to have a look at the status of the process.
-Operate should indicate with blue colored sequence flows the where to process went and mark the current activity with a green circle:
+To check the status of the process, you can always use [Camunda Operate](https://docs.camunda.io/docs/next/components/operate/operate-introduction/) to track the status of the process.
+Operate should indicate with blue colored sequence flows where the process went and mark the current activity with a green circle:
 
 ![Operate Process Instance](./readme-screenshots/operate-process-instance.png)
 
