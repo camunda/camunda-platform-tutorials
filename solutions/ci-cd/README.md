@@ -8,7 +8,7 @@
 ## Summary
 
 Camunda can also be used to orchestrate your process development life cycle (PDLC), covering all steps from change reviews to release activities.
-This blueprint demonstrates a customizable CI/CD pipeline for deploying a file to different environments using GitLab and Camunda Platform 8.
+This blueprint demonstrates a customizable CI/CD pipeline for deploying a file to different environments using GitLab and Camunda 8.
 To learn more about the topic, review [Integrate Web Modeler into CI/CD](https://docs.camunda.io/docs/guides/devops-lifecycle/integrate-web-modeler-in-ci-cd/).
 During the process, a pull request is created in the target repository, which, when merged, triggers the deployment to the development environment.
 For deploying to the stage and production environments, custom pipeline runs have to be triggered.
