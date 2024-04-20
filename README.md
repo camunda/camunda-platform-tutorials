@@ -15,9 +15,12 @@ Solutions:
    * [Intelligent Routing](solutions/ai-intelligent-routing) 
 	
 * Level Medium
-	* [Absence Request](solutions/absence-request)
-	* [Enforcing SLA](solutions/enforcing-sla)
-	* [Error Handling](solutions/error-handling)
-	* [Expense Reimbursement](solutions/event-registration)
-	* [Order Fulfillment](solutions/order-fulfillment)
-	* [Ticket Booking](solutions/ticket-booking)
+   * [Absence Request](solutions/absence-request)
+   * [Enforcing SLA](solutions/enforcing-sla)
+   * [Error Handling](solutions/error-handling)
+   * [Expense Reimbursement](solutions/event-registration)
+   * [Order Fulfillment](solutions/order-fulfillment)
+   * [Ticket Booking](solutions/ticket-booking)
+
+* Level Complex
+   * [CI/CD Pipeline](solutions/ci-cd)
