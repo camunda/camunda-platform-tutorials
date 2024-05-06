@@ -168,19 +168,19 @@
       <bpmndi:BPMNShape id="Event_1wd6p5s_di" bpmnElement="Event_1wd6p5s" bioc:stroke="#000000" bioc:fill="#ffffff" color:background-color="#ffffff" color:border-color="#000000">
         <dc:Bounds x="1048" y="152" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1qdclsp_di" bpmnElement="Flow_1qdclsp" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_1qdclsp_di" bpmnElement="Flow_1qdclsp">
         <di:waypoint x="588" y="170" />
         <di:waypoint x="630" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_122o77r_di" bpmnElement="Flow_122o77r" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_122o77r_di" bpmnElement="Flow_122o77r">
         <di:waypoint x="1010" y="170" />
         <di:waypoint x="1048" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0oytcxl_di" bpmnElement="Flow_0oytcxl" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_0oytcxl_di" bpmnElement="Flow_0oytcxl">
         <di:waypoint x="730" y="170" />
         <di:waypoint x="770" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_07bctic_di" bpmnElement="Flow_07bctic" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_07bctic_di" bpmnElement="Flow_07bctic">
         <di:waypoint x="870" y="170" />
         <di:waypoint x="910" y="170" />
       </bpmndi:BPMNEdge>
@@ -202,11 +202,11 @@
           <dc:Bounds x="655" y="495" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1kizjzs_di" bpmnElement="Flow_1kizjzs" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_1kizjzs_di" bpmnElement="Flow_1kizjzs">
         <di:waypoint x="488" y="470" />
         <di:waypoint x="530" y="470" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_07gv19k_di" bpmnElement="Flow_07gv19k" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_07gv19k_di" bpmnElement="Flow_07gv19k">
         <di:waypoint x="630" y="470" />
         <di:waypoint x="672" y="470" />
       </bpmndi:BPMNEdge>
@@ -222,42 +222,42 @@
           <dc:Bounds x="726" y="276" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0rfbpf0_di" bpmnElement="Flow_0rfbpf0" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_0rfbpf0_di" bpmnElement="Flow_0rfbpf0">
         <di:waypoint x="208" y="170" />
         <di:waypoint x="250" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0o6zxl7_di" bpmnElement="Flow_0o6zxl7" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_0o6zxl7_di" bpmnElement="Flow_0o6zxl7">
         <di:waypoint x="350" y="170" />
         <di:waypoint x="435" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0krdbvt_di" bpmnElement="Flow_0krdbvt" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_0krdbvt_di" bpmnElement="Flow_0krdbvt">
         <di:waypoint x="420" y="290" />
         <di:waypoint x="460" y="290" />
         <di:waypoint x="460" y="195" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_17nttda_di" bpmnElement="Flow_17nttda" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_17nttda_di" bpmnElement="Flow_17nttda">
         <di:waypoint x="485" y="170" />
         <di:waypoint x="520" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1may791_di" bpmnElement="Flow_1may791" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_1may791_di" bpmnElement="Flow_1may791">
         <di:waypoint x="270" y="228" />
         <di:waypoint x="270" y="290" />
         <di:waypoint x="320" y="290" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1vt6ezk_di" bpmnElement="Flow_1vt6ezk" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_1vt6ezk_di" bpmnElement="Flow_1vt6ezk">
         <di:waypoint x="1110" y="170" />
         <di:waypoint x="1150" y="170" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_188kodm_di" bpmnElement="Flow_188kodm" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_188kodm_di" bpmnElement="Flow_188kodm">
         <di:waypoint x="820" y="278" />
         <di:waypoint x="820" y="340" />
         <di:waypoint x="870" y="340" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_18w8ool_di" bpmnElement="Flow_18w8ool" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_18w8ool_di" bpmnElement="Flow_18w8ool">
         <di:waypoint x="970" y="340" />
         <di:waypoint x="1012" y="340" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_02o6lmr_di" bpmnElement="Flow_02o6lmr" bioc:stroke="#000000" color:border-color="#000000">
+      <bpmndi:BPMNEdge id="Flow_02o6lmr_di" bpmnElement="Flow_02o6lmr">
         <di:waypoint x="1250" y="170" />
         <di:waypoint x="1292" y="170" />
       </bpmndi:BPMNEdge>
