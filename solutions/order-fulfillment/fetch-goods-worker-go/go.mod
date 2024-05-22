@@ -2,7 +2,7 @@ module go-hello-world
 
 go 1.19
 
-require github.com/camunda/zeebe/clients/go/v8 v8.1.4
+require github.com/camunda/camunda/clients/go/v8 v8.1.4
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
