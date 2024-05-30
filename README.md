@@ -20,7 +20,8 @@ Solutions:
    * [Error Handling](solutions/error-handling)
    * [Expense Reimbursement](solutions/event-registration)
    * [Order Fulfillment](solutions/order-fulfillment)
-   * [Ticket Booking](solutions/ticket-booking)
+   * [Ticket Booking](solutions/ticket-booking)	
 
 * Level Complex
+   * [RPA Orchestration UI PAth](solutions/rpa-orchestration-uipath)
    * [CI/CD Pipeline](solutions/ci-cd)
