@@ -1,0 +1,132 @@
+stages:
+  - prepare
+  - deploy
+
+get-changed-files-merge:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - git fetch origin $CI_COMMIT_BRANCH --depth=1
+    - CHANGED_FILES=$(git diff --name-only --diff-filter=AM $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep -E '\.bpmn$|\.dmn$|\.form$' || echo "")
+    - echo "Found '$(echo "$CHANGED_FILES" | tr '\n' ' ' | sed 's/ $//')' to deploy"
+    - echo "CHANGED_FILES=$(echo "$CHANGED_FILES" | sed ':a;N;$!ba;s/\n/\\n/g')" >> build.env
+  stage: prepare
+  artifacts:
+    reports:
+      dotenv: build.env
+
+get-changed-files-web:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    - apt-get -qq update
+    - apt-get install -y jq
+  script:
+    - |
+      PREVIOUS_DEPLOYED_COMMIT=$(curl --header "JOB-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/deployments?environment=$CI_ENVIRONMENT_NAME&status=success" | jq -r --arg env_name "$CI_ENVIRONMENT_NAME" 'first(.[] | select(.environment.name == $env_name)).deployable.commit.id')
+      # Check if PREVIOUS_DEPLOYED_COMMIT is empty
+      if [ -z "$PREVIOUS_DEPLOYED_COMMIT" ]; then
+          # Fetch the first commit of the repository using git command
+          FIRST_COMMIT_ID=$(git rev-list --max-parents=0 HEAD)
+
+          # Assign the first commit ID to PREVIOUS_DEPLOYED_COMMIT
+          PREVIOUS_DEPLOYED_COMMIT=$FIRST_COMMIT_ID
+      fi
+    - CHANGED_FILES=$(git diff --name-only --diff-filter=AM $PREVIOUS_DEPLOYED_COMMIT $CI_COMMIT_SHA | grep -E '\.bpmn$|\.dmn$|\.form$' || echo "")
+    - echo "Found '$(echo "$CHANGED_FILES" | tr '\n' ' ' | sed 's/ $//')' to deploy"
+    - echo "CHANGED_FILES=$(echo "$CHANGED_FILES" | sed ':a;N;$!ba;s/\n/\\n/g')" >> build.env
+  stage: prepare
+  artifacts:
+    reports:
+      dotenv: build.env
+
+.deploy_template: &deploy_template
+  image: node:latest
+  before_script:
+    - apt-get -qq update
+    - apt-get install -y jq
+  script:
+    - set -o pipefail
+    - if [ -z "$CHANGED_FILES" ]; then echo "No changes detected; aborting deployment"; exit 0; fi
+    - readarray -t CHANGED_FILES_ARRAY <<< "$(echo "$CHANGED_FILES" | sed 's/\\n/\n/g')"
+    - echo "Deploying '${CHANGED_FILES_ARRAY[*]}'"
+    - npm install --global --silent zbctl
+    - |
+      ZEEBE_RESPONSE=$(zbctl deploy "${CHANGED_FILES_ARRAY[@]}" 2>&1 || true)
+      if [[ "$ZEEBE_RESPONSE" =~ ^Error:.* ]]; then
+        echo "Failed to deploy '${CHANGED_FILES_ARRAY[*]}': $ZEEBE_RESPONSE"
+        DEPLOYMENT_STATUS="failure"
+      else
+        DEPLOYMENT_STATUS="success"
+        echo "Successfully deployed '${CHANGED_FILES_ARRAY[*]}'"
+      fi
+      FOLDER_NAME=$(echo "${CHANGED_FILES_ARRAY[0]}" | cut -d "/" -f1)
+      WEBHOOK_PAYLOAD=$(jq --null-input --compact-output --arg folderName "$FOLDER_NAME" --arg env "$CI_ENVIRONMENT_NAME" --arg status "$DEPLOYMENT_STATUS" '{deployedFolder: $folderName, environment: $env, status: $status}')
+      curl --fail-with-body --header "Content-Type: application/json" --header "X-Gitlab-Token: $WEB_MODELER_WEBHOOK_SECRET" --data "$WEBHOOK_PAYLOAD" "$WEB_MODELER_WEBHOOK_URL"
+    - if [ "$DEPLOYMENT_STATUS" == "failure" ]; then exit 1; fi
+  variables:
+    ZEEBE_ADDRESS: $ZEEBE_ADDRESS
+    ZEEBE_CLIENT_ID: $ZEEBE_CLIENT_ID
+    ZEEBE_CLIENT_SECRET: $ZEEBE_CLIENT_SECRET
+    ZEEBE_AUTHORIZATION_SERVER_URL: $ZEEBE_AUTHORIZATION_SERVER_URL
+    ZEEBE_TOKEN_AUDIENCE: $ZEEBE_TOKEN_AUDIENCE
+    WEB_MODELER_WEBHOOK_URL: $WEB_MODELER_WEBHOOK_URL
+    WEB_MODELER_WEBHOOK_SECRET: $WEB_MODELER_WEBHOOK_SECRET
+  stage: deploy
+
+deploy_to_dev:
+  environment: dev
+  extends: .deploy_template
+  needs:
+    - job: get-changed-files-merge
+      artifacts: true
+    - job: get-changed-files-web
+      optional: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    ZEEBE_ADDRESS: $DEV_ZEEBE_ADDRESS
+    ZEEBE_CLIENT_ID: $DEV_ZEEBE_CLIENT_ID
+    ZEEBE_CLIENT_SECRET: $DEV_ZEEBE_CLIENT_SECRET
+    ZEEBE_AUTHORIZATION_SERVER_URL: 'https://login.cloud.camunda.io/oauth/token'
+    ZEEBE_TOKEN_AUDIENCE: 'zeebe.camunda.io'
+    WEB_MODELER_WEBHOOK_URL: $DEV_WEB_MODELER_WEBHOOK_URL
+    WEB_MODELER_WEBHOOK_SECRET: $DEV_WEB_MODELER_WEBHOOK_SECRET
+
+deploy_to_stage:
+  environment: stage
+  extends: .deploy_template
+  needs:
+    - job: get-changed-files-merge
+      optional: true
+    - job: get-changed-files-web
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $ENVIRONMENT == "stage"
+  variables:
+    ZEEBE_ADDRESS: $STAGE_ZEEBE_ADDRESS
+    ZEEBE_CLIENT_ID: $STAGE_ZEEBE_CLIENT_ID
+    ZEEBE_CLIENT_SECRET: $STAGE_ZEEBE_CLIENT_SECRET
+    ZEEBE_AUTHORIZATION_SERVER_URL: 'https://login.cloud.camunda.io/oauth/token'
+    ZEEBE_TOKEN_AUDIENCE: 'zeebe.camunda.io'
+    WEB_MODELER_WEBHOOK_URL: $STAGE_WEB_MODELER_WEBHOOK_URL
+    WEB_MODELER_WEBHOOK_SECRET: $STAGE_WEB_MODELER_WEBHOOK_SECRET
+
+deploy_to_prod:
+  environment: prod
+  extends: .deploy_template
+  needs:
+    - job: get-changed-files-merge
+      optional: true
+    - job: get-changed-files-web
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $ENVIRONMENT == "prod"
+  variables:
+    ZEEBE_ADDRESS: $PROD_ZEEBE_ADDRESS
+    ZEEBE_CLIENT_ID: $PROD_ZEEBE_CLIENT_ID
+    ZEEBE_CLIENT_SECRET: $PROD_ZEEBE_CLIENT_SECRET
+    ZEEBE_AUTHORIZATION_SERVER_URL: 'https://login.cloud.camunda.io/oauth/token'
+    ZEEBE_TOKEN_AUDIENCE: 'zeebe.camunda.io'
+    WEB_MODELER_WEBHOOK_URL: $PROD_WEB_MODELER_WEBHOOK_URL
+    WEB_MODELER_WEBHOOK_SECRET: $PROD_WEB_MODELER_WEBHOOK_SECRET
