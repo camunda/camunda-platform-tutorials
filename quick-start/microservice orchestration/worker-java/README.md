@@ -4,7 +4,7 @@ This project contains a worker that can connect a BPMN service task to whatever 
 
 Requirements:
 
-* Java >= 8
+* Java >= 21
 * Maven
 
 How to run:
