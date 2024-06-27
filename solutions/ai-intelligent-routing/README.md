@@ -7,4 +7,4 @@
 
 ## Summary
 
-This process blueprint exemplifies the use of AI to intelligently route customer inquiries to the appropriate department. It utilizes the OpenAI connectors for processing signals within a business context, ensuring that each task is assigned based on the optimal path for efficiency and resolution.
+This process blueprint exemplifies the use of AI to intelligently route customer inquiries to the appropriate department. It utilizes the OpenAI, Azure OpenAI or Huggingface connectors for processing signals within a business context, ensuring that each task is assigned based on the optimal path for efficiency and resolution.
