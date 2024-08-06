@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_0ihetx3" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Web Modeler" exporterVersion="198ac19" camunda:diagramRelationId="ab73e0e5-6386-4c1a-b1a0-db58a91659b7" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <decision id="Decision_12lb3gf" name="Decision 1">
+    <decisionTable id="DecisionTable_0rjtge7" hitPolicy="FIRST">
+      <input id="Input_1" label="Limit Order Type">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text>orderType</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_08lpuw8">
+          <text>"BUY_LIMIT","SELL_LIMIT"</text>
+        </inputValues>
+      </input>
+      <input id="InputClause_1yqk1ds" label="Price Ratio">
+        <inputExpression id="LiteralExpression_0zz0gh0" typeRef="number">
+          <text>limitPricePerStock.price/marketPrice.price</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_11or24x" label="Is Trade Accepted" name="isTradeAccepted" typeRef="boolean" />
+      <rule id="DecisionRule_0lwt1uw">
+        <inputEntry id="UnaryTests_1t0vkds">
+          <text>"BUY_LIMIT"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1i4irk5">
+          <text>[0.9..1.05]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1rb0dir">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1arw7bf">
+        <inputEntry id="UnaryTests_0o9tflt">
+          <text>"SELL_LIMIT"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_090692o">
+          <text>[0.95..1.1]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1fqbbqb">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ma6s6e">
+        <inputEntry id="UnaryTests_1115yjv">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0cvccup">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0syv0qi">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="Decision_12lb3gf">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
