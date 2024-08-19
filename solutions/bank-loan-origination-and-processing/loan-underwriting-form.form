@@ -1,0 +1,124 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "ab01412"
+  },
+  "schemaVersion": 16,
+  "id": "Form_1a3j1g2",
+  "components": [
+    {
+      "text": "# Loan Underwriting Form",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1m9nal4",
+        "columns": null
+      },
+      "id": "Field_1kxegqx"
+    },
+    {
+      "text": "## Requested loan",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1fkvjkk",
+        "columns": null
+      },
+      "id": "Field_0gm6ulc"
+    },
+    {
+      "label": "Amount",
+      "type": "number",
+      "layout": {
+        "row": "Row_1x0ua4c",
+        "columns": null
+      },
+      "id": "Field_0n39t8r",
+      "key": "loan.amount",
+      "appearance": {
+        "suffixAdorner": "US$"
+      },
+      "disabled": true
+    },
+    {
+      "label": "Tenure",
+      "type": "number",
+      "layout": {
+        "row": "Row_1x0ua4c",
+        "columns": null
+      },
+      "id": "Field_18yplpq",
+      "key": "loan.tenure",
+      "disabled": true,
+      "appearance": {
+        "suffixAdorner": "months"
+      }
+    },
+    {
+      "text": "=\"The customer's credit score is: \" + string(creditScore)",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0ca3zdf",
+        "columns": null
+      },
+      "id": "Field_1c9195p"
+    },
+    {
+      "text": "## Results",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_02dgowj",
+        "columns": null
+      },
+      "id": "Field_0wbf4u2"
+    },
+    {
+      "text": "=if loan_results.interestRate != -1 then \"The calculated interest rate is: \" + string(loan_results.interestRate) + \"%\" else \"No interest rate could be calculated!\"",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_18aczoq",
+        "columns": null
+      },
+      "id": "Field_1t4dowt"
+    },
+    {
+      "label": "Custom interest rate",
+      "type": "number",
+      "layout": {
+        "row": "Row_1dzqbgb",
+        "columns": null
+      },
+      "id": "Field_0d9irzx",
+      "key": "custom_interest_rate",
+      "conditional": {
+        "hide": "=results.amountEligible and results.tenureEligible"
+      },
+      "defaultValue": 18,
+      "decimalDigits": 1,
+      "increment": "0.1",
+      "appearance": {
+        "suffixAdorner": "%"
+      },
+      "validate": {
+        "required": true,
+        "min": 18
+      }
+    },
+    {
+      "label": "Approve loan",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_05duail",
+        "columns": null
+      },
+      "id": "Field_0y1ibhd",
+      "key": "approve_loan"
+    }
+  ],
+  "type": "default"
+}

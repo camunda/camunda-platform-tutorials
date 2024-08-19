@@ -1,0 +1,163 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "ab01412"
+  },
+  "schemaVersion": 16,
+  "id": "claim-initiated-101u3bt",
+  "components": [
+    {
+      "text": "# Personal Property Claim Form",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_04vl1q9",
+        "columns": null
+      },
+      "id": "Field_0qzyhgc"
+    },
+    {
+      "text": "Please provide the information necessary to process your insurance claim!",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_16djwxf",
+        "columns": null
+      },
+      "id": "Field_0247v2b"
+    },
+    {
+      "components": [
+        {
+          "values": [
+            {
+              "label": "TV",
+              "value": "tv"
+            },
+            {
+              "label": "Desktop PC",
+              "value": "pc"
+            }
+          ],
+          "label": "Personal property",
+          "type": "select",
+          "layout": {
+            "row": "Row_19cvm3q",
+            "columns": null
+          },
+          "id": "Field_10dic16",
+          "key": "personal_property",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Maker",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_19cvm3q",
+            "columns": null
+          },
+          "id": "Field_12c567v",
+          "key": "maker",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Model",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_19cvm3q",
+            "columns": null
+          },
+          "id": "Field_1eq3jqe",
+          "key": "model",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "subtype": "date",
+          "dateLabel": "Date of purchase",
+          "label": "Date time",
+          "type": "datetime",
+          "layout": {
+            "row": "Row_09dlc09",
+            "columns": null
+          },
+          "id": "Field_0e38e6w",
+          "key": "date_of_purchase",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Price at purchase",
+          "type": "number",
+          "layout": {
+            "row": "Row_09dlc09",
+            "columns": null
+          },
+          "id": "Field_1ex2if2",
+          "key": "price_at_purchase",
+          "appearance": {
+            "suffixAdorner": "US$"
+          },
+          "validate": {
+            "required": true,
+            "min": 2
+          },
+          "decimalDigits": 2
+        }
+      ],
+      "showOutline": false,
+      "label": "",
+      "type": "group",
+      "layout": {
+        "row": "Row_1sxads4",
+        "columns": null
+      },
+      "id": "Field_168843p",
+      "path": "property_details"
+    },
+    {
+      "label": "How did the damage occur?",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0z6ry77",
+        "columns": null
+      },
+      "id": "Field_0kxoq2y",
+      "key": "incident_description",
+      "validate": {
+        "required": true,
+        "minLength": 30,
+        "maxLength": 500
+      }
+    },
+    {
+      "text": "Please upload the receipt via the following link:",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1s7dmp7",
+        "columns": null
+      },
+      "id": "Field_1u58yrp"
+    },
+    {
+      "content": "<style>\n.container {\n  margin-block: 16px;\n}\na {\n  background: lightgray;\n  color: black;\n  text-decoration: none;\n  padding: 16px;\n  border-radius: 6px\n}\n\na:link {\n  color: black;\n}\n</style>\n\n<div class=\"container\">\n  <a class=\"link\" target=\"_blank\" href=\"https://camunda.com\">Upload Receipt</a>\n</div>",
+      "label": "HTML view",
+      "type": "html",
+      "layout": {
+        "row": "Row_0tr374b",
+        "columns": null
+      },
+      "id": "Field_1kb3pxx"
+    }
+  ],
+  "type": "default"
+}

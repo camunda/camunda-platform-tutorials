@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_0ir0931" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Web Modeler" exporterVersion="ab01412" camunda:diagramRelationId="ff1f7c05-0b85-4bf4-b782-c50fc6587979" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <decision id="validate-automatic-claim-business-rules-0u81qnu" name="Validate automatic claim business rules">
+    <decisionTable id="DecisionTable_0u997ki" hitPolicy="FIRST">
+      <input id="Input_1" label="Customer claim frequency in last three years">
+        <inputExpression id="InputExpression_1" typeRef="number">
+          <text>customer_claim_frequency_last_three_years</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0mn81nf" label="Price at purchase - receipt">
+        <inputExpression id="LiteralExpression_0lzxc6h" typeRef="number">
+          <text>receipt_details.price_at_purchase</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_02sc4m4" label="Insurance policy">
+        <inputExpression id="LiteralExpression_0h4492s" typeRef="string">
+          <text>policy</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_1du48jp">
+          <text>"full","partial"</text>
+        </inputValues>
+      </input>
+      <output id="Output_1" label="Automatic approval" name="isApproved" typeRef="boolean" />
+      <output id="OutputClause_06c2nco" label="Deductible" name="deductible" typeRef="number" />
+      <rule id="DecisionRule_0u6nrhl">
+        <inputEntry id="UnaryTests_0a1v5eg">
+          <text>0</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_17904ib">
+          <text>&lt;200</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0rz3nut">
+          <text>"full"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1mh38t4">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1xc8i6r">
+          <text>0.2*receipt_details.price_at_purchase</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1h56pwp">
+        <inputEntry id="UnaryTests_1m88y4q">
+          <text>0</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1luhbem">
+          <text>&lt;200</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1hc9iaj">
+          <text>"partial"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1uc07gs">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0uwidrk">
+          <text>0.4*receipt_details.price_at_purchase</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0xvuco2">
+        <inputEntry id="UnaryTests_0gu6b73">
+          <text>[1..3]</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_04tsh6c">
+          <text>&lt;100</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0a7ydy6">
+          <text>"full","partial"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0729py1">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1adr65r">
+          <text>0.5*receipt_details.price_at_purchase</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1u498cp">
+        <inputEntry id="UnaryTests_129ql4e">
+          <text>[1..3]</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0kfvao4">
+          <text>&lt;500</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1toxyph">
+          <text>"full"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_02vsrd5">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0okkguw">
+          <text>0.5*receipt_details.price_at_purchase</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_11696qt">
+        <inputEntry id="UnaryTests_0islh8p">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_04rgb4e">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_015dv1f">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0oaqr3g">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0rllze6">
+          <text>receipt_details.price_at_purchase</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="validate-automatic-claim-business-rules-0u81qnu">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

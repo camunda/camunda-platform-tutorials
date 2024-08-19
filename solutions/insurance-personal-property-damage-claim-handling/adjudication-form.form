@@ -1,0 +1,228 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "ab01412"
+  },
+  "schemaVersion": 16,
+  "id": "adjudicate-0rmquh9",
+  "components": [
+    {
+      "text": "# Personal Property Claim - Adjudication",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1qs3jv4",
+        "columns": null
+      },
+      "id": "Field_0wwuwbr"
+    },
+    {
+      "components": [
+        {
+          "label": "Property",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0t0kmk1",
+            "columns": null
+          },
+          "id": "Field_06yc434",
+          "key": "personal_property",
+          "readonly": true
+        },
+        {
+          "label": "Maker",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0t0kmk1",
+            "columns": null
+          },
+          "id": "Field_1wfpydw",
+          "key": "maker",
+          "readonly": true
+        },
+        {
+          "label": "Model",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0t0kmk1",
+            "columns": null
+          },
+          "id": "Field_10emxg1",
+          "key": "model",
+          "readonly": true
+        },
+        {
+          "subtype": "date",
+          "dateLabel": "Date of purchase",
+          "label": "Date time",
+          "type": "datetime",
+          "layout": {
+            "row": "Row_1kosv0w",
+            "columns": null
+          },
+          "id": "Field_0j2uyfj",
+          "key": "date_of_purchase",
+          "readonly": true
+        },
+        {
+          "label": "Price at purchase",
+          "type": "number",
+          "layout": {
+            "row": "Row_1kosv0w",
+            "columns": null
+          },
+          "id": "Field_0r1g1cu",
+          "key": "price_at_purchase",
+          "appearance": {
+            "suffixAdorner": "US$"
+          },
+          "readonly": true
+        }
+      ],
+      "showOutline": true,
+      "label": "Property details",
+      "type": "group",
+      "layout": {
+        "row": "Row_1p5zgjl",
+        "columns": null
+      },
+      "id": "Field_12t770l",
+      "path": "property_details"
+    },
+    {
+      "label": "Incident description",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0p7e2dn",
+        "columns": null
+      },
+      "id": "Field_1l8rlrp",
+      "key": "incident_description",
+      "readonly": true
+    },
+    {
+      "components": [
+        {
+          "subtype": "date",
+          "dateLabel": "Date",
+          "label": "Date time",
+          "type": "datetime",
+          "layout": {
+            "row": "Row_17s7qa7",
+            "columns": null
+          },
+          "id": "Field_003ukl5",
+          "key": "date_of_purchase",
+          "readonly": true
+        },
+        {
+          "label": "Number",
+          "type": "number",
+          "layout": {
+            "row": "Row_17s7qa7",
+            "columns": null
+          },
+          "id": "Field_0ymmral",
+          "key": "price_at_purchase",
+          "readonly": true
+        }
+      ],
+      "showOutline": true,
+      "label": "Receipt details",
+      "type": "group",
+      "layout": {
+        "row": "Row_0ep32nw",
+        "columns": null
+      },
+      "id": "Field_0tvkims",
+      "path": "receipt_details"
+    },
+    {
+      "components": [
+        {
+          "label": "Identified item",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0wqw04a",
+            "columns": null
+          },
+          "id": "Field_0ctfpr2",
+          "key": "item",
+          "readonly": true
+        },
+        {
+          "label": "Damage",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0wqw04a",
+            "columns": null
+          },
+          "id": "Field_1istx8a",
+          "key": "damage",
+          "readonly": true
+        }
+      ],
+      "showOutline": true,
+      "label": "Gen AI Analysis",
+      "type": "group",
+      "layout": {
+        "row": "Row_1wuj84n",
+        "columns": null
+      },
+      "id": "Field_0d3urom",
+      "path": "identified_damage"
+    },
+    {
+      "text": "=\"**Customer claim frequency in last three years:** \" + string(customer_claim_frequency_last_three_years)",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0ihlejw",
+        "columns": null
+      },
+      "id": "Field_1czgel3"
+    },
+    {
+      "text": "=\"**Customer's policy plan:** \" + policy",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1unzq55",
+        "columns": null
+      },
+      "id": "Field_0bcyu0z"
+    },
+    {
+      "label": "Select to approve claim",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_059r95g",
+        "columns": null
+      },
+      "id": "Field_1y7ab23",
+      "key": "isApproved"
+    },
+    {
+      "label": "Please set the deductible!",
+      "type": "number",
+      "layout": {
+        "row": "Row_0cub2wz",
+        "columns": null
+      },
+      "id": "Field_1d7hooy",
+      "key": "deductible",
+      "conditional": {
+        "hide": "=not(isApproved)"
+      },
+      "validate": {
+        "required": true,
+        "max": "=receipt_details.price_at_purchase",
+        "min": 0
+      },
+      "appearance": { }
+    }
+  ],
+  "type": "default"
+}

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1gz1vl1" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Web Modeler" exporterVersion="ab01412" camunda:diagramRelationId="9b8f3cb1-3477-40d7-a895-20ef5c12a44e" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <decision id="calculate_loan_results_01uhf55" name="Calculate loan results">
+    <decisionTable id="DecisionTable_13a7nar" hitPolicy="FIRST">
+      <input id="InputClause_06gvv8y" label="credit score">
+        <inputExpression id="LiteralExpression_1fq8pnd" typeRef="number">
+          <text>creditScore</text>
+        </inputExpression>
+      </input>
+      <input id="Input_1" label="requested amount">
+        <inputExpression id="InputExpression_1" typeRef="number">
+          <text>loan.amount</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_17n7yev" label="requested tenure">
+        <inputExpression id="LiteralExpression_0muy65s" typeRef="number">
+          <text>loan.tenure</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_1jbe1nu" label="is loan eligibile?" name="isLoanEligible" typeRef="boolean" />
+      <output id="OutputClause_1bwv2jb" label="send to underwriter?" name="sendToUnderwriter" typeRef="boolean" />
+      <output id="OutputClause_0jt9x0e" label="interest rate" name="interestRate" typeRef="number" />
+      <rule id="DecisionRule_1ci6u51">
+        <inputEntry id="UnaryTests_1erdsqq">
+          <text>&gt;800</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1kp722v">
+          <text>&lt;0.7*pi.annual_salary</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0bgl3r6">
+          <text>[24..48]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0qdwpae">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_144eie1">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hryfq8">
+          <text>12</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1xr1b32">
+        <inputEntry id="UnaryTests_1k6xl3m">
+          <text>&gt;800</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_07g92ag">
+          <text>&lt;0.9*pi.annual_salary</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1heovol">
+          <text>[24..48]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1femuje">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yxrx8o">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0q3ff5t">
+          <text>-1</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0cqk4cc">
+        <inputEntry id="UnaryTests_0ljpe6m">
+          <text>[700..800]</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_18t1xdn">
+          <text>&lt;0.5*pi.annual_salary</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0weocpm">
+          <text>[24..48]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lo9a0j">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0r9dx70">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0y46pyj">
+          <text>14</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0usbnfe">
+        <inputEntry id="UnaryTests_0d231aa">
+          <text>[700..800]</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0zwu75n">
+          <text>&lt;0.7*pi.annual_salary</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0qb85jt">
+          <text>[24..36]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lyrmxm">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1vykf1f">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1w7yip9">
+          <text>-1</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0i1ak2n">
+        <inputEntry id="UnaryTests_0yltpbm">
+          <text>[500..700)</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1qbg7xd">
+          <text>&lt;0.3*pi.annual_salary</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ful2jv">
+          <text>[24..48]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0x79io7">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0d6087v">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1wtyes2">
+          <text>18</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1gujm2w">
+        <inputEntry id="UnaryTests_1nazr0m">
+          <text>[500..700)</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_126y8s4">
+          <text>&lt;0.5*pi.annual_salary</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_14udjjp">
+          <text>[24..36]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_01wl8c1">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0eqp0gd">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1a6ijgn">
+          <text>-1</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0t5obgy">
+        <inputEntry id="UnaryTests_0yavggz">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0mw3fr3">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_041j751">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1muhi0x">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yk4zs7">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0st88g2">
+          <text>-1</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="calculate_loan_results_01uhf55">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

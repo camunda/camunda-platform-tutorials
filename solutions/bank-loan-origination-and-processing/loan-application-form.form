@@ -1,0 +1,319 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "ab01412"
+  },
+  "schemaVersion": 16,
+  "id": "Form_16l6p9i",
+  "components": [
+    {
+      "text": "# Loan Application Form",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0psyj29",
+        "columns": null
+      },
+      "id": "Field_0xctawe"
+    },
+    {
+      "components": [
+        {
+          "label": "First name",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_11y0q8t",
+            "columns": null
+          },
+          "id": "Field_0a5bi7x",
+          "key": "first_name",
+          "validate": {
+            "required": false
+          },
+          "defaultValue": "Laya"
+        },
+        {
+          "label": "Last name",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_11y0q8t",
+            "columns": null
+          },
+          "id": "Field_1qcazkf",
+          "key": "last_name",
+          "validate": {
+            "required": false
+          },
+          "defaultValue": "Williams"
+        },
+        {
+          "label": "Address 1",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0cfqt9q",
+            "columns": null
+          },
+          "id": "Field_16pcsga",
+          "key": "address_1",
+          "validate": {
+            "required": false
+          },
+          "defaultValue": "123 Anywhere Dr"
+        },
+        {
+          "label": "Address 2",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0ywrlmp",
+            "columns": null
+          },
+          "id": "Field_0e199kk",
+          "key": "address_2",
+          "validate": {
+            "required": false
+          }
+        },
+        {
+          "label": "City",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_130n7gj",
+            "columns": null
+          },
+          "id": "Field_0p4f59n",
+          "key": "city",
+          "defaultValue": "Raleigh"
+        },
+        {
+          "label": "Zip code",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_130n7gj",
+            "columns": null
+          },
+          "id": "Field_078k332",
+          "key": "zip_code",
+          "defaultValue": "27697"
+        },
+        {
+          "label": "State",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0ilttir",
+            "columns": null
+          },
+          "id": "Field_1c2f1ji",
+          "key": "state",
+          "defaultValue": "North Carolina"
+        },
+        {
+          "label": "Country",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0ilttir",
+            "columns": null
+          },
+          "id": "Field_18g15fx",
+          "key": "country",
+          "defaultValue": "USA"
+        }
+      ],
+      "showOutline": true,
+      "label": "Address",
+      "type": "group",
+      "layout": {
+        "row": "Row_07hr9nq",
+        "columns": null
+      },
+      "id": "Field_1uynnxm",
+      "path": "address"
+    },
+    {
+      "components": [
+        {
+          "label": "Email",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0v8qr5m",
+            "columns": null
+          },
+          "id": "Field_06ivwh3",
+          "key": "email",
+          "validate": {
+            "required": false,
+            "validationType": "email"
+          }
+        },
+        {
+          "label": "Phone",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0owbg2c",
+            "columns": null
+          },
+          "id": "Field_0dpg86y",
+          "key": "phone",
+          "validate": {
+            "required": false,
+            "validationType": "phone"
+          }
+        },
+        {
+          "label": "Mobile",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0owbg2c",
+            "columns": null
+          },
+          "id": "Field_11it7k2",
+          "key": "mobile",
+          "validate": {
+            "validationType": "phone"
+          }
+        }
+      ],
+      "showOutline": true,
+      "label": "Contact",
+      "type": "group",
+      "layout": {
+        "row": "Row_1704ab1",
+        "columns": null
+      },
+      "id": "Field_0hv5emo",
+      "path": "contact"
+    },
+    {
+      "components": [
+        {
+          "label": "Social Security Number",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0loi8dc",
+            "columns": null
+          },
+          "id": "Field_0t0pxlf",
+          "key": "ssn",
+          "defaultValue": "134-31-1679"
+        },
+        {
+          "subtype": "date",
+          "dateLabel": "Date of birth",
+          "label": "Date time",
+          "type": "datetime",
+          "layout": {
+            "row": "Row_1c90erz",
+            "columns": null
+          },
+          "id": "Field_0orzwtm",
+          "key": "date_of_birth",
+          "validate": {
+            "required": false
+          }
+        },
+        {
+          "label": "Annual Salary",
+          "type": "number",
+          "layout": {
+            "row": "Row_0afadec",
+            "columns": null
+          },
+          "id": "Field_03eu3oa",
+          "key": "annual_salary",
+          "validate": {
+            "required": true
+          },
+          "defaultValue": 55200
+        },
+        {
+          "label": "Current employer",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0afadec",
+            "columns": null
+          },
+          "id": "Field_097nuas",
+          "key": "current_employer",
+          "validate": {
+            "required": true
+          },
+          "defaultValue": "Styles and Speed Printing LLC."
+        }
+      ],
+      "showOutline": true,
+      "label": "Personal Information",
+      "type": "group",
+      "layout": {
+        "row": "Row_1o2yh7x",
+        "columns": null
+      },
+      "id": "Field_0ncstm3",
+      "path": "pi"
+    },
+    {
+      "components": [
+        {
+          "label": "Amount requested",
+          "type": "number",
+          "layout": {
+            "row": "Row_0uw6c54",
+            "columns": null
+          },
+          "id": "Field_1gpocp8",
+          "key": "amount",
+          "defaultValue": 25000,
+          "decimalDigits": 0,
+          "increment": "500",
+          "validate": {
+            "required": true
+          },
+          "appearance": {
+            "suffixAdorner": "US$"
+          }
+        },
+        {
+          "label": "Tenure requested",
+          "type": "number",
+          "layout": {
+            "row": "Row_0uw6c54",
+            "columns": null
+          },
+          "id": "Field_1srbo58",
+          "key": "tenure",
+          "defaultValue": 36,
+          "increment": "12",
+          "decimalDigits": 0,
+          "validate": {
+            "required": true,
+            "min": 24,
+            "max": 48
+          },
+          "appearance": {
+            "suffixAdorner": "months"
+          }
+        }
+      ],
+      "showOutline": true,
+      "label": "Loan Information",
+      "type": "group",
+      "layout": {
+        "row": "Row_12f4rg9",
+        "columns": null
+      },
+      "id": "Field_1ttaf6g",
+      "path": "loan"
+    },
+    {
+      "content": "<style>\n.container {\n  margin-block: 16px;\n}\na {\n  background: lightgray;\n  color: black;\n  text-decoration: none;\n  padding: 16px;\n  border-radius: 6px\n}\n\na:link {\n  color: black;\n}\n</style>\n\n<div class=\"container\">\n  <a class=\"link\" target=\"_blank\" href=\"https://camunda.com\">Upload Pay Slip</a>\n</div>",
+      "label": "HTML view",
+      "type": "html",
+      "layout": {
+        "row": "Row_17e4wn5",
+        "columns": null
+      },
+      "id": "Field_0evylb4"
+    }
+  ],
+  "type": "default"
+}
