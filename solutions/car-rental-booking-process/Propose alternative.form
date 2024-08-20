@@ -1,0 +1,33 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "3ffff27"
+  },
+  "schemaVersion": 16,
+  "id": "propose-alternative-1u7fzsr",
+  "components": [
+    {
+      "text": "# Propose Alternative Car\nThe booked car was not available or not ready. Please discuss propose an alternative car to the customer!",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1bt6gyy",
+        "columns": null
+      },
+      "id": "Field_1mesjh1"
+    },
+    {
+      "label": "Does the customer agree with the alternative car?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_1o0uq35",
+        "columns": null
+      },
+      "id": "Field_0i1j3ks",
+      "key": "isAlternativeAccepted"
+    }
+  ],
+  "type": "default"
+}

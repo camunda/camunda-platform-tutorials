@@ -1,0 +1,33 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "3ffff27"
+  },
+  "schemaVersion": 16,
+  "id": "inspect-returned-car-0cloeow",
+  "components": [
+    {
+      "text": "# Inspect Returned Car\nPlease inspect the returned car for any potential damages, including the fuel gage.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0bdi25b",
+        "columns": null
+      },
+      "id": "Field_1x5ro9u"
+    },
+    {
+      "label": "Are there damages?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_085sxn2",
+        "columns": null
+      },
+      "id": "Field_19xaf5h",
+      "key": "hasCarDamage"
+    }
+  ],
+  "type": "default"
+}

@@ -1,0 +1,33 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.5.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "3ffff27"
+  },
+  "schemaVersion": 16,
+  "id": "inspect-car-0h29i18",
+  "components": [
+    {
+      "text": "# Inspect Car\nPlease inspect the car to check if it is ready for rental!",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1nh06d1",
+        "columns": null
+      },
+      "id": "Field_1is9g5c"
+    },
+    {
+      "label": "Is car ready for rental?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0hspof8",
+        "columns": null
+      },
+      "id": "Field_0fpykqe",
+      "key": "isCarReady"
+    }
+  ],
+  "type": "default"
+}
