@@ -17,7 +17,7 @@
           <text>loan.tenure</text>
         </inputExpression>
       </input>
-      <output id="OutputClause_1jbe1nu" label="is loan eligibile?" name="isLoanEligible" typeRef="boolean" />
+      <output id="OutputClause_1jbe1nu" label="is loan eligibile?" name="isLoanEligble" typeRef="boolean" />
       <output id="OutputClause_1bwv2jb" label="send to underwriter?" name="sendToUnderwriter" typeRef="boolean" />
       <output id="OutputClause_0jt9x0e" label="interest rate" name="interestRate" typeRef="number" />
       <rule id="DecisionRule_1ci6u51">
