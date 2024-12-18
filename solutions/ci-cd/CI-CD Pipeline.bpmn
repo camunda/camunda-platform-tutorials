@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="74f16d4" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="395c424" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
   <bpmn:process id="cicdGitlabBlueprint" name="CI/CD Blueprint: GitLab" isExecutable="true">
-    <bpmn:documentation>A customizable process development lifecycle that begins when Web Modeler changes are complete and ends when the process and all other dependencies in the Web Modeler folder is released to production. 
+    <bpmn:documentation>A customizable process development lifecycle that begins when Web Modeler changes are complete and ends when the process and all other dependencies in the Web Modeler folder are released to production.
 
 For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/integrate-web-modeler-in-ci-cd/</bpmn:documentation>
     <bpmn:extensionElements>
@@ -333,6 +333,10 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
         <bpmn:outgoing>Flow_0ilq3am</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0ilq3am" sourceRef="openMergeRequest" targetRef="endOpenMergeRequest" />
+      <bpmn:textAnnotation id="TextAnnotation_0cxdibw">
+        <bpmn:text>This is the biggest difference to Git Sync. Instead of creating merge requests, changes are directly pushed to the branch</bpmn:text>
+      </bpmn:textAnnotation>
+      <bpmn:association id="Association_1ee1c6r" associationDirection="None" sourceRef="startOpenMergeRequest" targetRef="TextAnnotation_0cxdibw" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_14ymik0" sourceRef="startCicd" targetRef="getFileMetadata" />
     <bpmn:subProcess id="getFileMetadata" name="Retrieve file metadata from Web Modeler API">
@@ -845,6 +849,12 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
       <bpmn:messageEventDefinition id="MessageEventDefinition_1oiu7f4" messageRef="Message_1bqnvxo" />
     </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="Flow_1bohcmb" sourceRef="checkMergeRequestStatus" targetRef="joinCheckMergeRequestStatus" />
+    <bpmn:textAnnotation id="TextAnnotation_0eg8swt">
+      <bpmn:text>You can also use GitSync to pull and push process application changes to your remote repository:
+
+https://docs.camunda.io/docs/next/components/modeler/web-modeler/git-sync/</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_01nnwlp" associationDirection="None" sourceRef="startCicd" targetRef="TextAnnotation_0eg8swt" />
   </bpmn:process>
   <bpmn:error id="Error_0u4w06y" name="fileNotFoundError" errorCode="404" />
   <bpmn:error id="Error_0ue4so7" name="deployError" errorCode="500" />
@@ -924,6 +934,10 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
           <dc:Bounds x="595" y="155" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0eg8swt_di" bpmnElement="TextAnnotation_0eg8swt">
+        <dc:Bounds x="140" y="-40" width="230" height="113" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_14ymik0_di" bpmnElement="Flow_14ymik0">
         <di:waypoint x="208" y="130" />
         <di:waypoint x="250" y="130" />
@@ -971,6 +985,10 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
       <bpmndi:BPMNEdge id="Flow_1bohcmb_di" bpmnElement="Flow_1bohcmb">
         <di:waypoint x="648" y="130" />
         <di:waypoint x="685" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_01nnwlp_di" bpmnElement="Association_01nnwlp">
+        <di:waypoint x="190" y="112" />
+        <di:waypoint x="190" y="73" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1059,6 +1077,10 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
         <dc:Bounds x="1000" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0cxdibw_di" bpmnElement="TextAnnotation_0cxdibw">
+        <dc:Bounds x="140" y="10" width="200" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1p2kaz7_di" bpmnElement="Flow_1p2kaz7">
         <di:waypoint x="208" y="160" />
         <di:waypoint x="250" y="160" />
@@ -1074,6 +1096,10 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
       <bpmndi:BPMNEdge id="Flow_0ilq3am_di" bpmnElement="Flow_0ilq3am">
         <di:waypoint x="1100" y="160" />
         <di:waypoint x="1142" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1ee1c6r_di" bpmnElement="Association_1ee1c6r">
+        <di:waypoint x="190" y="142" />
+        <di:waypoint x="190" y="90" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
