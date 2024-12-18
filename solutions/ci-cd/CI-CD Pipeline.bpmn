@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="cicdBlueprintDefinitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="395c424" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0" camunda:diagramRelationId="c1103ead-75a7-4c07-9ae3-115d8d7a645c">
   <bpmn:process id="cicdGitlabBlueprint" name="CI/CD Blueprint: GitLab" isExecutable="true">
-    <bpmn:documentation>A customizable process development lifecycle that begins when Web Modeler changes are complete and ends when the process and all other dependencies in the Web Modeler folder is released to production.
+    <bpmn:documentation>A customizable process development lifecycle that begins when Web Modeler changes are complete and ends when the process and all other dependencies in the Web Modeler folder are released to production.
 
 For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/integrate-web-modeler-in-ci-cd/</bpmn:documentation>
     <bpmn:extensionElements>
@@ -334,7 +334,7 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0ilq3am" sourceRef="openMergeRequest" targetRef="endOpenMergeRequest" />
       <bpmn:textAnnotation id="TextAnnotation_0cxdibw">
-        <bpmn:text>This is the biggest difference to Git Sync. Instead of creating merge requests, changes will be directly pushed to the branch</bpmn:text>
+        <bpmn:text>This is the biggest difference to Git Sync. Instead of creating merge requests, changes are directly pushed to the branch</bpmn:text>
       </bpmn:textAnnotation>
       <bpmn:association id="Association_1ee1c6r" associationDirection="None" sourceRef="startOpenMergeRequest" targetRef="TextAnnotation_0cxdibw" />
     </bpmn:subProcess>
@@ -850,7 +850,7 @@ For more information, read https://docs.camunda.io/docs/guides/devops-lifecycle/
     </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="Flow_1bohcmb" sourceRef="checkMergeRequestStatus" targetRef="joinCheckMergeRequestStatus" />
     <bpmn:textAnnotation id="TextAnnotation_0eg8swt">
-      <bpmn:text>You can also use GitSync functionality to pull and push process application changes to your remote repository:
+      <bpmn:text>You can also use GitSync to pull and push process application changes to your remote repository:
 
 https://docs.camunda.io/docs/next/components/modeler/web-modeler/git-sync/</bpmn:text>
     </bpmn:textAnnotation>
