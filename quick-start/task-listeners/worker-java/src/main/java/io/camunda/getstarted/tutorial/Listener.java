@@ -14,6 +14,12 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class Listener {
 
+  /** Enable this flag to auto deploy the process on startup */
+  private static final boolean SHOULD_DEPLOY_PROCESS_ON_STARTUP = false;
+
+  /** Enable this flag to auto create an instance on startup */
+  private static final boolean SHOULD_CREATE_PROCESS_INSTANCE_ON_STARTUP = false;
+
   public static void main(String[] args) {
     SpringApplication.run(Listener.class, args);
   }
@@ -27,23 +33,27 @@ public class Listener {
 
   @EventListener(ApplicationReadyEvent.class)
   public void deployProcessAndStartProcessInstance() {
-    client
-        .newDeployResourceCommand()
-        .addResourceFromClasspath("Quick_Start_Task_Listeners.bpmn")
-        .send()
-        .join();
-    System.out.println("Process deployed successfully.");
-    client
-        .newCreateInstanceCommand()
-        .bpmnProcessId("task-listener-tutorial")
-        .latestVersion()
-        .variable("assignee", "john")
-        .send()
-        .join();
-    System.out.println("Process instance created successfully.");
+    if (SHOULD_DEPLOY_PROCESS_ON_STARTUP) {
+      client
+          .newDeployResourceCommand()
+          .addResourceFromClasspath("Quick_Start_Task_Listeners.bpmn")
+          .send()
+          .join();
+      System.out.println("Process deployed successfully.");
+    }
+    if (SHOULD_CREATE_PROCESS_INSTANCE_ON_STARTUP) {
+      client
+          .newCreateInstanceCommand()
+          .bpmnProcessId("task-listener-tutorial")
+          .latestVersion()
+          .variable("assignee", "john")
+          .send()
+          .join();
+      System.out.println("Process instance created successfully.");
+    }
   }
 
-  @JobWorker(type = "assign_new_task", autoComplete = false)
+  @JobWorker(type = "assign_new_task", autoComplete = SHOULD_DEPLOY_PROCESS_ON_STARTUP)
   public void assignNewUserTasks(final ActivatedJob job) {
     final Map<String, Object> variables = job.getVariablesAsMap();
     if (!variables.containsKey("assignee") && !variables.containsKey("manager")) {
