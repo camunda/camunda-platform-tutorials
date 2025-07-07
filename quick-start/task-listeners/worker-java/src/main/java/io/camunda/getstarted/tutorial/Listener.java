@@ -61,7 +61,8 @@ public class Listener {
           .errorMessage(
               "No assignee or manager variable provided. Please set either 'assignee' or 'manager' variable.")
           .execute();
-      System.out.println("Job failed: No assignee or manager variable provided.");
+      System.out.println(
+          "Job failed: No assignee or manager variable provided. Incident will be raised.");
       return;
     }
     // assign to assignee or manager if no assignee is provided
