@@ -24,7 +24,7 @@ How to run:
   existing sample values.
 * Run the listener application to deploy the process, start an instance, and start the listener:
 
-```
+```sh
 mvn package exec:java
 ```
 
