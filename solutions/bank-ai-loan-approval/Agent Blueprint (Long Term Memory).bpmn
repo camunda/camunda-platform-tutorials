@@ -125,7 +125,7 @@
             <zeebe:input source="BEDROCK_MODEL_PROVIDER" target="embeddingModelProvider.modelProvider" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="embeddingModelProvider.accessKey" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="embeddingModelProvider.secretKey" />
-            <zeebe:input source="=aws_configuration.region" target="embeddingModelProvider.region" />
+            <zeebe:input source="us-east-1" target="embeddingModelProvider.region" />
             <zeebe:input source="TitanEmbedTextV2" target="embeddingModelProvider.modelName" />
             <zeebe:input source="D1024" target="embeddingModelProvider.dimensions" />
             <zeebe:input source="=false" target="embeddingModelProvider.normalize" />
@@ -133,8 +133,8 @@
             <zeebe:input source="STORE_AMAZON_MANAGED_OPENSEARCH" target="vectorStore.storeType" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="vectorStore.accessKey" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="vectorStore.secretKey" />
-            <zeebe:input source="aws_configuration.longterm_memory_server_url" target="vectorStore.serverUrl" />
-            <zeebe:input source="=aws_configuration.region" target="vectorStore.region" />
+            <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_LONGTERM_MEMORY_SERVER}}" target="vectorStore.serverUrl" />
+            <zeebe:input source="us-east-1" target="vectorStore.region" />
             <zeebe:input source="specialist-knowledge-base" target="vectorStore.indexName" />
             <zeebe:input source="PlainText" target="vectorDatabaseConnectorOperation.documentSource" />
             <zeebe:input source="=toolResult" target="vectorDatabaseConnectorOperation.documentSourceFromProcessVariable" />
@@ -162,7 +162,7 @@
             <zeebe:input source="bedrockModelProvider" target="embeddingModelProvider.modelProvider" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="embeddingModelProvider.bedrock.accessKey" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="embeddingModelProvider.bedrock.secretKey" />
-            <zeebe:input source="=aws_configuration.region" target="embeddingModelProvider.bedrock.region" />
+            <zeebe:input source="us-east-1" target="embeddingModelProvider.bedrock.region" />
             <zeebe:input source="TitanEmbedTextV2" target="embeddingModelProvider.bedrock.modelName" />
             <zeebe:input source="D1024" target="embeddingModelProvider.bedrock.dimensions" />
             <zeebe:input source="=false" target="embeddingModelProvider.bedrock.normalize" />
@@ -170,8 +170,8 @@
             <zeebe:input source="amazonManagedOpenSearchStore" target="vectorStore.storeType" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="vectorStore.amazonManagedOpensearch.accessKey" />
             <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="vectorStore.amazonManagedOpensearch.secretKey" />
-            <zeebe:input source="=aws_configuration.longterm_memory_server_url" target="vectorStore.amazonManagedOpensearch.serverUrl" />
-            <zeebe:input source="=aws_configuration.region" target="vectorStore.amazonManagedOpensearch.region" />
+            <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_LONGTERM_MEMORY_SERVER}}" target="vectorStore.amazonManagedOpensearch.serverUrl" />
+            <zeebe:input source="us-east-1" target="vectorStore.amazonManagedOpensearch.region" />
             <zeebe:input source="specialist-knowledge-base" target="vectorStore.amazonManagedOpensearch.indexName" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -234,32 +234,32 @@
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=taking_full_control</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
     </bpmn:adHocSubProcess>
-    <bpmn:serviceTask id="Activity_0tn95r9" name="Save&#10;customer interaction in long term memory" zeebe:modelerTemplate="io.camunda.connectors.EmbeddingsVectorDB.v1" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjAxIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bXVsdGlwbHkiLz4KPHBhdGggZD0iTTI1NS45OTkgMTM2LjcwMkMxOTMuMzE4IDEzNi43MDIgMTI1Ljg1NSAxNTEuNDg1IDEyNS44NTUgMTgzLjkzM1YzOTYuNDc1QzEyNS44NTUgNDI4LjkyMyAxOTMuMzE4IDQ0My43MDcgMjU1Ljk5OSA0NDMuNzA3QzMxOC42NzkgNDQzLjcwNyAzODYuMTQyIDQyOC45MjMgMzg2LjE0MiAzOTYuNDc1VjE4My45MzNDMzg2LjE0MiAxNTEuNDg1IDMxOC42NzkgMTM2LjcwMiAyNTUuOTk5IDEzNi43MDJaTTI1NS45OTkgMTYwLjMxOEMzMjQuNTkxIDE2MC4zMTggMzYwLjA1MyAxNzcuMjUxIDM2Mi40NDIgMTgzLjkzM0MzNjAuMDUzIDE5MC42MTUgMzI0LjU5MSAyMDcuNTQ5IDI1NS45OTkgMjA3LjU0OUMxODYuODg5IDIwNy41NDkgMTUxLjQxOCAxOTAuMzYyIDE0OS41MTggMTg0LjE0MVYxODQuMDgzQzE1MS40MTggMTc3LjUwNSAxODYuODg5IDE2MC4zMTggMjU1Ljk5OSAxNjAuMzE4Wk0xNDkuNTE4IDIxMi41OTlDMTc0LjY5NCAyMjUuMjAzIDIxNi4yNzcgMjMxLjE2NSAyNTUuOTk5IDIzMS4xNjVDMjk1LjcyMSAyMzEuMTY1IDMzNy4zMDQgMjI1LjIwMyAzNjIuNDggMjEyLjU5OVYyNTQuNjMxQzM2MC41OCAyNjEuMjA5IDMyNS4xMDggMjc4LjM5NiAyNTUuOTk5IDI3OC4zOTZDMTg2Ljc4NSAyNzguMzk2IDE1MS4zMDMgMjYxLjE1NyAxNDkuNTE4IDI1NC43ODFWMjEyLjU5OVpNMTQ5LjUxOCAyODMuNDQ3QzE3NC42OTQgMjk2LjA1IDIxNi4yNzcgMzAyLjAxMiAyNTUuOTk5IDMwMi4wMTJDMjk1LjcyMSAzMDIuMDEyIDMzNy4zMDQgMjk2LjA1IDM2Mi40OCAyODMuNDQ3VjMyNS40NzhDMzYwLjU4IDMzMi4wNTYgMzI1LjEwOCAzNDkuMjQ0IDI1NS45OTkgMzQ5LjI0NEMxODYuNzg1IDM0OS4yNDQgMTUxLjMwMyAzMzIuMDA0IDE0OS41MTggMzI1LjYyOFYyODMuNDQ3Wk0yNTUuOTk5IDQyMC4wOTFDMTg2Ljc4NSA0MjAuMDkxIDE1MS4zMDMgNDAyLjg1MSAxNDkuNTE4IDM5Ni40NzVWMzU0LjI5NEMxNzQuNjk0IDM2Ni44OTggMjE2LjI3NyAzNzIuODU5IDI1NS45OTkgMzcyLjg1OUMyOTUuNzIxIDM3Mi44NTkgMzM3LjMwNCAzNjYuODk4IDM2Mi40OCAzNTQuMjk0VjM5Ni4zMjVDMzYwLjU4IDQwMi45MDMgMzI1LjEwOCA0MjAuMDkxIDI1NS45OTkgNDIwLjA5MVoiIGZpbGw9IiNGQzVEMEQiIHN0cm9rZT0iI0ZDNUQwRCIgc3Ryb2tlLXdpZHRoPSI2LjY3NDAyIi8+CjxwYXRoIGQ9Ik0zODcuODYgMzk5Ljg4M0wzNzQuNTMxIDQxMy4yMTFMNDQ2Ljg4NiA0ODUuNTY2SDM4NC4wNTJWNTA0LjYwN0g0NzkuMjU2VjQwOS40MDNINDYwLjIxNVY0NzIuMjM4TDM4Ny44NiAzOTkuODgzWiIgZmlsbD0iI0ZDNUQwRCIgc3Ryb2tlPSIjRkM1RDBEIiBzdHJva2Utd2lkdGg9IjguMzQyNTIiLz4KPHBhdGggZD0iTTEyNC4xMzggMzk5Ljg4M0wxMzcuNDY3IDQxMy4yMTFMNjUuMTExNiA0ODUuNTY2SDEyNy45NDZWNTA0LjYwN0gzMi43NDIyVjQwOS40MDNINTEuNzgzVjQ3Mi4yMzhMMTI0LjEzOCAzOTkuODgzWiIgZmlsbD0iI0ZDNUQwRCIgc3Ryb2tlPSIjRkM1RDBEIiBzdHJva2Utd2lkdGg9IjguMzQyNTIiLz4KPHBhdGggZD0iTTI0Ni41NzUgMTQ2LjA3MUgyNjUuNDI1VjQzLjc0NTNMMzA5Ljg1NiA4OC4xNzYxTDMyMy4zMTkgNzQuNzEyMkwyNTYgNy4zOTI4MkwxODguNjgxIDc0LjcxMjJMMjAyLjE0NCA4OC4xNzYxTDI0Ni41NzUgNDMuNzQ1M1YxNDYuMDcxWiIgZmlsbD0iI0ZDNUQwRCIgc3Ryb2tlPSIjRkM1RDBEIiBzdHJva2Utd2lkdGg9IjguMzQyNTIiLz4KPC9zdmc+Cg==">
+    <bpmn:serviceTask id="Activity_0tn95r9" name="Save&#10;customer interaction in long term memory" zeebe:modelerTemplate="io.camunda.connectors.EmbeddingsVectorDB.v1" zeebe:modelerTemplateVersion="2" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjAxIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bXVsdGlwbHkiLz4KPHBhdGggZD0iTTI1NS45OTkgMTM2LjcwMkMxOTMuMzE4IDEzNi43MDIgMTI1Ljg1NSAxNTEuNDg1IDEyNS44NTUgMTgzLjkzM1YzOTYuNDc1QzEyNS44NTUgNDI4LjkyMyAxOTMuMzE4IDQ0My43MDcgMjU1Ljk5OSA0NDMuNzA3QzMxOC42NzkgNDQzLjcwNyAzODYuMTQyIDQyOC45MjMgMzg2LjE0MiAzOTYuNDc1VjE4My45MzNDMzg2LjE0MiAxNTEuNDg1IDMxOC42NzkgMTM2LjcwMiAyNTUuOTk5IDEzNi43MDJaTTI1NS45OTkgMTYwLjMxOEMzMjQuNTkxIDE2MC4zMTggMzYwLjA1MyAxNzcuMjUxIDM2Mi40NDIgMTgzLjkzM0MzNjAuMDUzIDE5MC42MTUgMzI0LjU5MSAyMDcuNTQ5IDI1NS45OTkgMjA3LjU0OUMxODYuODg5IDIwNy41NDkgMTUxLjQxOCAxOTAuMzYyIDE0OS41MTggMTg0LjE0MVYxODQuMDgzQzE1MS40MTggMTc3LjUwNSAxODYuODg5IDE2MC4zMTggMjU1Ljk5OSAxNjAuMzE4Wk0xNDkuNTE4IDIxMi41OTlDMTc0LjY5NCAyMjUuMjAzIDIxNi4yNzcgMjMxLjE2NSAyNTUuOTk5IDIzMS4xNjVDMjk1LjcyMSAyMzEuMTY1IDMzNy4zMDQgMjI1LjIwMyAzNjIuNDggMjEyLjU5OVYyNTQuNjMxQzM2MC41OCAyNjEuMjA5IDMyNS4xMDggMjc4LjM5NiAyNTUuOTk5IDI3OC4zOTZDMTg2Ljc4NSAyNzguMzk2IDE1MS4zMDMgMjYxLjE1NyAxNDkuNTE4IDI1NC43ODFWMjEyLjU5OVpNMTQ5LjUxOCAyODMuNDQ3QzE3NC42OTQgMjk2LjA1IDIxNi4yNzcgMzAyLjAxMiAyNTUuOTk5IDMwMi4wMTJDMjk1LjcyMSAzMDIuMDEyIDMzNy4zMDQgMjk2LjA1IDM2Mi40OCAyODMuNDQ3VjMyNS40NzhDMzYwLjU4IDMzMi4wNTYgMzI1LjEwOCAzNDkuMjQ0IDI1NS45OTkgMzQ5LjI0NEMxODYuNzg1IDM0OS4yNDQgMTUxLjMwMyAzMzIuMDA0IDE0OS41MTggMzI1LjYyOFYyODMuNDQ3Wk0yNTUuOTk5IDQyMC4wOTFDMTg2Ljc4NSA0MjAuMDkxIDE1MS4zMDMgNDAyLjg1MSAxNDkuNTE4IDM5Ni40NzVWMzU0LjI5NEMxNzQuNjk0IDM2Ni44OTggMjE2LjI3NyAzNzIuODU5IDI1NS45OTkgMzcyLjg1OUMyOTUuNzIxIDM3Mi44NTkgMzM3LjMwNCAzNjYuODk4IDM2Mi40OCAzNTQuMjk0VjM5Ni4zMjVDMzYwLjU4IDQwMi45MDMgMzI1LjEwOCA0MjAuMDkxIDI1NS45OTkgNDIwLjA5MVoiIGZpbGw9IiNGQzVEMEQiIHN0cm9rZT0iI0ZDNUQwRCIgc3Ryb2tlLXdpZHRoPSI2LjY3NDAyIi8+CjxwYXRoIGQ9Ik0zODcuODYgMzk5Ljg4M0wzNzQuNTMxIDQxMy4yMTFMNDQ2Ljg4NiA0ODUuNTY2SDM4NC4wNTJWNTA0LjYwN0g0NzkuMjU2VjQwOS40MDNINDYwLjIxNVY0NzIuMjM4TDM4Ny44NiAzOTkuODgzWiIgZmlsbD0iI0ZDNUQwRCIgc3Ryb2tlPSIjRkM1RDBEIiBzdHJva2Utd2lkdGg9IjguMzQyNTIiLz4KPHBhdGggZD0iTTEyNC4xMzggMzk5Ljg4M0wxMzcuNDY3IDQxMy4yMTFMNjUuMTExNiA0ODUuNTY2SDEyNy45NDZWNTA0LjYwN0gzMi43NDIyVjQwOS40MDNINTEuNzgzVjQ3Mi4yMzhMMTI0LjEzOCAzOTkuODgzWiIgZmlsbD0iI0ZDNUQwRCIgc3Ryb2tlPSIjRkM1RDBEIiBzdHJva2Utd2lkdGg9IjguMzQyNTIiLz4KPHBhdGggZD0iTTI0Ni41NzUgMTQ2LjA3MUgyNjUuNDI1VjQzLjc0NTNMMzA5Ljg1NiA4OC4xNzYxTDMyMy4zMTkgNzQuNzEyMkwyNTYgNy4zOTI4MkwxODguNjgxIDc0LjcxMjJMMjAyLjE0NCA4OC4xNzYxTDI0Ni41NzUgNDMuNzQ1M1YxNDYuMDcxWiIgZmlsbD0iI0ZDNUQwRCIgc3Ryb2tlPSIjRkM1RDBEIiBzdHJva2Utd2lkdGg9IjguMzQyNTIiLz4KPC9zdmc+Cg==">
       <bpmn:documentation>The agent learns from past interactions and specific customer situations</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:embeddings-vector-database:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="OPERATION_EMBED_DOCUMENT" target="vectorDatabaseConnectorOperation.operationType" />
-          <zeebe:input source="BEDROCK_MODEL_PROVIDER" target="embeddingModelProvider.modelProvider" />
-          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="embeddingModelProvider.accessKey" />
-          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="embeddingModelProvider.secretKey" />
-          <zeebe:input source="=aws_configuration.region" target="embeddingModelProvider.region" />
-          <zeebe:input source="TitanEmbedTextV2" target="embeddingModelProvider.modelName" />
-          <zeebe:input source="D1024" target="embeddingModelProvider.dimensions" />
-          <zeebe:input source="=false" target="embeddingModelProvider.normalize" />
-          <zeebe:input source="=3" target="embeddingModelProvider.maxRetries" />
-          <zeebe:input source="STORE_AMAZON_MANAGED_OPENSEARCH" target="vectorStore.storeType" />
-          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="vectorStore.accessKey" />
-          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="vectorStore.secretKey" />
-          <zeebe:input source="=aws_configuration.longterm_memory_server_url" target="vectorStore.serverUrl" />
-          <zeebe:input source="=aws_configuration.region" target="vectorStore.region" />
-          <zeebe:input source="=&#34;conversation-knowledge-base-&#34; + currentEmail.fromAddress" target="vectorStore.indexName" />
+          <zeebe:input source="embedDocumentOperation" target="vectorDatabaseConnectorOperation.operationType" />
+          <zeebe:input source="bedrockModelProvider" target="embeddingModelProvider.modelProvider" />
+          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="embeddingModelProvider.bedrock.accessKey" />
+          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="embeddingModelProvider.bedrock.secretKey" />
+          <zeebe:input source="us-east-1" target="embeddingModelProvider.bedrock.region" />
+          <zeebe:input source="TitanEmbedTextV2" target="embeddingModelProvider.bedrock.modelName" />
+          <zeebe:input source="D1024" target="embeddingModelProvider.bedrock.dimensions" />
+          <zeebe:input source="=false" target="embeddingModelProvider.bedrock.normalize" />
+          <zeebe:input source="=3" target="embeddingModelProvider.bedrock.maxRetries" />
+          <zeebe:input source="amazonManagedOpenSearchStore" target="vectorStore.storeType" />
+          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="vectorStore.amazonManagedOpensearch.accessKey" />
+          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="vectorStore.amazonManagedOpensearch.secretKey" />
+          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_LONGTERM_MEMORY_SERVER}}" target="vectorStore.amazonManagedOpensearch.serverUrl" />
+          <zeebe:input source="us-east-1" target="vectorStore.amazonManagedOpensearch.region" />
+          <zeebe:input source="=&#34;conversation-knowledge-base-&#34; + currentEmail.fromAddress" target="vectorStore.amazonManagedOpensearch.indexName" />
           <zeebe:input source="PlainText" target="vectorDatabaseConnectorOperation.documentSource" />
           <zeebe:input source="=agent.responseText" target="vectorDatabaseConnectorOperation.documentSourceFromProcessVariable" />
-          <zeebe:input source="DOCUMENT_SPLITTER_NONE" target="vectorDatabaseConnectorOperation.documentSplitter.splitterType" />
+          <zeebe:input source="noopDocumentSplitter" target="vectorDatabaseConnectorOperation.documentSplitter.splitterType" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="1" />
+          <zeebe:header key="elementTemplateVersion" value="2" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.EmbeddingsVectorDB.v1" />
           <zeebe:header key="retryBackoff" value="PT0S" />
         </zeebe:taskHeaders>
@@ -273,12 +273,12 @@
         <zeebe:taskDefinition type="io.camunda:embeddings-vector-database:1" retries="3" />
         <zeebe:ioMapping type="io.camunda:embeddings-vector-database:1" modelerTemplate="io.camunda.connectors.EmbeddingsVectorDB.v1" modelerTemplateVersion="1">
           <zeebe:input source="retrieveDocumentOperation" target="vectorDatabaseConnectorOperation.operationType" />
-          <zeebe:input source="=currentEmail.plainTextBody" target="vectorDatabaseConnectorOperation.query" />
+          <zeebe:input source="=if currentEmail.plainTextBody != null then currentEmail.plainTextBody else currentEmail.htmlBody" target="vectorDatabaseConnectorOperation.query" />
           <zeebe:input source="=5" target="vectorDatabaseConnectorOperation.documentLimit" />
           <zeebe:input source="bedrockModelProvider" target="embeddingModelProvider.modelProvider" />
           <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="embeddingModelProvider.bedrock.accessKey" />
           <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="embeddingModelProvider.bedrock.secretKey" />
-          <zeebe:input source="=aws_configuration.region" target="embeddingModelProvider.bedrock.region" />
+          <zeebe:input source="us-east-1" target="embeddingModelProvider.bedrock.region" />
           <zeebe:input source="TitanEmbedTextV2" target="embeddingModelProvider.bedrock.modelName" />
           <zeebe:input source="D1024" target="embeddingModelProvider.bedrock.dimensions" />
           <zeebe:input source="=false" target="embeddingModelProvider.bedrock.normalize" />
@@ -286,8 +286,8 @@
           <zeebe:input source="amazonManagedOpenSearchStore" target="vectorStore.storeType" />
           <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_ACCESS_KEY}}" target="vectorStore.amazonManagedOpensearch.accessKey" />
           <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_SECRET_KEY}}" target="vectorStore.amazonManagedOpensearch.secretKey" />
-          <zeebe:input source="=aws_configuration.longterm_memory_server_url" target="vectorStore.amazonManagedOpensearch.serverUrl" />
-          <zeebe:input source="=aws_configuration.region" target="vectorStore.amazonManagedOpensearch.region" />
+          <zeebe:input source="{{secrets.CAMUNDAAGENT_AWS_LONGTERM_MEMORY_SERVER}}" target="vectorStore.amazonManagedOpensearch.serverUrl" />
+          <zeebe:input source="us-east-1" target="vectorStore.amazonManagedOpensearch.region" />
           <zeebe:input source="=&#34;conversation-knowledge-base-&#34; + currentEmail.fromAddress" target="vectorStore.amazonManagedOpensearch.indexName" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
@@ -298,7 +298,7 @@
           <zeebe:header key="retryBackoff" value="PT0S" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0pe445y</bpmn:incoming>
+      <bpmn:incoming>Flow_0fghmqt</bpmn:incoming>
       <bpmn:outgoing>Flow_0coeih9</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:subProcess id="Activity_0sw5ued" name="Human controlled request" triggeredByEvent="true">
@@ -445,7 +445,7 @@
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_0v6pwqf" sourceRef="Activity_132636m" targetRef="Event_ProcessEnd" />
     <bpmn:sequenceFlow id="Flow_0dqug0r" sourceRef="Activity_0tn95r9" targetRef="Activity_0hp732o" />
-    <bpmn:sequenceFlow id="Flow_0fghmqt" sourceRef="Event_WaitForEmail" targetRef="Activity_0waqzte" />
+    <bpmn:sequenceFlow id="Flow_0fghmqt" sourceRef="Event_WaitForEmail" targetRef="Activity_0kce977" />
     <bpmn:sequenceFlow id="Flow_0coeih9" sourceRef="Activity_0kce977" targetRef="Gateway_0kp1fqr" />
     <bpmn:sequenceFlow id="Flow_0nq27w0" name="needs review" sourceRef="Gateway_0ua9lj6" targetRef="Activity_132636m">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=decision = "AGENT_SUBOPTIMAL"</bpmn:conditionExpression>
@@ -458,21 +458,8 @@
     <bpmn:sequenceFlow id="Flow_08s0wt5" sourceRef="Activity_0d9av47" targetRef="Activity_1647ldd" />
     <bpmn:sequenceFlow id="Flow_02rr1ty" sourceRef="Event_0fquesm" targetRef="Gateway_0kp1fqr" />
     <bpmn:sequenceFlow id="Flow_0d6n3x7" sourceRef="Activity_1647ldd" targetRef="Event_0mw9iyy" />
-    <bpmn:sequenceFlow id="Flow_0pe445y" sourceRef="Activity_0waqzte" targetRef="Activity_0kce977" />
-    <bpmn:scriptTask id="Activity_0waqzte" name="aws configuration">
-      <bpmn:extensionElements>
-        <zeebe:script expression="={&#10;  &#34;region&#34; : &#34;us-east-1&#34;,&#10;  &#34;longterm_memory_server_url&#34;:&#34;search-camundacon-25-ams-demo-bjbkeuqheayrnkjkkx2zys4hqm.aos.us-east-1.on.aws&#34;&#10;}" resultVariable="aws_configuration" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0fghmqt</bpmn:incoming>
-      <bpmn:incoming>Flow_0my6wlj</bpmn:incoming>
-      <bpmn:outgoing>Flow_0pe445y</bpmn:outgoing>
-    </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_16e6f6v" sourceRef="Gateway_0kp1fqr" targetRef="Activity_04glkkx" />
     <bpmn:sequenceFlow id="Flow_1tw35xw" sourceRef="Activity_04glkkx" targetRef="Activity_0tn95r9" />
-    <bpmn:startEvent id="Event_07pe48k">
-      <bpmn:outgoing>Flow_0my6wlj</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_0my6wlj" sourceRef="Event_07pe48k" targetRef="Activity_0waqzte" />
     <bpmn:startEvent id="Event_WaitForEmail" name="Customer email received" zeebe:modelerTemplate="io.camunda.connectors.inbound.EmailMessageStart.v1" zeebe:modelerTemplateVersion="2" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzkwXzI0MjApIj4KPHBhdGggZD0iTTguMzM4MzUgOS45NTM2NUwxMC4zODk0IDEyLjAxMDRMOC4zMzI2MiAxNC4wNjcyTDkuMTQ2MTYgMTQuODc1TDEyLjAxMDcgMTIuMDEwNEw5LjE0NjE2IDkuMTQ1ODNMOC4zMzgzNSA5Ljk1MzY1WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTEyLjM0ODggOS45NTM2NUwxNC4zOTk4IDEyLjAxMDRMMTIuMzQzIDE0LjA2NzJMMTMuMTU2NiAxNC44NzVMMTYuMDIxMiAxMi4wMTA0TDEzLjE1NjYgOS4xNDU4M0wxMi4zNDg4IDkuOTUzNjVaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMy45NzIgMTEuNDM3NUgxLjEyNTMzVjIuNzkyMTlMNy42NzM3NiA3LjMyMzk2QzcuNzY5NjcgNy4zOTA0OSA3Ljg4MzYgNy40MjYxNCA4LjAwMDMyIDcuNDI2MTRDOC4xMTcwNSA3LjQyNjE0IDguMjMwOTggNy4zOTA0OSA4LjMyNjg5IDcuMzIzOTZMMTQuODc1MyAyLjc5MjE5VjhIMTYuMDIxMlYyLjI3MDgzQzE2LjAyMTIgMS45NjY5NCAxNS45MDA0IDEuNjc1NDkgMTUuNjg1NiAxLjQ2MDYxQzE1LjQ3MDcgMS4yNDU3MiAxNS4xNzkyIDEuMTI1IDE0Ljg3NTMgMS4xMjVIMS4xMjUzM0MwLjgyMTQzMiAxLjEyNSAwLjUyOTk4NCAxLjI0NTcyIDAuMzE1MDk5IDEuNDYwNjFDMC4xMDAyMTQgMS42NzU0OSAtMC4wMjA1MDc4IDEuOTY2OTQgLTAuMDIwNTA3OCAyLjI3MDgzVjExLjQzNzVDLTAuMDIwNTA3OCAxMS43NDE0IDAuMTAwMjE0IDEyLjAzMjggMC4zMTUwOTkgMTIuMjQ3N0MwLjUyOTk4NCAxMi40NjI2IDAuODIxNDMyIDEyLjU4MzMgMS4xMjUzMyAxMi41ODMzSDMuOTcyVjExLjQzNzVaTTEzLjYxNDkgMi4yNzA4M0w4LjAwMDMyIDYuMTU1MjFMMi4zODU3NCAyLjI3MDgzSDEzLjYxNDlaIiBmaWxsPSIjRkM1RDBEIi8+CjxwYXRoIGQ9Ik00LjI4MjEgOS45NTM2NUw2LjMzMzE0IDEyLjAxMDRMNC4yNzYzNyAxNC4wNjcyTDUuMDg5OTEgMTQuODc1TDcuOTU0NDkgMTIuMDEwNEw1LjA4OTkxIDkuMTQ1ODNMNC4yODIxIDkuOTUzNjVaIiBmaWxsPSJibGFjayIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzkwXzI0MjAiPgo8cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==">
       <bpmn:extensionElements>
         <zeebe:properties>
@@ -484,9 +471,10 @@
           <zeebe:property name="data.imapConfig.imapPort" value="993" />
           <zeebe:property name="data.imapConfig.imapCryptographicProtocol" value="SSL" />
           <zeebe:property name="data.pollingWaitTime" value="PT10S" />
-          <zeebe:property name="data.pollingConfigDiscriminator" value="allPollingConfig" />
-          <zeebe:property name="data.pollingConfig.handlingStrategy" value="DELETE" />
-          <zeebe:property name="consumeUnmatchedEvents" value="true" />
+          <zeebe:property name="data.pollingConfigDiscriminator" value="unseenPollingConfig" />
+          <zeebe:property name="data.pollingConfig.handlingStrategy" value="READ" />
+          <zeebe:property name="activationCondition" value="=is empty(headers[key = &#34;In-Reply-To&#34;])" />
+          <zeebe:property name="consumeUnmatchedEvents" value="false" />
           <zeebe:property name="correlationRequired" value="notRequired" />
           <zeebe:property name="deduplicationModeManualFlag" value="true" />
           <zeebe:property name="deduplicationId" value="agent-general-email-channel" />
@@ -498,9 +486,6 @@
       <bpmn:outgoing>Flow_0fghmqt</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0ri1ayo" messageRef="Message_0whm78z" />
     </bpmn:startEvent>
-    <bpmn:textAnnotation id="TextAnnotation_0oibtxl">
-      <bpmn:text>Can be integrated into ad hoc subprocess with 8.8</bpmn:text>
-    </bpmn:textAnnotation>
     <bpmn:textAnnotation id="TextAnnotation_00q3d45">
       <bpmn:text>load long term memory</bpmn:text>
     </bpmn:textAnnotation>
@@ -523,319 +508,298 @@
   <bpmn:message id="Message_0fr5ip9" name="116d29be-ca23-4ab4-acfd-f3a278c341e2">
     <bpmn:extensionElements />
   </bpmn:message>
-  <bpmn:message id="Message_0whm78z" name="647d8ced-4a01-4edd-9784-718c440f1500" zeebe:modelerTemplate="io.camunda.connectors.inbound.EmailMessageStart.v1" />
+  <bpmn:message id="Message_0whm78z" name="3c562193-4e24-4d28-8407-3f6079e80f0e" zeebe:modelerTemplate="io.camunda.connectors.inbound.EmailMessageStart.v1" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0j5qzil">
-      <bpmndi:BPMNShape id="Event_ProcessEnd_di" bpmnElement="Event_ProcessEnd">
-        <dc:Bounds x="2216" y="502" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2191" y="546" width="87" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1omte3n" bpmnElement="Activity_0tn95r9" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
-        <dc:Bounds x="1598" y="480" width="100" height="80" />
+      <bpmndi:BPMNShape id="BPMNShape_1squlpg" bpmnElement="Activity_1647ldd" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="2050" y="108" width="100" height="80" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lon2qv_di" bpmnElement="Activity_132636m">
-        <dc:Bounds x="2049" y="480" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0ua9lj6_di" bpmnElement="Gateway_0ua9lj6" isMarkerVisible="true">
-        <dc:Bounds x="1932" y="495" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1va155p_di" bpmnElement="Event_1jfz6dk" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
-        <dc:Bounds x="2216" y="630" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2198" y="673" width="72" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_12gbl24" bpmnElement="Activity_0hp732o" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
-        <dc:Bounds x="1765" y="480" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_11xj1kv" bpmnElement="Activity_0d9av47">
-        <dc:Bounds x="2049" y="338" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0mw9iyy_di" bpmnElement="Event_0mw9iyy">
-        <dc:Bounds x="2216" y="360" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2204" y="403" width="61" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1squlpg" bpmnElement="Activity_1647ldd">
-        <dc:Bounds x="2310" y="338" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0v9uhlr_di" bpmnElement="Activity_0waqzte">
-        <dc:Bounds x="280" y="480" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_07pe48k_di" bpmnElement="Event_07pe48k">
-        <dc:Bounds x="172" y="412" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0j1qtdl_di" bpmnElement="Event_WaitForEmail">
-        <dc:Bounds x="172" y="502" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="151" y="546" width="78" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1y1vn4t_di" bpmnElement="Activity_0kce977" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
-        <dc:Bounds x="477" y="480" width="100" height="80" />
+        <dc:Bounds x="278" y="250" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0kp1fqr_di" bpmnElement="Gateway_0kp1fqr" isMarkerVisible="true">
-        <dc:Bounds x="614" y="495" width="50" height="50" />
+        <dc:Bounds x="438" y="265" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0icwfki_di" bpmnElement="Activity_04glkkx" isExpanded="true">
-        <dc:Bounds x="731" y="315" width="759" height="410" />
+      <bpmndi:BPMNShape id="BPMNShape_1omte3n" bpmnElement="Activity_0tn95r9" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1367" y="250" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0pn4ems_di" bpmnElement="Reply_with_email_to_customer">
-        <dc:Bounds x="776" y="335" width="100" height="80" />
+      <bpmndi:BPMNShape id="BPMNShape_12gbl24" bpmnElement="Activity_0hp732o" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1527" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ua9lj6_di" bpmnElement="Gateway_0ua9lj6" isMarkerVisible="true">
+        <dc:Bounds x="1687" y="265" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lon2qv_di" bpmnElement="Activity_132636m" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="1797" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_11xj1kv" bpmnElement="Activity_0d9av47" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1797" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ProcessEnd_di" bpmnElement="Event_ProcessEnd">
+        <dc:Bounds x="1957" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1932" y="316" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1va155p_di" bpmnElement="Event_1jfz6dk" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1957" y="400" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1939" y="443" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0mw9iyy_di" bpmnElement="Event_0mw9iyy">
+        <dc:Bounds x="1957" y="130" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1945" y="173" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0j1qtdl_di" bpmnElement="Event_WaitForEmail">
+        <dc:Bounds x="172" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="151" y="316" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0icwfki_di" bpmnElement="Activity_04glkkx" isExpanded="true">
+        <dc:Bounds x="548" y="85" width="759" height="410" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0pn4ems_di" bpmnElement="Reply_with_email_to_customer" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="593" y="105" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1r7dbg4_di" bpmnElement="Event_WaitForResponse">
-        <dc:Bounds x="1038" y="357" width="36" height="36" />
+        <dc:Bounds x="855" y="127" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1006" y="401" width="90" height="27" />
+          <dc:Bounds x="823" y="171" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1338851_di" bpmnElement="Ask_a_specialist">
-        <dc:Bounds x="776" y="505" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_1338851_di" bpmnElement="Ask_a_specialist" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="593" y="275" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_045jpsd_di" bpmnElement="Activity_062h34x">
-        <dc:Bounds x="1276" y="505" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_045jpsd_di" bpmnElement="Activity_062h34x" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1093" y="275" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1c9umdq" bpmnElement="query_knowledge_base">
-        <dc:Bounds x="1276" y="350" width="100" height="80" />
+      <bpmndi:BPMNShape id="BPMNShape_1c9umdq" bpmnElement="query_knowledge_base" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1093" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0wh5ha7_di" bpmnElement="Event_0wh5ha7">
-        <dc:Bounds x="1428" y="412" width="36" height="36" />
+        <dc:Bounds x="1245" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1432" y="455" width="31" height="14" />
+          <dc:Bounds x="1249" y="225" width="31" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1whb5u5_di" bpmnElement="Gateway_1whb5u5" isMarkerVisible="true">
-        <dc:Bounds x="1151" y="520" width="50" height="50" />
+        <dc:Bounds x="968" y="290" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1135" y="490" width="82" height="27" />
+          <dc:Bounds x="952" y="260" width="82" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1wd6fel_di" bpmnElement="Event_1wd6fel">
-        <dc:Bounds x="1428" y="527" width="36" height="36" />
+        <dc:Bounds x="1245" y="297" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1422" y="490" width="48" height="27" />
+          <dc:Bounds x="1239" y="260" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0x6ayre" bpmnElement="Gateway_1g2difp" isMarkerVisible="true">
-        <dc:Bounds x="1021" y="520" width="50" height="50" />
+        <dc:Bounds x="838" y="290" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1019" y="483" width="56" height="27" />
+          <dc:Bounds x="836" y="253" width="56" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0fqmlp5_di" bpmnElement="Event_0xzg3s4" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
-        <dc:Bounds x="1028" y="637" width="36" height="36" />
+        <dc:Bounds x="845" y="407" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1010" y="683" width="72" height="27" />
+          <dc:Bounds x="827" y="453" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0jmzwhr_di" bpmnElement="Event_0jmzwhr">
-        <dc:Bounds x="1138" y="357" width="36" height="36" />
+        <dc:Bounds x="955" y="127" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1132" y="400" width="50" height="27" />
+          <dc:Bounds x="949" y="170" width="50" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0obdo5z" bpmnElement="Event_1wezv96">
-        <dc:Bounds x="1348" y="412" width="36" height="36" />
+        <dc:Bounds x="1165" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1316" y="448" width="80" height="27" />
+          <dc:Bounds x="1133" y="218" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0yjq5t1_di" bpmnElement="Flow_0yjq5t1">
-        <di:waypoint x="876" y="375" />
-        <di:waypoint x="1038" y="375" />
+        <di:waypoint x="693" y="145" />
+        <di:waypoint x="855" y="145" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_11xrx39_di" bpmnElement="Flow_11xrx39">
-        <di:waypoint x="1074" y="375" />
-        <di:waypoint x="1138" y="375" />
+        <di:waypoint x="891" y="145" />
+        <di:waypoint x="955" y="145" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1aaxb1w_di" bpmnElement="Flow_1aaxb1w">
-        <di:waypoint x="876" y="545" />
-        <di:waypoint x="1021" y="545" />
+        <di:waypoint x="693" y="315" />
+        <di:waypoint x="838" y="315" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1mudddl_di" bpmnElement="Flow_1mudddl">
-        <di:waypoint x="1201" y="545" />
-        <di:waypoint x="1276" y="545" />
+        <di:waypoint x="1018" y="315" />
+        <di:waypoint x="1093" y="315" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1230" y="527" width="18" height="14" />
+          <dc:Bounds x="1047" y="297" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j63wm9_di" bpmnElement="Flow_0j63wm9">
-        <di:waypoint x="1376" y="545" />
-        <di:waypoint x="1428" y="545" />
+        <di:waypoint x="1193" y="315" />
+        <di:waypoint x="1245" y="315" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0d4itte_di" bpmnElement="Flow_0d4itte">
-        <di:waypoint x="1384" y="430" />
-        <di:waypoint x="1428" y="430" />
+        <di:waypoint x="1201" y="200" />
+        <di:waypoint x="1245" y="200" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0acq6om_di" bpmnElement="Flow_0acq6om">
-        <di:waypoint x="1071" y="545" />
-        <di:waypoint x="1151" y="545" />
+        <di:waypoint x="888" y="315" />
+        <di:waypoint x="968" y="315" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1085" y="523" width="28" height="14" />
+          <dc:Bounds x="902" y="293" width="28" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0lexqwn_di" bpmnElement="Flow_0lexqwn">
-        <di:waypoint x="1176" y="570" />
-        <di:waypoint x="1176" y="625" />
-        <di:waypoint x="1446" y="625" />
-        <di:waypoint x="1446" y="563" />
+        <di:waypoint x="993" y="340" />
+        <di:waypoint x="993" y="395" />
+        <di:waypoint x="1263" y="395" />
+        <di:waypoint x="1263" y="333" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1199" y="588" width="13" height="14" />
+          <dc:Bounds x="1016" y="358" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0q6oul9_di" bpmnElement="Flow_0q6oul9">
-        <di:waypoint x="1046" y="570" />
-        <di:waypoint x="1046" y="637" />
+        <di:waypoint x="863" y="340" />
+        <di:waypoint x="863" y="407" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1053" y="597" width="46" height="14" />
+          <dc:Bounds x="870" y="367" width="46" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0p70jxz_di" bpmnElement="Association_0p70jxz">
-        <di:waypoint x="1683" y="480" />
-        <di:waypoint x="1717" y="441" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1h2tjie_di" bpmnElement="Association_1h2tjie">
-        <di:waypoint x="526" y="480" />
-        <di:waypoint x="526" y="441" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Activity_0rqvkub_di" bpmnElement="Activity_0sw5ued" isExpanded="true" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
-        <dc:Bounds x="887" y="790" width="448" height="180" />
+        <dc:Bounds x="703.5" y="540" width="448" height="180" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_10qjan1_di" bpmnElement="Event_1daac7o" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
-        <dc:Bounds x="919" y="862" width="36" height="36" />
+        <dc:Bounds x="735.5" y="612" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="902" y="905" width="72" height="27" />
+          <dc:Bounds x="718.5" y="655" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lf6juj_di" bpmnElement="Activity_0pyk6oo">
-        <dc:Bounds x="1057" y="840" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_1lf6juj_di" bpmnElement="Activity_0pyk6oo" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="873.5" y="590" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0pcdb7p_di" bpmnElement="Event_0pcdb7p">
-        <dc:Bounds x="1239" y="862" width="36" height="36" />
+        <dc:Bounds x="1055.5" y="612" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1215" y="905" width="85" height="27" />
+          <dc:Bounds x="1031.5" y="655" width="85" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1sjth1d_di" bpmnElement="Flow_1sjth1d">
-        <di:waypoint x="955" y="880" />
-        <di:waypoint x="1057" y="880" />
+        <di:waypoint x="771.5" y="630" />
+        <di:waypoint x="873.5" y="630" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0kks6ca_di" bpmnElement="Flow_0kks6ca">
-        <di:waypoint x="1157" y="880" />
-        <di:waypoint x="1239" y="880" />
+        <di:waypoint x="973.5" y="630" />
+        <di:waypoint x="1055.5" y="630" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1h2tjie_di" bpmnElement="Association_1h2tjie">
+        <di:waypoint x="319" y="250" />
+        <di:waypoint x="310" y="211" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0p70jxz_di" bpmnElement="Association_0p70jxz">
+        <di:waypoint x="1456" y="250" />
+        <di:waypoint x="1494" y="211" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0fquesm_di" bpmnElement="Event_0fquesm">
-        <dc:Bounds x="539" y="542" width="36" height="36" />
+        <dc:Bounds x="340" y="312" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="553" y="610" width="68" height="40" />
+          <dc:Bounds x="354" y="380" width="68" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0oibtxl_di" bpmnElement="TextAnnotation_0oibtxl">
-        <dc:Bounds x="1030" y="80" width="200" height="41" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_00q3d45_di" bpmnElement="TextAnnotation_00q3d45">
-        <dc:Bounds x="477" y="400" width="100" height="41" />
+        <dc:Bounds x="257" y="170" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_0fpqtvh_di" bpmnElement="TextAnnotation_0fpqtvh">
-        <dc:Bounds x="1690" y="400" width="100" height="41" />
+        <dc:Bounds x="1470" y="170" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0v6pwqf_di" bpmnElement="Flow_0v6pwqf">
-        <di:waypoint x="2149" y="520" />
-        <di:waypoint x="2216" y="520" />
+      <bpmndi:BPMNEdge id="Flow_08s0wt5_di" bpmnElement="Flow_08s0wt5">
+        <di:waypoint x="1847" y="108" />
+        <di:waypoint x="1847" y="88" />
+        <di:waypoint x="2100" y="88" />
+        <di:waypoint x="2100" y="108" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0pe445y_di" bpmnElement="Flow_0pe445y">
-        <di:waypoint x="380" y="520" />
-        <di:waypoint x="477" y="520" />
+      <bpmndi:BPMNEdge id="Flow_0d6n3x7_di" bpmnElement="Flow_0d6n3x7">
+        <di:waypoint x="2100" y="108" />
+        <di:waypoint x="2100" y="88" />
+        <di:waypoint x="1975" y="88" />
+        <di:waypoint x="1975" y="130" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_16e6f6v_di" bpmnElement="Flow_16e6f6v">
-        <di:waypoint x="664" y="520" />
-        <di:waypoint x="731" y="520" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1tw35xw_di" bpmnElement="Flow_1tw35xw">
-        <di:waypoint x="1490" y="520" />
-        <di:waypoint x="1598" y="520" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0dqug0r_di" bpmnElement="Flow_0dqug0r">
-        <di:waypoint x="1698" y="520" />
-        <di:waypoint x="1765" y="520" />
+      <bpmndi:BPMNEdge id="Flow_0fghmqt_di" bpmnElement="Flow_0fghmqt">
+        <di:waypoint x="208" y="290" />
+        <di:waypoint x="278" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0coeih9_di" bpmnElement="Flow_0coeih9">
-        <di:waypoint x="577" y="520" />
-        <di:waypoint x="614" y="520" />
+        <di:waypoint x="378" y="290" />
+        <di:waypoint x="438" y="290" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0nq27w0_di" bpmnElement="Flow_0nq27w0">
-        <di:waypoint x="1982" y="520" />
-        <di:waypoint x="2049" y="520" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1975" y="502" width="65" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="Flow_02rr1ty_di" bpmnElement="Flow_02rr1ty">
+        <di:waypoint x="358" y="348" />
+        <di:waypoint x="358" y="368" />
+        <di:waypoint x="463" y="368" />
+        <di:waypoint x="463" y="315" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16e6f6v_di" bpmnElement="Flow_16e6f6v">
+        <di:waypoint x="488" y="290" />
+        <di:waypoint x="548" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tw35xw_di" bpmnElement="Flow_1tw35xw">
+        <di:waypoint x="1307" y="290" />
+        <di:waypoint x="1367" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dqug0r_di" bpmnElement="Flow_0dqug0r">
+        <di:waypoint x="1467" y="290" />
+        <di:waypoint x="1527" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ocsi68_di" bpmnElement="Flow_1ocsi68">
-        <di:waypoint x="1865" y="520" />
-        <di:waypoint x="1932" y="520" />
+        <di:waypoint x="1627" y="290" />
+        <di:waypoint x="1687" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nq27w0_di" bpmnElement="Flow_0nq27w0">
+        <di:waypoint x="1737" y="290" />
+        <di:waypoint x="1797" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1727" y="272" width="65" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0a79ens_di" bpmnElement="Flow_0a79ens">
-        <di:waypoint x="1957" y="545" />
-        <di:waypoint x="1957" y="648" />
-        <di:waypoint x="2216" y="648" />
+        <di:waypoint x="1712" y="315" />
+        <di:waypoint x="1712" y="418" />
+        <di:waypoint x="1957" y="418" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1965" y="616" width="67" height="27" />
+          <dc:Bounds x="1718" y="386" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fh19mp_di" bpmnElement="Flow_0fh19mp">
-        <di:waypoint x="1957" y="495" />
-        <di:waypoint x="1957" y="378" />
-        <di:waypoint x="2049" y="378" />
+        <di:waypoint x="1712" y="265" />
+        <di:waypoint x="1712" y="148" />
+        <di:waypoint x="1797" y="148" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1969" y="386" width="55" height="27" />
+          <dc:Bounds x="1721" y="156" width="55" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_08s0wt5_di" bpmnElement="Flow_08s0wt5">
-        <di:waypoint x="2099" y="338" />
-        <di:waypoint x="2099" y="318" />
-        <di:waypoint x="2360" y="318" />
-        <di:waypoint x="2360" y="338" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_02rr1ty_di" bpmnElement="Flow_02rr1ty">
-        <di:waypoint x="557" y="578" />
-        <di:waypoint x="557" y="598" />
-        <di:waypoint x="639" y="598" />
-        <di:waypoint x="639" y="545" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0d6n3x7_di" bpmnElement="Flow_0d6n3x7">
-        <di:waypoint x="2360" y="338" />
-        <di:waypoint x="2360" y="318" />
-        <di:waypoint x="2234" y="318" />
-        <di:waypoint x="2234" y="360" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0fghmqt_di" bpmnElement="Flow_0fghmqt">
-        <di:waypoint x="208" y="520" />
-        <di:waypoint x="280" y="520" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0my6wlj_di" bpmnElement="Flow_0my6wlj">
-        <di:waypoint x="208" y="430" />
-        <di:waypoint x="244" y="430" />
-        <di:waypoint x="244" y="490" />
-        <di:waypoint x="280" y="490" />
+      <bpmndi:BPMNEdge id="Flow_0v6pwqf_di" bpmnElement="Flow_0v6pwqf">
+        <di:waypoint x="1897" y="290" />
+        <di:waypoint x="1957" y="290" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
