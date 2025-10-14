@@ -1,0 +1,137 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "0aba732"
+  },
+  "schemaVersion": 18,
+  "id": "Form_0gkm2u8",
+  "components": [
+    {
+      "text": "### AI agent request handling",
+      "type": "text",
+      "id": "Heading_0",
+      "layout": {
+        "row": "Row_16pdden"
+      }
+    },
+    {
+      "text": "##### Request Details",
+      "type": "text",
+      "id": "Subheading_1",
+      "layout": {
+        "row": "Row_1m02rhy"
+      }
+    },
+    {
+      "label": "Request Details",
+      "type": "textarea",
+      "id": "Textarea_2",
+      "validate": {
+        "required": true
+      },
+      "key": "requestDetails",
+      "readonly": true,
+      "layout": {
+        "row": "Row_1m8bwtn"
+      }
+    },
+    {
+      "text": "##### Taking control",
+      "type": "text",
+      "layout": {
+        "row": "Row_0ar4vkj",
+        "columns": null
+      },
+      "id": "Field_0piyv9u"
+    },
+    {
+      "label": "I take full control",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0tleasr",
+        "columns": null
+      },
+      "id": "Field_1tzrg0y",
+      "key": "taking_full_control"
+    },
+    {
+      "label": "",
+      "components": [
+        {
+          "text": "##### Response",
+          "type": "text",
+          "id": "Subheading_3",
+          "layout": {
+            "row": "Row_0f16ov9"
+          }
+        },
+        {
+          "label": "Response to Request",
+          "type": "textarea",
+          "id": "Textarea_4",
+          "validate": {
+            "required": true
+          },
+          "key": "responseToRequest",
+          "layout": {
+            "row": "Row_035o0ne"
+          }
+        },
+        {
+          "text": "##### Knowledge Base Decision",
+          "type": "text",
+          "id": "Subheading_5",
+          "layout": {
+            "row": "Row_0e9pivv"
+          }
+        },
+        {
+          "label": "Add to Knowledge Base?",
+          "values": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            }
+          ],
+          "type": "radio",
+          "id": "Radio_6",
+          "validate": {
+            "required": true
+          },
+          "key": "knowledgeBaseDecision",
+          "layout": {
+            "row": "Row_0lywab6"
+          }
+        }
+      ],
+      "showOutline": true,
+      "type": "group",
+      "layout": {
+        "row": "Row_1o7tfpl",
+        "columns": null
+      },
+      "id": "Field_0v15yxt",
+      "conditional": {
+        "hide": "=taking_full_control"
+      }
+    },
+    {
+      "label": "Submit",
+      "action": "submit",
+      "type": "button",
+      "layout": {
+        "row": "Row_1vfx72u",
+        "columns": null
+      },
+      "id": "Field_0tuly6o"
+    }
+  ],
+  "generated": true,
+  "type": "default"
+}

@@ -1,0 +1,52 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "0aba732"
+  },
+  "schemaVersion": 18,
+  "id": "review-case-resolution-04315tw",
+  "components": [
+    {
+      "text": "# Final Review",
+      "type": "text",
+      "layout": {
+        "row": "Row_1qzi1wq",
+        "columns": null
+      },
+      "id": "Field_03lbnbt"
+    },
+    {
+      "label": "Judge result",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0tip2qj",
+        "columns": null
+      },
+      "id": "Field_17wiv9l",
+      "key": "decision"
+    },
+    {
+      "label": "Identified issues",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1k5tru5",
+        "columns": null
+      },
+      "id": "Field_0y4l6fn",
+      "key": "identified_issues"
+    },
+    {
+      "label": "Chain of Thought",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_15o9awk",
+        "columns": null
+      },
+      "id": "Field_0ynjcrg",
+      "key": "reasoning"
+    }
+  ],
+  "type": "default"
+}
