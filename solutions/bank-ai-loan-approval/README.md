@@ -32,6 +32,11 @@ This imports **all required artifacts** in two steps:
 | AWS IAM user                            | Permissions: `bedrock:InvokeModel` (Claude 3 Sonnet/Haiku) and `aoss:*` for your OpenSearch index. |
 | Outbound internet access                | Connectors must reach your email server, Bedrock, and OpenSearch endpoints.                        |
 
+### Tips and tricks for using gmail
+- To enable app passwords, you need to enable 2-Step Verification on your Google account first
+- Use an App Password for better security: [Google App Passwords](https://myaccount.google.com/apppasswords)
+- Remove the spaces from the app password to have a 16 character password and use that for `CAMUNDA_SAMPLE_AGENT_EMAIL_PASSWORD`
+
 ---
 
 ## 3 · Secrets to create in the cluster
