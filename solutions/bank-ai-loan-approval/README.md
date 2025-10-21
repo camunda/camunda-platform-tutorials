@@ -56,8 +56,8 @@ This imports **all required artifacts** in two steps:
 ```
 blueprint/
 ├── email-support.bpmn
-├── form-escalate-human.form
-└── form-review-resolution.form
+├── escalate-to-human.form
+└── review-case-resolution.form
 README.md
 ```
 
