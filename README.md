@@ -15,6 +15,7 @@ Solutions:
    * [Intelligent Routing](solutions/ai-intelligent-routing) 
 	
 * Level Medium
+   * [AI Bank agent for loan approval](solutions/bank-ai-loan-approval)
    * [Absence Request](solutions/absence-request)
    * [Enforcing SLA](solutions/enforcing-sla)
    * [Error Handling](solutions/error-handling)

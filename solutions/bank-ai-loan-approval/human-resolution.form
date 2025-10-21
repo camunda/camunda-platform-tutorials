@@ -1,0 +1,42 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "53f4f37"
+  },
+  "schemaVersion": 19,
+  "id": "handle-customer-request-01ybsnn",
+  "components": [
+    {
+      "text": "# Human resolution requested",
+      "type": "text",
+      "layout": {
+        "row": "Row_0ikcj2n",
+        "columns": null
+      },
+      "id": "Field_055gppw"
+    },
+    {
+      "text": "#### The following issue has been taken over from AI",
+      "type": "text",
+      "layout": {
+        "row": "Row_0ju8l44",
+        "columns": null
+      },
+      "id": "Field_1leuhmt"
+    },
+    {
+      "label": "Text area",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1xvrgep",
+        "columns": null
+      },
+      "id": "Field_1h5ki19",
+      "key": "requestDetails",
+      "readonly": true
+    }
+  ],
+  "type": "default"
+}
