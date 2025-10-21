@@ -1,12 +1,12 @@
 {
   "executionPlatform": "Camunda Cloud",
-  "executionPlatformVersion": "8.7.0",
+  "executionPlatformVersion": "8.8.0",
   "exporter": {
     "name": "Camunda Web Modeler",
-    "version": "0aba732"
+    "version": "53f4f37"
   },
-  "schemaVersion": 18,
-  "id": "Form_0gkm2u8",
+  "schemaVersion": 19,
+  "id": "escalate-to-human-0gkm2u8",
   "components": [
     {
       "text": "### AI agent request handling",

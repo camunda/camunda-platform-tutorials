@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="cd71e2f" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="53f4f37" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
   <bpmn:process id="Process_0j5qzil" name="Agent Blueprint (Long Term Memory)" isExecutable="true">
     <bpmn:endEvent id="Event_ProcessEnd" name="Case resolution applied by human">
       <bpmn:extensionElements>
@@ -27,7 +27,7 @@
           <zeebe:input source="=0.2" target="provider.bedrock.model.parameters.temperature" />
           <zeebe:input source="=0.1" target="provider.bedrock.model.parameters.topP" />
           <zeebe:input source="=&#34;You are **LoanSupportAgent**, the dedicated banking-loan support assistant for Camunda Bank.  &#10;You handle **only** loan-related customer requests (applications, rates, status, repayment, payoff quotes, modifications, collateral, statements, and regulatory disclosures).  &#10;Any non-loan topic must be declined with an error as defined below.&#10;&#10;────────────────────────────────&#10;# 0. CONTEXT — WHO IS “USER”?&#10;────────────────────────────────&#10;• Every incoming user message is from a **customer**.  &#10;• Internal loan officers and compliance specialists communicate only through the expert-communication tool(s).&#10;&#10;────────────────────────────────&#10;# 1. STRICT LOAN-DOMAIN SCOPE&#10;────────────────────────────────&#10;• If the request is NOT about a banking loan, reply exactly with  &#10;  `ERROR: Out-of-scope (loan support only)` and stop.  &#10;• Otherwise proceed with the workflow below.&#10;&#10;────────────────────────────────&#10;# 2. MANDATORY TOOL-DRIVEN WORKFLOW&#10;────────────────────────────────&#10;For **every** in-scope customer request:&#10;&#10;1. **Inspect** the full list of available tools. Typical tools include, but are not limited to:  &#10;   • `Reply with email to customer` – Give an answer to the customer’s email&#10;   • `Query knowledge base` – Query knowledge base about a certain question. Use this when you need additional information about our oferring with regards to the customer enquiry. &#10;   • `Ask a specialist` – You didn&#39;t find an answer to the customer&#39;s question and you need assitance from a human colleague. You will be able to learn from that colleague and save answer in the knowledge base for future interactions.&#10;2. **Evaluate** each tool’s relevance and explain why you picked or not picked a specific tool. Include all available tools in &#60;reflection&#62; tag and explain why using a tool or not.&#10;3. **Invoke at least one relevant tool**  &#10;   • Call the same tool multiple times with different inputs if needed.  &#10;   • If no loan-specific tool fits, you **must**  &#10;     a. call a generic search / knowledge tool **or**  &#10;     b. escalate via `Ask a specialist`.  &#10;   • Only if the expert confirms that no tool can help may you answer from general knowledge.  &#10;   • Any choice to skip a potentially helpful tool must be justified inside `&#60;reflection&#62;`.  &#10;4. **Communication mandate**:  &#10;   • To gather information from the **customer**, call `Reply with email to customer`.  &#10;   • To seek guidance from an **expert**, call `Ask a specialist`.  &#10;5. **Never** invent or call tools that are not in the supplied list.  &#10;6. After exhausting every relevant tool—and expert escalation if required—if you still cannot help, reply exactly with  &#10;   `ERROR: Unable to resolve (explain)`&#10;&#10;────────────────────────────────&#10;# 3. REGULATORY &#38; PRIVACY RULES&#10;────────────────────────────────&#10;• Never disclose internal account notes or confidential data.  &#10;• Do not reveal PII unless authenticated and tool-permitted.  &#10;• If regulations require additional authentication, call `ask_customer` to obtain it.&#10;&#10;────────────────────────────────&#10;# 4. CHAIN-OF-THOUGHT FORMAT&#10;────────────────────────────────&#10;Wrap minimal, inspectable reasoning in *exactly* this XML template:&#10;&#10;&#60;thinking&#62;&#10;  &#60;context&#62;…briefly state the customer’s loan-related need and current state…&#60;/context&#62;&#10;  &#60;reflection&#62;…list candidate tools, justify which you will call next and why…&#60;/reflection&#62;&#10;&#60;/thinking&#62;&#10;&#10;Reveal **no** additional private reasoning outside these tags.&#10;&#10;────────────────────────────────&#10;# 5. SATISFACTION CONFIRMATION, FINAL EMAIL &#38; TASK RESOLUTION&#10;────────────────────────────────&#10;A. When you believe you have fulfilled the request, end your reply with:  &#10;   “Does this fully resolve your loan inquiry?”  &#10;B. If the customer answers positively (e.g. “yes”, “thanks, that helps”):  &#10;   1. **Immediately call** `send_email` with an appropriate subject and body summarizing the resolution.  &#10;   2. After that tool call, your *next* chat message must contain **only** a summary of this conversation and how it was fixed. This should not exceed 4000 characters.&#10;C. If the customer’s very next message already expresses satisfaction, do step B immediately.  &#10;&#10;────────────────────────────────&#10;# 6. Real world information&#10;────────────────────────────────&#10;Please adhere to the following rules regarding real-world information.&#10;&#10;**General Rule:** Do not invent or hallucinate addresses, phone numbers, or personal names. Only provide this type of information if it has been explicitly mentioned in our conversation context. If you are uncertain, state that you do not know the information.&#10;&#10;**Information Types to be specific about:**&#10;&#10;* Addresses (street address, city, region, postal code, country)&#10;* Phone numbers (including country and area codes)&#10;* Full names of individuals (first, middle, last)&#10;* Email addresses&#10;* Social media handles&#10;* Dates of birth&#10;* National identification numbers (e.g., Social Security Numbers, passport numbers)&#10;* Financial account numbers (e.g., bank account numbers, credit card numbers)&#10;* Medical information&#10;* Legal information&#10;&#10;**Instructions for Missing Information:**&#10;&#10;If a request requires a specific, current real-world piece of information from the list above that is not in our context, please indicate that you need to access external data or perform a search to provide accurate information. For example, say: \&#34;I need to look that up\&#34; or \&#34;I cannot provide that information without searching.\&#34;&#10;&#10;**Tool Use (if applicable):**&#10;&#10;If you have access to search tools or external databases, use them to find the most accurate and up-to-date information for any of the above information types that I haven&#39;t provided. If the information is not publicly available or cannot be found through your tools, state that you cannot provide it.&#10;&#10;**Example scenarios:**&#10;&#10;* **Acceptable:** \&#34;The address you provided earlier was 123 Main Street.\&#34;&#10;* **Acceptable:** \&#34;To find the current address of the Eiffel Tower, I will need to search online.\&#34;&#10;* **Unacceptable:** \&#34;The address is 456 Fake Street, and the phone number is 555-1212.\&#34; (Unless this was explicitly provided in the conversation)&#10;&#10;**Prioritization:**&#10;&#10;1.  Use information provided within the current conversation or prompt.&#10;2.  If the information is not present, and search capabilities are available, use them to find the required information.&#10;3.  If the information cannot be found through search or is not publicly available, state that you cannot provide it.&#10;────────────────────────────────&#10;# 7. CUSTOMER CONTEXTUAL INFORMATION FROM PAST CONVERSATIONS&#10;────────────────────────────────&#10;&#34; + customerPreviousConversationContext" target="data.systemPrompt.prompt" />
-          <zeebe:input source="=&#34;I want to buy an expensive electric car for $5K. Can you offer me a loan for 10 years?&#34;" target="data.userPrompt.prompt" />
+          <zeebe:input source="=if currentEmail.plainTextBody != null then currentEmail.plainTextBody else currentEmail.htmlBody" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
@@ -113,7 +113,7 @@
             <zeebe:output source="=knowledgeBaseDecision" target="knowledgeBaseDecision" />
             <zeebe:output source="=taking_full_control" target="taking_full_control" />
           </zeebe:ioMapping>
-          <zeebe:formDefinition formId="Form_0gkm2u8" />
+          <zeebe:formDefinition formId="escalate-to-human-0gkm2u8" />
         </bpmn:extensionElements>
         <bpmn:outgoing>Flow_1aaxb1w</bpmn:outgoing>
       </bpmn:userTask>
@@ -309,6 +309,10 @@
       <bpmn:userTask id="Activity_0pyk6oo" name="Handle customer request">
         <bpmn:extensionElements>
           <zeebe:userTask />
+          <zeebe:formDefinition formId="handle-customer-request-01ybsnn" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=fromAi(toolCall.requestToHuman, &#34;Describe what you need advise on from a specialist&#34;, &#34;string&#34;)" target="requestDetails" />
+          </zeebe:ioMapping>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1sjth1d</bpmn:incoming>
         <bpmn:outgoing>Flow_0kks6ca</bpmn:outgoing>
@@ -513,58 +517,10 @@
   <bpmn:message id="Message_0whm78z" name="3c562193-4e24-4d28-8407-3f6079e80f0e" zeebe:modelerTemplate="io.camunda.connectors.inbound.EmailMessageStart.v1" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0j5qzil">
-      <bpmndi:BPMNShape id="BPMNShape_1squlpg" bpmnElement="Activity_1647ldd" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
-        <dc:Bounds x="2050" y="108" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1y1vn4t_di" bpmnElement="Activity_0kce977" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
-        <dc:Bounds x="278" y="250" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0kp1fqr_di" bpmnElement="Gateway_0kp1fqr" isMarkerVisible="true">
-        <dc:Bounds x="438" y="265" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1omte3n" bpmnElement="Activity_0tn95r9" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
-        <dc:Bounds x="1367" y="250" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_12gbl24" bpmnElement="Activity_0hp732o" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
-        <dc:Bounds x="1527" y="250" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0ua9lj6_di" bpmnElement="Gateway_0ua9lj6" isMarkerVisible="true">
-        <dc:Bounds x="1687" y="265" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lon2qv_di" bpmnElement="Activity_132636m" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
-        <dc:Bounds x="1797" y="250" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_11xj1kv" bpmnElement="Activity_0d9av47" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
-        <dc:Bounds x="1797" y="108" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_ProcessEnd_di" bpmnElement="Event_ProcessEnd">
         <dc:Bounds x="1957" y="272" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1932" y="316" width="87" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1va155p_di" bpmnElement="Event_1jfz6dk" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
-        <dc:Bounds x="1957" y="400" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1939" y="443" width="72" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0mw9iyy_di" bpmnElement="Event_0mw9iyy">
-        <dc:Bounds x="1957" y="130" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1945" y="173" width="61" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0j1qtdl_di" bpmnElement="Event_WaitForEmail">
-        <dc:Bounds x="172" y="272" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="151" y="316" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0icwfki_di" bpmnElement="Activity_04glkkx" isExpanded="true">
@@ -684,6 +640,14 @@
           <dc:Bounds x="870" y="367" width="46" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_1omte3n" bpmnElement="Activity_0tn95r9" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1367" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1y1vn4t_di" bpmnElement="Activity_0kce977" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="278" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0rqvkub_di" bpmnElement="Activity_0sw5ued" isExpanded="true" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
         <dc:Bounds x="703.5" y="540" width="448" height="180" />
         <bpmndi:BPMNLabel />
@@ -712,18 +676,44 @@
         <di:waypoint x="973.5" y="630" />
         <di:waypoint x="1055.5" y="630" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1h2tjie_di" bpmnElement="Association_1h2tjie">
-        <di:waypoint x="319" y="250" />
-        <di:waypoint x="310" y="211" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0p70jxz_di" bpmnElement="Association_0p70jxz">
-        <di:waypoint x="1456" y="250" />
-        <di:waypoint x="1494" y="211" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_0fquesm_di" bpmnElement="Event_0fquesm">
-        <dc:Bounds x="340" y="312" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_1lon2qv_di" bpmnElement="Activity_132636m" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="1797" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ua9lj6_di" bpmnElement="Gateway_0ua9lj6" isMarkerVisible="true">
+        <dc:Bounds x="1687" y="265" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1va155p_di" bpmnElement="Event_1jfz6dk" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1957" y="400" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="354" y="380" width="68" height="40" />
+          <dc:Bounds x="1939" y="443" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_12gbl24" bpmnElement="Activity_0hp732o" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1527" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_11xj1kv" bpmnElement="Activity_0d9av47" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1797" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0kp1fqr_di" bpmnElement="Gateway_0kp1fqr" isMarkerVisible="true">
+        <dc:Bounds x="438" y="265" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0mw9iyy_di" bpmnElement="Event_0mw9iyy">
+        <dc:Bounds x="1957" y="130" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1945" y="173" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1squlpg" bpmnElement="Activity_1647ldd" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="2050" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0j1qtdl_di" bpmnElement="Event_WaitForEmail">
+        <dc:Bounds x="172" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="151" y="316" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_00q3d45_di" bpmnElement="TextAnnotation_00q3d45">
@@ -734,17 +724,19 @@
         <dc:Bounds x="1470" y="170" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_08s0wt5_di" bpmnElement="Flow_08s0wt5">
-        <di:waypoint x="1847" y="108" />
-        <di:waypoint x="1847" y="88" />
-        <di:waypoint x="2100" y="88" />
-        <di:waypoint x="2100" y="108" />
+      <bpmndi:BPMNShape id="Event_0fquesm_di" bpmnElement="Event_0fquesm">
+        <dc:Bounds x="340" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="354" y="380" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0v6pwqf_di" bpmnElement="Flow_0v6pwqf">
+        <di:waypoint x="1897" y="290" />
+        <di:waypoint x="1957" y="290" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0d6n3x7_di" bpmnElement="Flow_0d6n3x7">
-        <di:waypoint x="2100" y="108" />
-        <di:waypoint x="2100" y="88" />
-        <di:waypoint x="1975" y="88" />
-        <di:waypoint x="1975" y="130" />
+      <bpmndi:BPMNEdge id="Flow_0dqug0r_di" bpmnElement="Flow_0dqug0r">
+        <di:waypoint x="1467" y="290" />
+        <di:waypoint x="1527" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fghmqt_di" bpmnElement="Flow_0fghmqt">
         <di:waypoint x="208" y="290" />
@@ -754,34 +746,16 @@
         <di:waypoint x="378" y="290" />
         <di:waypoint x="438" y="290" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_02rr1ty_di" bpmnElement="Flow_02rr1ty">
-        <di:waypoint x="358" y="348" />
-        <di:waypoint x="358" y="368" />
-        <di:waypoint x="463" y="368" />
-        <di:waypoint x="463" y="315" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_16e6f6v_di" bpmnElement="Flow_16e6f6v">
-        <di:waypoint x="488" y="290" />
-        <di:waypoint x="548" y="290" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1tw35xw_di" bpmnElement="Flow_1tw35xw">
-        <di:waypoint x="1307" y="290" />
-        <di:waypoint x="1367" y="290" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0dqug0r_di" bpmnElement="Flow_0dqug0r">
-        <di:waypoint x="1467" y="290" />
-        <di:waypoint x="1527" y="290" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ocsi68_di" bpmnElement="Flow_1ocsi68">
-        <di:waypoint x="1627" y="290" />
-        <di:waypoint x="1687" y="290" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0nq27w0_di" bpmnElement="Flow_0nq27w0">
         <di:waypoint x="1737" y="290" />
         <di:waypoint x="1797" y="290" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1727" y="272" width="65" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ocsi68_di" bpmnElement="Flow_1ocsi68">
+        <di:waypoint x="1627" y="290" />
+        <di:waypoint x="1687" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0a79ens_di" bpmnElement="Flow_0a79ens">
         <di:waypoint x="1712" y="315" />
@@ -799,9 +773,39 @@
           <dc:Bounds x="1721" y="156" width="55" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0v6pwqf_di" bpmnElement="Flow_0v6pwqf">
-        <di:waypoint x="1897" y="290" />
-        <di:waypoint x="1957" y="290" />
+      <bpmndi:BPMNEdge id="Flow_08s0wt5_di" bpmnElement="Flow_08s0wt5">
+        <di:waypoint x="1847" y="108" />
+        <di:waypoint x="1847" y="88" />
+        <di:waypoint x="2100" y="88" />
+        <di:waypoint x="2100" y="108" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02rr1ty_di" bpmnElement="Flow_02rr1ty">
+        <di:waypoint x="358" y="348" />
+        <di:waypoint x="358" y="368" />
+        <di:waypoint x="463" y="368" />
+        <di:waypoint x="463" y="315" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0d6n3x7_di" bpmnElement="Flow_0d6n3x7">
+        <di:waypoint x="2100" y="108" />
+        <di:waypoint x="2100" y="88" />
+        <di:waypoint x="1975" y="88" />
+        <di:waypoint x="1975" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16e6f6v_di" bpmnElement="Flow_16e6f6v">
+        <di:waypoint x="488" y="290" />
+        <di:waypoint x="548" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tw35xw_di" bpmnElement="Flow_1tw35xw">
+        <di:waypoint x="1307" y="290" />
+        <di:waypoint x="1367" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1h2tjie_di" bpmnElement="Association_1h2tjie">
+        <di:waypoint x="319" y="250" />
+        <di:waypoint x="310" y="211" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0p70jxz_di" bpmnElement="Association_0p70jxz">
+        <di:waypoint x="1456" y="250" />
+        <di:waypoint x="1494" y="211" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

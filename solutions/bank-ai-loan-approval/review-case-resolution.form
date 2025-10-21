@@ -1,11 +1,11 @@
 {
   "executionPlatform": "Camunda Cloud",
-  "executionPlatformVersion": "8.7.0",
+  "executionPlatformVersion": "8.8.0",
   "exporter": {
     "name": "Camunda Web Modeler",
-    "version": "0aba732"
+    "version": "53f4f37"
   },
-  "schemaVersion": 18,
+  "schemaVersion": 19,
   "id": "review-case-resolution-04315tw",
   "components": [
     {

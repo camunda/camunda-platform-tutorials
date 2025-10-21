@@ -16,10 +16,10 @@ Visit the [Camunda Marketplace](https://marketplace.camunda.com/en-US/apps/52249
 
 This imports **all required artifacts**:
 
-| Artifact                                                            | Source          |
-|---------------------------------------------------------------------|-----------------|
-| **BPMN**  – `email-support.bpmn`                                    | this repository |
-| **Forms** – `escalate-to-human.form`, `review-case-resolution.form` | this repository |
+| Artifact                                                                                     | Source          |
+|----------------------------------------------------------------------------------------------|-----------------|
+| **BPMN**  – `email-support.bpmn`                                                             | this repository |
+| **Forms** – `escalate-to-human.form`, `review-case-resolution.form`, `human-resolution.form` | this repository |
 
 ---
 
@@ -57,6 +57,7 @@ This imports **all required artifacts**:
 blueprint/
 ├── email-support.bpmn
 ├── escalate-to-human.form
+├── human-resolution.form
 └── review-case-resolution.form
 README.md
 ```
