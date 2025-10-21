@@ -18,7 +18,7 @@ This imports **all required artifacts**:
 
 | Artifact                                                                                     | Source          |
 |----------------------------------------------------------------------------------------------|-----------------|
-| **BPMN**  – `email-support.bpmn`                                                             | this repository |
+| **BPMN**  – `AI Email Support Agent.bpmn`                                                    | this repository |
 | **Forms** – `escalate-to-human.form`, `review-case-resolution.form`, `human-resolution.form` | this repository |
 
 ---
@@ -55,7 +55,7 @@ This imports **all required artifacts**:
 
 ```
 blueprint/
-├── email-support.bpmn
+├── AI Email Support Agent.bpmn
 ├── escalate-to-human.form
 ├── human-resolution.form
 └── review-case-resolution.form
