@@ -14,12 +14,12 @@ A ready-to-import solution that demonstrates an AI-driven email conversation loo
 
 Visit the [Camunda Marketplace](https://marketplace.camunda.com/en-US/apps/522492/ai-email-support-agent) and click the SaaS button.
 
-This imports **all required artifacts** in two steps:
+This imports **all required artifacts**:
 
-| Artifact                                                              | Source          |
-|-----------------------------------------------------------------------|-----------------|
-| **BPMN** – `Agent%20Blueprint%20(Long%20Term%20Memory).bpmn`          | this repository |
-| **Forms** – `form-escalate-human.form`, `form-review-resolution.form` | this repository |
+| Artifact                                                            | Source          |
+|---------------------------------------------------------------------|-----------------|
+| **BPMN**  – `email-support.bpmn`                                    | this repository |
+| **Forms** – `escalate-to-human.form`, `review-case-resolution.form` | this repository |
 
 ---
 
