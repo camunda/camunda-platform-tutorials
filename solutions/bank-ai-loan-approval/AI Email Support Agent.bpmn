@@ -271,7 +271,7 @@
       <bpmn:documentation>Using knowledge base, inject contextual data to help the agent make decisions based on your company's most relevant data points</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:embeddings-vector-database:1" retries="3" />
-        <zeebe:ioMapping type="io.camunda:embeddings-vector-database:1" modelerTemplate="io.camunda.connectors.EmbeddingsVectorDB.v1" modelerTemplateVersion="1">
+        <zeebe:ioMapping>
           <zeebe:input source="retrieveDocumentOperation" target="vectorDatabaseConnectorOperation.operationType" />
           <zeebe:input source="=if currentEmail.plainTextBody != null then currentEmail.plainTextBody else currentEmail.htmlBody" target="vectorDatabaseConnectorOperation.query" />
           <zeebe:input source="=5" target="vectorDatabaseConnectorOperation.documentLimit" />
