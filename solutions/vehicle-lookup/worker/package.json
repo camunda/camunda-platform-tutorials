@@ -1,0 +1,13 @@
+{
+  "name": "vehicle-risk-assessment-worker",
+  "version": "1.0.0",
+  "description": "Zeebe job worker for io.camunda.demo:vehicle-risk-assessment",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "zeebe-node": "^8.3.2"
+  }
+}
