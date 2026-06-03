@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/schema/process-variables.meta-schema.json",
-  "title": "Camunda 8 Tutorials — Solutions Process Variables",
+  "title": "Camunda 8 Tutorials \u2014 Solutions Process Variables",
   "metadata": {
     "convention": "camelCase",
     "scope": "process",
@@ -12,38 +12,50 @@
       "type": "string",
       "format": "date",
       "description": "Last day of the requested absence period, inclusive. Submitted by the employee on the request form.",
-      "examples": ["2024-08-16"]
+      "examples": [
+        "2024-08-16"
+      ]
     },
     "absenceLogged": {
       "title": "Absence logged",
       "type": "boolean",
       "description": "Confirmation flag set by the HR system task after successfully recording the approved absence.",
-      "examples": [true]
+      "examples": [
+        true
+      ]
     },
     "absenceStartDate": {
       "title": "Absence start date",
       "type": "string",
       "format": "date",
       "description": "First day of the requested absence period. Submitted by the employee on the request form.",
-      "examples": ["2024-08-12"]
+      "examples": [
+        "2024-08-12"
+      ]
     },
     "additional_comments": {
       "title": "Additional comments",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "address_1": {
       "title": "Address 1",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "address_2": {
       "title": "Address 2",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "agent": {
       "title": "Agent context",
@@ -53,27 +65,73 @@
         "responseText": {
           "type": "string",
           "description": "Final text response produced by the agent.",
-          "examples": ["Your loan application is under review."]
+          "examples": [
+            "Your loan application is under review."
+          ]
         },
         "context": {
           "type": "object",
           "description": "Execution metrics and conversation state.",
-          "examples": [{"state": "READY", "metrics": {"modelCalls": 1}}],
+          "examples": [
+            {
+              "state": "READY",
+              "metrics": {
+                "modelCalls": 1
+              }
+            }
+          ],
           "properties": {
-            "state": {"type": "string", "description": "Agent state at completion.", "examples": ["READY"]},
+            "state": {
+              "type": "string",
+              "description": "Agent state at completion.",
+              "examples": [
+                "READY"
+              ]
+            },
             "metrics": {
               "type": "object",
               "description": "Token usage counters.",
-              "examples": [{"modelCalls": 1, "tokenUsage": {"inputTokenCount": 100, "outputTokenCount": 50}}],
+              "examples": [
+                {
+                  "modelCalls": 1,
+                  "tokenUsage": {
+                    "inputTokenCount": 100,
+                    "outputTokenCount": 50
+                  }
+                }
+              ],
               "properties": {
-                "modelCalls": {"type": "integer", "description": "Number of model invocations.", "examples": [1]},
+                "modelCalls": {
+                  "type": "integer",
+                  "description": "Number of model invocations.",
+                  "examples": [
+                    1
+                  ]
+                },
                 "tokenUsage": {
                   "type": "object",
                   "description": "Input and output token counts.",
-                  "examples": [{"inputTokenCount": 100, "outputTokenCount": 50}],
+                  "examples": [
+                    {
+                      "inputTokenCount": 100,
+                      "outputTokenCount": 50
+                    }
+                  ],
                   "properties": {
-                    "inputTokenCount": {"type": "integer", "description": "Tokens consumed as input.", "examples": [100]},
-                    "outputTokenCount": {"type": "integer", "description": "Tokens produced as output.", "examples": [50]}
+                    "inputTokenCount": {
+                      "type": "integer",
+                      "description": "Tokens consumed as input.",
+                      "examples": [
+                        100
+                      ]
+                    },
+                    "outputTokenCount": {
+                      "type": "integer",
+                      "description": "Tokens produced as output.",
+                      "examples": [
+                        50
+                      ]
+                    }
                   }
                 }
               }
@@ -81,709 +139,945 @@
           }
         }
       },
-      "examples": [{"responseText": "Your loan application is under review.", "context": {"state": "READY", "metrics": {"modelCalls": 1, "tokenUsage": {"inputTokenCount": 100, "outputTokenCount": 50}}}}]
+      "examples": [
+        {
+          "responseText": "Your loan application is under review.",
+          "context": {
+            "state": "READY",
+            "metrics": {
+              "modelCalls": 1,
+              "tokenUsage": {
+                "inputTokenCount": 100,
+                "outputTokenCount": 50
+              }
+            }
+          }
+        }
+      ]
     },
     "amount": {
       "title": "Amount",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "annual_salary": {
       "title": "Annual salary",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "answer": {
       "title": "Answer",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/enforcing-sla (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/enforcing-sla (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "approvalResult": {
       "title": "Approval result",
       "type": "string",
       "description": "Line manager's decision on the absence request. Drives the post-approval gateway routing.",
-      "enum": ["approved", "rejected", "clarificationNeeded"],
-      "examples": ["approved"]
+      "enum": [
+        "approved",
+        "rejected",
+        "clarificationNeeded"
+      ],
+      "examples": [
+        "approved"
+      ]
     },
     "approve_loan": {
       "title": "Approve loan",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "assignedLineManager": {
       "title": "Assigned line manager",
       "type": "string",
       "description": "Display name of the line manager assigned to approve this absence request, resolved from the DMN decision.",
-      "examples": ["John"]
+      "examples": [
+        "John"
+      ]
     },
     "city": {
       "title": "City",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "clarificationCommentEmployee": {
       "title": "Clarification comment (employee)",
       "type": "string",
       "description": "Employee's written response during the clarification loop.",
-      "examples": ["I need to attend a family event on those dates."]
+      "examples": [
+        "I need to attend a family event on those dates."
+      ]
     },
     "clarificationCommentLineManager": {
       "title": "Clarification comment (line manager)",
       "type": "string",
       "description": "Line manager's note when requesting clarification before making a final decision.",
-      "examples": ["Please confirm whether you have arranged cover for those days."]
+      "examples": [
+        "Please confirm whether you have arranged cover for those days."
+      ]
     },
     "company": {
       "title": "Company",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "country": {
       "title": "Country",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "current_employer": {
       "title": "Current employer",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
-    },
-    "custom_interest_rate": {
-      "title": "Custom interest rate",
-      "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
-    },
-    "customer_inquiry": {
-      "title": "Customer inquiry",
-      "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-intelligent-routing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
-    },
-    "customer_message": {
-      "title": "Customer message",
-      "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-intelligent-routing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
-    },
-    "customerProofText": {
-      "title": "Customer Proof Text",
-      "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "customExpenseType": {
       "title": "Custom Expense Type",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "custom_interest_rate": {
+      "title": "Custom interest rate",
+      "type": "string",
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "customerProofText": {
+      "title": "Customer Proof Text",
+      "type": "string",
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "customer_inquiry": {
+      "title": "Customer inquiry",
+      "type": "string",
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-intelligent-routing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "customer_message": {
+      "title": "Customer message",
+      "type": "string",
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-intelligent-routing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "damage": {
       "title": "Damage",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "date_of_birth": {
       "title": "Date of birth",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "date_of_purchase": {
       "title": "Date of purchase",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "decision": {
       "title": "Agent-as-a-Judge decision",
       "type": "string",
       "description": "Evaluation outcome from the Agent-as-a-Judge task. Drives routing after quality assessment.",
-      "enum": ["AGENT_SUCCESS", "AGENT_SUBOPTIMAL"],
-      "examples": ["AGENT_SUCCESS"]
+      "enum": [
+        "AGENT_SUCCESS",
+        "AGENT_SUBOPTIMAL"
+      ],
+      "examples": [
+        "AGENT_SUCCESS"
+      ]
     },
     "deductible": {
       "title": "Deductible",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: bpmn-output, dmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: bpmn-output, dmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "department": {
       "title": "Department",
       "type": "string",
       "description": "The employee's department. Used as input to the Department Line Manager DMN decision.",
-      "examples": ["sales"]
+      "examples": [
+        "sales"
+      ]
     },
     "department_line_manager": {
       "title": "Department line manager (legacy)",
       "type": "string",
-      "description": "Output of the Department Line Manager DMN decision. snake_case — migration to camelCase pending (issue #96). Superseded by assignedLineManager after the mapping step.",
-      "examples": ["John"]
+      "description": "Output of the Department Line Manager DMN decision. snake_case \u2014 migration to camelCase pending (issue #96). Superseded by assignedLineManager after the mapping step.",
+      "examples": [
+        "John"
+      ]
     },
     "disputeDetails": {
       "title": "Dispute Details",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "eligible": {
+      "title": "Eligible",
+      "type": "boolean",
+      "description": "Whether the vehicle passed the risk threshold. True if riskScore is at or below the threshold. Set by the risk-assessment worker.",
+      "examples": [
+        true
+      ]
     },
     "email": {
       "title": "Email",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration, solutions/bank-loan-origination-and-processing, solutions/expense-reimbursement (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration, solutions/bank-loan-origination-and-processing, solutions/expense-reimbursement (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "emailOk": {
       "title": "Email Ok",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "employeeName": {
       "title": "Employee name",
       "type": "string",
       "description": "Full name of the employee submitting the absence request.",
-      "examples": ["Alice Smith"]
+      "examples": [
+        "Alice Smith"
+      ]
     },
     "expenseAmount": {
       "title": "Expense Amount",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "expenseDate": {
       "title": "Expense Date",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "expensePurpose": {
       "title": "Expense Purpose",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "expenseType": {
       "title": "Expense Type",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "feedback": {
       "title": "Feedback",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-intelligent-routing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-intelligent-routing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "financeReviewOutcome": {
       "title": "Finance Review Outcome",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
-    },
-    "first_name": {
-      "title": "First name",
-      "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration, solutions/bank-loan-origination-and-processing (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "firstName": {
       "title": "First Name",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "first_name": {
+      "title": "First name",
+      "type": "string",
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration, solutions/bank-loan-origination-and-processing (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "folderId": {
       "title": "Folder Id",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "followUpDocuments": {
       "title": "Follow Up Documents",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "followUpInput": {
       "title": "Follow Up Input",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "fraud_rating_confidence_score": {
       "title": "Fraud rating confidence score",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: dmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: dmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "fraud_rating_score": {
       "title": "Fraud rating score",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: dmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: dmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "future_notifications": {
       "title": "Future notifications",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "gitlabBaseUrl": {
       "title": "Gitlab Base Url",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "gitlabBranch": {
       "title": "Gitlab Branch",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "gitlabProjectId": {
       "title": "Gitlab Project Id",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "hasCarDamage": {
       "title": "Has Car Damage",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/car-rental-booking-process (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/car-rental-booking-process (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "identified_issues": {
       "title": "Identified issues",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "incident_description": {
       "title": "Incident description",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "inputDocuments": {
       "title": "Input Documents",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "inputText": {
       "title": "Input Text",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "inquiry": {
       "title": "Inquiry",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/enforcing-sla (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/enforcing-sla (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "interestRate": {
       "title": "Interest Rate",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: dmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: dmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isAlternativeAccepted": {
       "title": "Is Alternative Accepted",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/car-rental-booking-process (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/car-rental-booking-process (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isApproved": {
       "title": "Is Approved",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: bpmn-output, dmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: bpmn-output, dmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isCarReady": {
       "title": "Is Car Ready",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/car-rental-booking-process (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/car-rental-booking-process (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isHighFraudRatingConfidence": {
       "title": "Is High Fraud Rating Confidence",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isLoanEligible": {
       "title": "Is Loan Eligible",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: dmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: dmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isRefund": {
       "title": "Is Refund",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "isTradeAccepted": {
       "title": "Is Trade Accepted",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/capital-market-exception-processing (sources: dmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/capital-market-exception-processing (sources: dmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "item": {
       "title": "Item",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "key": {
       "title": "Key",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/enforcing-sla (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/enforcing-sla (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "knowledgeBaseDecision": {
       "title": "Knowledge base decision",
       "type": "string",
       "description": "Whether the knowledge base query returned a usable answer. Gates the loop-back branch.",
-      "enum": ["yes", "no"],
-      "examples": ["yes"]
-    },
-    "last_name": {
-      "title": "Last name",
-      "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration, solutions/bank-loan-origination-and-processing (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "examples": [
+        "yes"
+      ]
     },
     "lastName": {
       "title": "Last Name",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "last_name": {
+      "title": "Last name",
+      "type": "string",
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration, solutions/bank-loan-origination-and-processing (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "loan": {
       "title": "Loan",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "maker": {
       "title": "Maker",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "managerReviewOutcome": {
       "title": "Manager Review Outcome",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "metrics_inputTokenCount": {
       "title": "Metrics input Token Count",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "metrics_modelCalls": {
       "title": "Metrics model Calls",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "metrics_outputTokenCount": {
       "title": "Metrics output Token Count",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "milestoneLists": {
       "title": "Milestone Lists",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "mobile": {
       "title": "Mobile",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "model": {
       "title": "Model",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "newBranchName": {
       "title": "New Branch Name",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "news_source": {
       "title": "News source",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "news_source_alternative": {
       "title": "News source alternative",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "operatorFeedback": {
       "title": "Operator Feedback",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "personal_property": {
       "title": "Personal property",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "phone": {
       "title": "Phone",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "phone_number": {
       "title": "Phone number",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/event-registration (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/event-registration (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "policy": {
       "title": "Absence policy",
       "type": "string",
       "description": "The absence policy applicable to this request, selected by the employee on the request form.",
-      "examples": ["annual-leave"]
+      "examples": [
+        "annual-leave"
+      ]
     },
     "price_at_purchase": {
       "title": "Price at purchase",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/insurance-personal-property-damage-claim-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "qaSuccessfulCheck": {
       "title": "Qa Successful Check",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "reasoning": {
       "title": "Reasoning",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "rejectionReason": {
       "title": "Rejection reason",
       "type": "string",
       "description": "Line manager's explanation when the absence request is declined.",
-      "examples": ["Insufficient cover available during that period."]
+      "examples": [
+        "Insufficient cover available during that period."
+      ]
     },
     "reply": {
       "title": "Reply",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/enforcing-sla (sources: bpmn-output, form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/enforcing-sla (sources: bpmn-output, form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "requestComment": {
       "title": "Request comment",
       "type": "string",
       "description": "Optional free-text note from the employee explaining the reason for the absence request.",
-      "examples": ["Annual holiday with family."]
+      "examples": [
+        "Annual holiday with family."
+      ]
     },
     "requestDetails": {
       "title": "Request Details",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "responseToRequest": {
       "title": "Response To Request",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "reviewOutcome": {
       "title": "Review Outcome",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "riskScore": {
+      "title": "Risk score",
+      "type": "number",
+      "description": "Numeric risk score assigned to the vehicle by the risk-assessment worker. Lower is better. Drives the gateway condition.",
+      "examples": [
+        35
+      ]
     },
     "route": {
       "title": "Route",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-intelligent-routing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-intelligent-routing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "sanitizedFilePath": {
       "title": "Sanitized File Path",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ci-cd (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ci-cd (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "sendToUnderwriter": {
       "title": "Send To Underwriter",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: dmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: dmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "ssn": {
       "title": "Ssn",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "state": {
       "title": "State",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "supervisorEmail": {
       "title": "Supervisor Email",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "taking_full_control": {
       "title": "Taking full control (legacy)",
       "type": "boolean",
-      "description": "Flag set when the human operator takes over the case from the AI agent. snake_case — migration to camelCase pending (issue #96).",
-      "examples": [false]
+      "description": "Flag set when the human operator takes over the case from the AI agent. snake_case \u2014 migration to camelCase pending (issue #96).",
+      "examples": [
+        false
+      ]
     },
     "tenure": {
       "title": "Tenure",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "toolCallAllowed": {
       "title": "Tool Call Allowed",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "toolCallResult": {
       "title": "Tool Call Result",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "toolResult": {
       "title": "Tool Result",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-ai-loan-approval (sources: bpmn-output)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "travelEnd": {
       "title": "Travel End",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "travelLocation": {
       "title": "Travel Location",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "travelStart": {
       "title": "Travel Start",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/expense-reimbursement (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/expense-reimbursement (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "userSatisfied": {
       "title": "User Satisfied",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
-      "examples": ["{TODO: example value}"]
-    },
-    "vehicle": {
-      "title": "Vehicle",
-      "type": "object",
-      "description": "Vehicle domain object. Populated from the Slack webhook payload (vin) and enriched by the NHTSA lookup and risk assessment steps with make, model, year, vehicleType, riskScore, and eligible.",
-      "properties": {
-        "vin": {
-          "type": "string",
-          "description": "Vehicle Identification Number submitted via the Slack webhook trigger.",
-          "examples": ["1HGBH41JXMN109186"]
-        },
-        "make": {
-          "type": "string",
-          "description": "Vehicle manufacturer extracted from the NHTSA response.",
-          "examples": ["HONDA"]
-        },
-        "model": {
-          "type": "string",
-          "description": "Vehicle model extracted from the NHTSA response.",
-          "examples": ["CIVIC"]
-        },
-        "year": {
-          "type": "string",
-          "description": "Model year extracted from the NHTSA response.",
-          "examples": ["2021"]
-        },
-        "vehicleType": {
-          "type": "string",
-          "description": "Vehicle type classification from NHTSA (e.g. PASSENGER CAR, TRUCK).",
-          "examples": ["PASSENGER CAR"]
-        },
-        "riskScore": {
-          "type": "number",
-          "description": "Risk score (0-100) computed by the risk assessment worker. Lower is better.",
-          "examples": [35]
-        },
-        "eligible": {
-          "type": "boolean",
-          "description": "Whether the vehicle passed the risk threshold. True if riskScore is at or below the configured threshold.",
-          "examples": [true]
-        }
-      },
-      "examples": [{
-        "vin": "1HGBH41JXMN109186",
-        "make": "HONDA",
-        "model": "CIVIC",
-        "year": "2021",
-        "vehicleType": "PASSENGER CAR",
-        "riskScore": 35,
-        "eligible": true
-      }]
+      "description": "{TODO: business description} \u2014 used in: solutions/ai-agent-chat-with-mcp, solutions/ai-agent-chat-with-tools (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     },
     "vehicleApiResponse": {
       "title": "Vehicle API response",
       "type": "object",
       "description": "Full HTTP response from the NHTSA VIN decode API. Stored by the NHTSA lookup connector. Contains body.Results (array of Variable/Value pairs), headers, and status. Consumed by the risk assessment worker.",
-      "examples": [{"body": {"Results": [{"Variable": "Make", "Value": "HONDA"}]}, "status": 200}]
+      "examples": [
+        {
+          "body": {
+            "Results": [
+              {
+                "Variable": "Make",
+                "Value": "HONDA"
+              }
+            ]
+          },
+          "status": 200
+        }
+      ]
+    },
+    "vehicleInfo": {
+      "title": "Vehicle info",
+      "type": "object",
+      "description": "Structured vehicle details extracted from the NHTSA API response by the risk-assessment worker. Contains make, model, year, vehicleType.",
+      "examples": [
+        {
+          "make": "HONDA",
+          "model": "CIVIC",
+          "year": "2021",
+          "vehicleType": "PASSENGER CAR"
+        }
+      ]
     },
     "vendorProofText": {
       "title": "Vendor Proof Text",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-customer-complaint-dispute-handling (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-customer-complaint-dispute-handling (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
+    },
+    "vin": {
+      "title": "VIN",
+      "type": "string",
+      "description": "Vehicle Identification Number. Input to the NHTSA lookup connector. Must be 17 characters.",
+      "examples": [
+        "1HGBH41JXMN109186"
+      ]
     },
     "zip_code": {
       "title": "Zip code",
       "type": "string",
-      "description": "{TODO: business description} — used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
-      "examples": ["{TODO: example value}"]
+      "description": "{TODO: business description} \u2014 used in: solutions/bank-loan-origination-and-processing (sources: form-key)",
+      "examples": [
+        "{TODO: example value}"
+      ]
     }
   }
 }
