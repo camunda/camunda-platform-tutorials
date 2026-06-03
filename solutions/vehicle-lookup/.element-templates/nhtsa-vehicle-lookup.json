@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
   "name": "NHTSA Vehicle Lookup",
   "id": "io.camunda.demo:nhtsa-vehicle-lookup:1",
-  "description": "Looks up a vehicle by VIN using the NHTSA public API. No authentication required. Stores the full API response as vehicleApiResponse for downstream processing.",
+  "description": "Looks up a vehicle by VIN using the NHTSA public API. No authentication required. Reads vehicle.vin from the process. Stores the full API response as vehicleApiResponse.",
   "version": 1,
   "appliesTo": ["bpmn:ServiceTask"],
   "elementType": {
@@ -33,10 +33,10 @@
     },
     {
       "label": "VIN Lookup URL",
-      "description": "Pre-filled with the NHTSA VIN decode endpoint. References the 'vin' process variable. Adjust the expression if your variable is named differently.",
+      "description": "Pre-filled with the NHTSA VIN decode endpoint. References vehicle.vin from the process variable. Adjust the expression if your variable structure differs.",
       "type": "String",
       "feel": "optional",
-      "value": "= \"https://api.nhtsa.gov/vehicles/decodevin/\" + vin",
+      "value": "= \"https://api.nhtsa.gov/vehicles/decodevin/\" + vehicle.vin",
       "group": "input",
       "binding": {
         "type": "zeebe:input",
