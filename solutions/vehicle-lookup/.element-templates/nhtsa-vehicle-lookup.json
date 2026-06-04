@@ -34,6 +34,15 @@
   ],
   "properties": [
     {
+      "label": "Name",
+      "type": "String",
+      "value": "NHTSA Vehicle Lookup",
+      "binding": {
+        "type": "property",
+        "name": "name"
+      }
+    },
+    {
       "type": "Hidden",
       "value": "io.camunda:http-json:1",
       "binding": {
