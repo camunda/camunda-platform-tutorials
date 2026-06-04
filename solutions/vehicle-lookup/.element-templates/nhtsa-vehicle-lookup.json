@@ -1,17 +1,35 @@
 {
-  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
   "name": "NHTSA Vehicle Lookup",
   "id": "io.camunda.demo:nhtsa-vehicle-lookup:1",
-  "description": "Looks up a vehicle by VIN using the NHTSA public API. No authentication required. Reads vehicle.vin from the process. Stores the full API response as vehicleApiResponse.",
   "version": 1,
-  "appliesTo": ["bpmn:ServiceTask"],
+  "description": "Looks up a vehicle by VIN using the NHTSA public API. No authentication required. Reads `vin` from the process and stores the full HTTP response as `vehicleApiResponse`.",
+  "documentationRef": "https://vpic.nhtsa.dot.gov/api/",
+  "icon": {
+    "contents": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAARGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAASoAMABAAAAAEAAAASAAAAAJqpslUAAAHJaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj42NDwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj42NDwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgohBDnEAAAC70lEQVQ4EWVTy27TQBS9Y4/tJE3jpLSlVGy6YUERUtdssmCHECp8B68FEhK/UAn6LVXX/ADlD6qmUcUiNIikae3YnhnOGScglVHiOPdx7j3n3lFy65yfnx+mafqmKIpbHhHnnIRhKNPp9GhnZ+eFUgompxioT09PP6+vrUmkA0SKy8qiD6D/QJaGqqpkNps9Pzs7OwTI2yWYTtPOu063K6OcOCLKzHxOiYR5UYovt0Cx1jJCysrI1t3N14PBgB29h9GpHxdDN4k25MvXCwmUkpcPm/L00bZc32TyezoTpdDp4jhHIJFf47FYU8pKqymQ4GB3d/eDpgPUJQoC8Ge9+mitpdVsAGhpWTjQd7OxLVqH0gbQcDh8Bs9HD8QQi4CidJJVdVWiW+skieuQoixRBaAoCrOzFiVQPE5anIqqO4LXItGwtcUx0COfIwbJ7CnPCwjBKUFG41Qj8UOER/mkBVDdUayVhEFNZQn5jxjfap4MQT847M76EKTWGlXoNwetwtTUWJqH4zbG1N2BCjQgO1CKvR8P/rUaneLNSYWJlACjLv7gh2CXlyPoFElZVjKZTDCpFbnJM8mzHuxCW9zv99c8Na4H9bFe8hrIl/GgoItxtppN6fW6KKt8MWqYXWfSSzsP9vdfHQCoFroCJXa0FJwYJGlh5yJyapEEHJfnwrwKlCMd6TAMuppSWGWFGpUIwqdmRrtx0m635d7WBnSqCzK+/lIQ7lQizdaK9WvLZGrEFfBsEEwKpBRBnyRJREex99Fv8AAubAn8GnFaNPvkoGZzIzpEuh+mSKPRkDvY7uz6ygNUpsIu4UKCHu8hSwWBBhN0TlAsmaStWPbup+jKSdrQMpleSYmSHL21lQcPAnSHDti1wjtZ+IkDhBR1Pi/nm+1CPj1Z99x543lZ4ReDWx4ol3jdYIhBketBavzlEBDC1dB6PP75+Pj46O92eaWFfwvpdDrVaDTaX11N9zAh5GJi6AQHMIurEWr1/eTk2x9kjr6jHDAdRwAAAABJRU5ErkJggg=="
+  },
+  "category": {
+    "id": "connectors",
+    "name": "Connectors"
+  },
+  "appliesTo": [
+    "bpmn:Task"
+  ],
   "elementType": {
     "value": "bpmn:ServiceTask"
   },
   "groups": [
     {
-      "id": "input",
-      "label": "Input"
+      "id": "endpoint",
+      "label": "HTTP endpoint"
+    },
+    {
+      "id": "output",
+      "label": "Response mapping"
+    },
+    {
+      "id": "errors",
+      "label": "Error handling"
     }
   ],
   "properties": [
@@ -25,34 +43,100 @@
     },
     {
       "type": "Hidden",
-      "value": "GET",
+      "value": "noAuth",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.type"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "get",
       "binding": {
         "type": "zeebe:input",
         "name": "method"
       }
     },
     {
-      "label": "VIN Lookup URL",
-      "description": "Pre-filled with the NHTSA VIN decode endpoint. References vehicle.vin from the process variable. Adjust the expression if your variable structure differs.",
+      "label": "VIN lookup URL",
+      "description": "NHTSA VIN decode endpoint, pre-filled with a FEEL expression that appends the `vin` process variable. Adjust the expression if your variable name differs.",
+      "group": "endpoint",
       "type": "String",
       "feel": "optional",
-      "value": "= \"https://api.nhtsa.gov/vehicles/decodevin/\" + vehicle.vin",
-      "group": "input",
+      "value": "= \"https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/\" + vin + \"?format=json\"",
       "binding": {
         "type": "zeebe:input",
         "name": "url"
       },
       "constraints": {
-        "notEmpty": true
+        "notEmpty": true,
+        "pattern": {
+          "value": "^(=|(https?://|secrets\\..+|\\{\\{secrets\\..+\\}\\}).*$)",
+          "message": "Must be a http(s) URL"
+        }
+      },
+      "editable": false
+    },
+    {
+      "type": "Hidden",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "queryParameters"
       }
     },
     {
       "type": "Hidden",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "headers"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "20",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "connectionTimeoutInSeconds"
+      }
+    },
+    {
+      "label": "Result variable",
+      "description": "Name of the variable that stores the full HTTP response. Default `vehicleApiResponse` matches the downstream risk-assessment worker.",
+      "group": "output",
+      "type": "String",
       "value": "vehicleApiResponse",
       "binding": {
         "type": "zeebe:taskHeader",
         "key": "resultVariable"
+      },
+      "editable": false
+    },
+    {
+      "label": "Result expression",
+      "description": "Optional FEEL expression to map the response into process variables. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#result-expression\" target=\"_blank\">documentation</a>.",
+      "group": "output",
+      "type": "Text",
+      "feel": "required",
+      "optional": true,
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultExpression"
+      }
+    },
+    {
+      "label": "Error expression",
+      "description": "Optional FEEL expression to handle errors. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#bpmn-errors\" target=\"_blank\">documentation</a>.",
+      "group": "errors",
+      "type": "Text",
+      "feel": "required",
+      "optional": true,
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "errorExpression"
       }
     }
-  ]
+  ],
+  "engines": {
+    "camunda": "^8.2"
+  }
 }
