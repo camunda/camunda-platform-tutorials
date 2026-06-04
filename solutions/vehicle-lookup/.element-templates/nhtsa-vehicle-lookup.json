@@ -59,7 +59,7 @@
     },
     {
       "label": "VIN lookup URL",
-      "description": "NHTSA VIN decode endpoint, pre-filled with a FEEL expression that appends the `vin` process variable. Adjust the expression if your variable name differs.",
+      "description": "NHTSA VIN decode endpoint. Reads `vin` from the process (17-character Vehicle Identification Number).",
       "group": "endpoint",
       "type": "String",
       "feel": "optional",
@@ -101,7 +101,7 @@
     },
     {
       "label": "Result variable",
-      "description": "Name of the variable that stores the full HTTP response. Default `vehicleApiResponse` matches the downstream risk-assessment worker.",
+      "description": "Variable that stores the full HTTP response. Response contains `body.Results` (array of Variable/Value pairs), `headers`, and `status`.",
       "group": "output",
       "type": "String",
       "value": "vehicleApiResponse",
