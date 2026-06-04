@@ -7,6 +7,8 @@ on:
       - '**/*.dmn'
       - '**/*.form'
       - '**/*.test.json'
+      - 'solutions/**/*.js'
+      - 'quick-start/**/*.js'
       - 'solutions/variables.schema.json'
       - 'quick-start/variables.schema.json'
       - 'schema/**'
