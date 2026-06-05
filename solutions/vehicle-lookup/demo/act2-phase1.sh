@@ -1,16 +1,32 @@
 #!/usr/bin/env bash
-# Trigger: Act 1 Phase 1 done (milestone v1 pushed to web-modeler)
-# Does: pull BPMN from web-modeler, print Claude Code prompt
+# =============================================================================
+# act2-phase1.sh — Act 2 Phase 1: Pull BPMN + print Claude Code prompt
+# =============================================================================
+# Run this after: Act 1 Phase 1 complete (milestone v1 pushed to web-modeler)
+# Next script:    act2-pr.sh  (after Claude Code generates worker AND commit 2 pushed)
+#
+# What this does:
+#   1. Pulls the web-modeler branch so we have the BPMN Leila just synced
+#   2. Prints the first 30 lines so the presenter can show Claude reading raw XML
+#   3. Prints the exact Claude Code prompt for the presenter to paste
+#
+# Why hard-reset: web-modeler is owned by Web Modeler — we never commit to it
+# directly from Claude Code. Reset discards any local stale state.
+# =============================================================================
 set -euo pipefail
 
+# Resolve repo root from script location (scripts live at solutions/vehicle-lookup/demo/)
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO"
 
 echo "=== Pulling web-modeler branch ==="
 git fetch origin web-modeler
+# Create tracking branch on first run; subsequent runs just switch to it
 git checkout web-modeler 2>/dev/null || git checkout -b web-modeler origin/web-modeler
 git reset --hard origin/web-modeler
 
+# Web Modeler names the file from the process diagram title, which may include spaces.
+# Always discover dynamically rather than hardcoding the filename.
 BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn 2>/dev/null | head -1)
 if [[ -z "$BPMN_FILE" ]]; then
   echo "ERROR: No BPMN found — Act 1 sync did not complete"
@@ -19,8 +35,10 @@ fi
 
 echo "BPMN: $BPMN_FILE"
 echo ""
+# Show raw XML so the presenter can narrate "Claude reads standard BPMN — no proprietary format"
 head -30 "$BPMN_FILE"
 
+# Heredoc avoids variable expansion inside the prompt text
 cat <<'PROMPT'
 
 === CLAUDE CODE PROMPT — paste into Claude Code ===

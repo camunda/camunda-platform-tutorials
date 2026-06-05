@@ -1,6 +1,24 @@
 #!/usr/bin/env bash
-# Trigger: Claude Code done + FEEL expression applied + commit 2 pushed
-# Does: stage worker, rebase onto FEEL commit, push, open PR
+# =============================================================================
+# act2-pr.sh — Act 2 Phase 2a: Commit worker, rebase onto FEEL commit, open PR
+# =============================================================================
+# Run this after: Claude Code has written worker/index.js AND commit 2 pushed
+#                 (commit 2 = FEEL expression applied in Web Modeler + synced)
+# Next script:    act2-fix.sh  (after CI failure is visible to the audience)
+#
+# What this does:
+#   1. Commits Claude Code's worker file alongside the BPMN (which may have
+#      drifted slightly from Web Modeler's last sync)
+#   2. Rebases that commit on top of commit 2 so history reads:
+#        commit 1 (skeleton) → commit 2 (FEEL mapping) → commit 3 (worker)
+#   3. Pushes and opens a PR against the upstream fork
+#
+# Why rebase instead of merge: keeps the narrative linear — the worker commit
+# arrives after the BA's FEEL mapping, matching the story told on stage.
+#
+# Why --repo HanselIdes/camunda-8-tutorials: gh defaults to the upstream
+# camunda/camunda-8-tutorials. Always specify the fork explicitly.
+# =============================================================================
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
@@ -8,6 +26,7 @@ cd "$REPO"
 
 git checkout web-modeler
 
+# Discover BPMN filename dynamically — Web Modeler names it from the diagram title
 BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
 
 echo "=== Staging worker + BPMN ==="
@@ -16,8 +35,10 @@ git commit -m "feat: add vehicle risk assessment worker"
 
 echo "=== Rebasing onto FEEL commit (commit 2) ==="
 git fetch origin web-modeler
+# Replay our worker commit on top of whatever Leila just pushed from Web Modeler
 git rebase origin/web-modeler
 
+# Sanity check: confirm output mappings from the FEEL expression survived the rebase
 echo "Output mappings after rebase:"
 grep -E "resultExpression|zeebe:output" "$BPMN_FILE" | head -10
 
