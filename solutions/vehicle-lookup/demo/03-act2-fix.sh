@@ -24,7 +24,7 @@
 # variable names each demo run. If it does, the sed won't match and CI will
 # still fail after the "fix". Check both files before running:
 #   grep -n "Score\|score\|risk\|vehicle" solutions/vehicle-lookup/worker/index.js
-#   grep -n "source=" solutions/vehicle-lookup/Vehicle*.bpmn 2>/dev/null || grep -n "source=" solutions/vehicle-lookup/vehicle*.bpmn
+#   grep -n "source=" solutions/vehicle-eligibility-check/*.bpmn 2>/dev/null || grep -n "source=" solutions/vehicle-lookup/*.bpmn
 # Update FROM_VAR and TO_VAR below if Copilot used different names.
 FROM_VAR="${FROM_VAR:-vehicleScore}"
 TO_VAR="${TO_VAR:-riskScore}"
@@ -35,8 +35,11 @@ REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO"
 
 git checkout web-modeler
-# Discover BPMN filename dynamically — Web Modeler names it from the diagram title
-BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
+# Discover BPMN filename — check vehicle-eligibility-check/ first (current Web Modeler sync target)
+BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/"*.bpmn 2>/dev/null | head -1)
+if [[ -z "$BPMN_FILE" ]]; then
+  BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
+fi
 
 echo "=== Applying find-replace: $FROM_VAR → $TO_VAR ==="
 # Fix all occurrences in the worker (variable name used in scoring and job completion)

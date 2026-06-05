@@ -32,9 +32,12 @@ git fetch origin web-modeler
 git checkout web-modeler 2>/dev/null || git checkout -b web-modeler origin/web-modeler
 git reset --hard origin/web-modeler
 
-# Web Modeler names the file from the process diagram title, which may include spaces.
-# Always discover dynamically rather than hardcoding the filename.
-BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn 2>/dev/null | head -1)
+# Web Modeler names the file and folder from the diagram title, which may change each run.
+# Check vehicle-eligibility-check/ first (current Web Modeler sync target), fall back to vehicle-lookup/.
+BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/"*.bpmn 2>/dev/null | head -1)
+if [[ -z "$BPMN_FILE" ]]; then
+  BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn 2>/dev/null | head -1)
+fi
 if [[ -z "$BPMN_FILE" ]]; then
   echo "ERROR: No BPMN found — Act 1 sync did not complete"
   exit 1
@@ -45,13 +48,11 @@ echo ""
 # Show raw XML so the presenter can narrate "Claude reads standard BPMN — no proprietary format"
 head -30 "$BPMN_FILE"
 
-# Heredoc avoids variable expansion inside the prompt text
-cat <<'PROMPT'
-
-=== CLAUDE CODE PROMPT — paste into Claude Code ===
-
-  "Read solutions/vehicle-lookup/vehicle-lookup.bpmn and find the service
-   task that handles vehicle risk assessment.
+echo ""
+echo "=== CLAUDE CODE PROMPT — paste into Claude Code ==="
+echo ""
+cat <<PROMPT
+  "Read $BPMN_FILE and find the service task that handles vehicle risk assessment.
 
    Implement its Zeebe Node.js worker. The worker needs to integrate with
    the process data coming from the NHTSA vehicle lookup — pull out the
@@ -63,7 +64,7 @@ cat <<'PROMPT'
    packages. The local Camunda instance runs at http://localhost:8080 with
    basic auth demo:demo. Poll for jobs and complete them via the REST API.
    Write to solutions/vehicle-lookup/worker/index.js."
-
-=== PRESENTER: Switch to Claude Code. Paste prompt above. ===
-=== While Claude generates, narrate: "Claude read the BPMN and knew exactly what to implement." ===
 PROMPT
+echo ""
+echo "=== PRESENTER: Switch to Claude Code. Paste prompt above. ==="
+echo "=== While Claude generates, narrate: \"Claude read the BPMN and knew exactly what to implement.\" ==="
