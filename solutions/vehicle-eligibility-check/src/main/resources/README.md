@@ -1,43 +1,67 @@
 # Vehicle Eligibility Check
 
-Gartner BOAT MQ 2026 demo solution. Demonstrates AI-assisted process development:
+Written by: Leila Ramos, Operations Business Analyst
+Last updated: June 2026
 
-1. **Web Modeler Copilot** generates the process (VIN lookup → eligibility DMN → XOR → eligible / ineligible path)
-2. **FEEL Copilot** writes the result expression on the VIN lookup task
-3. **Claude Code** reads this README and the BPMN, fills in the CPT test scenarios, and the PR runs CI
-4. **CI (CPT)** runs process tests and reveals variable drift between the DMN output and the gateway condition
-5. A targeted fix to the DMN output column names → CI passes → merge to production
+---
 
-## Process variables
+## What this process does
 
-| Variable          | Type    | Source                        |
-|-------------------|---------|-------------------------------|
-| `vin`             | string  | Process start                 |
-| `year`            | number  | VIN lookup output mapping     |
-| `make`            | string  | VIN lookup output mapping     |
-| `model`           | string  | VIN lookup output mapping     |
-| `vehicle type`    | string  | VIN lookup output mapping     |
-| `riskScore`       | number  | Eligibility DMN               |
-| `eligible`        | boolean | Eligibility DMN               |
+This process checks whether a customer's vehicle qualifies for our seasonal maintenance promotion. A customer submits their VIN, the process looks up vehicle details automatically, runs the eligibility rules, and routes the case to either an eligible or ineligible outcome.
 
-## DMN decision
+The promotion offers a discounted maintenance package to qualifying customers. We defined eligibility based on vehicle age and type, because older commercial vehicles carry too much maintenance risk for the promotion economics to work.
 
-`vehicle-eligibility.dmn` — decision ID `vehicle-eligibility`. Input columns: `year`, `vehicle type`. Output columns: `riskScore` (number), `eligible` (boolean).
+## Stakeholders
 
-The gateway condition is `=eligible`. If the DMN output column names drift from `riskScore` / `eligible`, the gateway never sees `eligible = true` and routes every instance to the ineligible end event.
+| Role           | Name        | Responsibility                                     |
+|----------------|-------------|----------------------------------------------------|
+| Process owner  | Leila Ramos | Eligibility rules, outcomes, process requirements  |
+| Marketing      | TBD         | Promotion terms, customer communication            |
+| Engineering    | TBD         | System integration, connector configuration        |
 
-## CPT test scenarios
+## Process flow
 
-**3. CPT test scenarios** (`test/src/test/resources/scenarios/vehicle-eligibility-check.test.json`)
+1. Customer submits a VIN at process start.
+2. The **NHTSA VIN Lookup** service task calls the NHTSA vehicle database and returns the vehicle year, make, model, and type.
+3. The **Determine Eligibility** business rule task evaluates the vehicle against our eligibility rules and outputs a risk score and an eligible flag.
+4. A gateway routes based on `eligible`: eligible vehicles go to the eligible end event, ineligible vehicles go to the ineligible end event.
 
-The test harness (`pom.xml`, `ProcessTest.java`) and a partially-complete scenarios file are already in the `test/` folder. Update the scenarios file: replace every `REPLACE_*` placeholder with the actual value from the BPMN.
+## Eligibility rules
 
-- `REPLACE_PROCESS_DEFINITION_ID` → the `id` attribute of the `<bpmn:process>` element
-- `REPLACE_VIN_LOOKUP_TASK_ID` → element ID of the NHTSA VIN lookup service task
-- `REPLACE_ELIGIBILITY_TASK_ID` → element ID of the business rule task (Calculate Eligibility)
-- `REPLACE_ELIGIBLE_DOWNSTREAM_TASK_ID` → element ID of the task on the eligible path (after the gateway, before the eligible end event)
-- `REPLACE_INELIGIBLE_DOWNSTREAM_TASK_ID` → element ID of the task on the ineligible path (after the gateway, before the ineligible end event)
-- `REPLACE_ELIGIBLE_END_EVENT_ID` → element ID of the end event on the eligible path
-- `REPLACE_INELIGIBLE_END_EVENT_ID` → element ID of the end event on the ineligible path
+The eligibility decision table (`vehicle-eligibility.dmn`) uses two inputs from the VIN lookup: **vehicle year** and **vehicle type** (as returned by NHTSA, e.g. `PASSENGER CAR`, `MOTORCYCLE`, `MULTIPURPOSE PASSENGER VEHICLE (MPV)`, `TRUCK`, `BUS`).
 
-If a path has no downstream task between the gateway and the end event, remove that `COMPLETE_JOB` instruction for that path. Use element IDs from the BPMN.
+| Vehicle year  | Vehicle type                                | Risk score | Eligible? |
+|---------------|---------------------------------------------|------------|-----------|
+| 2022 or newer | Passenger car, motorcycle, or MPV           | 5          | Yes       |
+| 2022 or newer | Any other type (trucks, buses, etc.)        | 30         | Yes       |
+| 2018 to 2021  | Passenger car, motorcycle, or MPV           | 15         | Yes       |
+| 2018 to 2021  | Any other type                              | 40         | Yes       |
+| Before 2018   | Passenger car, motorcycle, or MPV           | 25         | Yes       |
+| Before 2018   | Any other type                              | 50         | **No**    |
+
+Rules apply in order; first match wins. Only pre-2018 non-personal vehicles (trucks, buses, trailers, etc.) are ineligible. All passenger cars, motorcycles, and MPVs qualify regardless of age.
+
+The DMN outputs two process variables: `riskScore` (integer) and `eligible` (boolean). The gateway condition is `=eligible`.
+
+---
+
+## Instructions for Claude Code
+
+Hi Claude. The BPMN and DMN are in this same folder. The test harness is already set up in the `test/` folder. I need you to complete the test scenarios file so our CI pipeline can validate the process before we go live.
+
+**What to do:**
+
+1. Read the BPMN file in this folder (`Vehicle Eligibility Check.bpmn`). Find the element IDs for:
+   - The process definition ID (the `id` attribute on the `<bpmn:process>` element)
+   - The NHTSA VIN lookup service task
+   - The Determine Eligibility business rule task
+   - The task on the eligible path (between the gateway and the eligible end event), if one exists
+   - The task on the ineligible path (between the gateway and the ineligible end event), if one exists
+   - The eligible end event
+   - The ineligible end event
+
+2. Open `test/src/test/resources/scenarios/vehicle-eligibility-check.test.json` and replace every `REPLACE_*` placeholder with the correct element ID from the BPMN. If there is no task between the gateway and an end event on a given path, remove the `COMPLETE_JOB` instruction for that path rather than leaving a placeholder.
+
+3. Do not change test names, mock responses, or assertion logic — only the element IDs.
+
+Use the eligibility rules table above if you need to confirm which scenario covers which DMN outcome.
