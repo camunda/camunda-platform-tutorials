@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="vehicle-lookup" name="Vehicle Lookup" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="VIN received">
+      <bpmn:outgoing>Flow_StartToNHTSA</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="NHTSALookup" name="Look up vehicle (NHTSA)" modeler:modelerTemplate="io.camunda.demo:nhtsa-vehicle-lookup:1" modeler:modelerTemplateVersion="1">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="get" target="method" />
+          <zeebe:input source="= &quot;https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/&quot; + vin + &quot;?format=json&quot;" target="url" />
+          <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" value="vehicleApiResponse" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_StartToNHTSA</bpmn:incoming>
+      <bpmn:outgoing>Flow_NHTSAToRisk</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="RiskAssessment" name="Assess vehicle risk">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda.demo:vehicle-risk-assessment" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:output source="vehicleInfo" target="vehicleInfo" />
+          <zeebe:output source="riskScore" target="riskScore" />
+          <zeebe:output source="eligible" target="eligible" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_NHTSAToRisk</bpmn:incoming>
+      <bpmn:outgoing>Flow_RiskToGateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="EligibilityGateway" name="Vehicle eligible?" default="Flow_GatewayToIneligible">
+      <bpmn:incoming>Flow_RiskToGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_GatewayToEligible</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GatewayToIneligible</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EligibleEnd" name="Vehicle eligible">
+      <bpmn:incoming>Flow_GatewayToEligible</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="IneligibleEnd" name="Vehicle ineligible">
+      <bpmn:incoming>Flow_GatewayToIneligible</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_StartToNHTSA" sourceRef="StartEvent_1" targetRef="NHTSALookup" />
+    <bpmn:sequenceFlow id="Flow_NHTSAToRisk" sourceRef="NHTSALookup" targetRef="RiskAssessment" />
+    <bpmn:sequenceFlow id="Flow_RiskToGateway" sourceRef="RiskAssessment" targetRef="EligibilityGateway" />
+    <bpmn:sequenceFlow id="Flow_GatewayToEligible" name="eligible" sourceRef="EligibilityGateway" targetRef="EligibleEnd">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= eligible</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_GatewayToIneligible" name="ineligible" sourceRef="EligibilityGateway" targetRef="IneligibleEnd" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="vehicle-lookup">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NHTSALookup_di" bpmnElement="NHTSALookup">
+        <dc:Bounds x="240" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RiskAssessment_di" bpmnElement="RiskAssessment">
+        <dc:Bounds x="410" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EligibilityGateway_di" bpmnElement="EligibilityGateway" isMarkerVisible="true">
+        <dc:Bounds x="575" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EligibleEnd_di" bpmnElement="EligibleEnd">
+        <dc:Bounds x="712" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IneligibleEnd_di" bpmnElement="IneligibleEnd">
+        <dc:Bounds x="712" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_StartToNHTSA_di" bpmnElement="Flow_StartToNHTSA">
+        <di:waypoint x="188" y="180" />
+        <di:waypoint x="240" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NHTSAToRisk_di" bpmnElement="Flow_NHTSAToRisk">
+        <di:waypoint x="340" y="180" />
+        <di:waypoint x="410" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RiskToGateway_di" bpmnElement="Flow_RiskToGateway">
+        <di:waypoint x="510" y="180" />
+        <di:waypoint x="575" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayToEligible_di" bpmnElement="Flow_GatewayToEligible">
+        <di:waypoint x="625" y="180" />
+        <di:waypoint x="712" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GatewayToIneligible_di" bpmnElement="Flow_GatewayToIneligible">
+        <di:waypoint x="600" y="205" />
+        <di:waypoint x="600" y="280" />
+        <di:waypoint x="712" y="280" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

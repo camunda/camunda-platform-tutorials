@@ -1,10 +1,12 @@
 {
-  "$schema": "https://unpkg.com/@camunda/element-templates-json-schema/resources/schema.json",
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
   "name": "Vehicle Risk Assessment",
   "id": "io.camunda.demo:vehicle-risk-assessment:1",
-  "description": "Parses the NHTSA response and computes a risk score and eligibility decision. Reads vehicleApiResponse. Outputs vehicleInfo (make/model/year/type), riskScore (0–100), and eligible (boolean).",
   "version": 1,
-  "appliesTo": ["bpmn:ServiceTask"],
+  "description": "Parses the NHTSA response and computes a risk score and eligibility decision. Reads vehicleApiResponse. Outputs vehicleInfo (make/model/year/type), riskScore (0–100), and eligible (boolean).",
+  "appliesTo": [
+    "bpmn:ServiceTask"
+  ],
   "elementType": {
     "value": "bpmn:ServiceTask"
   },
