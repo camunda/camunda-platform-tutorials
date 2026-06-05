@@ -19,7 +19,7 @@ cd "$REPO"
 
 git checkout web-modeler
 
-DMN_FILE="solutions/vehicle-eligibility-check/vehicle-eligibility.dmn"
+DMN_FILE="solutions/vehicle-eligibility-check/src/main/resources/vehicle-eligibility.dmn"
 
 echo "=== Applying fix: vehicleScore → riskScore, vehicleEligible → eligible ==="
 sed -i '' 's/vehicleScore/riskScore/g' "$DMN_FILE"
@@ -39,4 +39,4 @@ echo "Say: 'Two name changes in the DMN. The gateway now sees eligible=true."
 echo "      The eligible vehicle reaches the right end event.'"
 echo ""
 echo "Ask presenter to confirm before Act 3."
-echo "When ready, run: bash solutions/vehicle-lookup/demo/04-act3-merge.sh"
+echo "When ready, run: bash solutions/vehicle-eligibility-check/demo/04-act3-merge.sh"

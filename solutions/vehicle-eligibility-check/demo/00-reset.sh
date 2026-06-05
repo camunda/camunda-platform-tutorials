@@ -117,19 +117,16 @@ if [[ "$TARGET" == "act2" ]]; then
 
   git checkout web-modeler
 
-  BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/"*.bpmn 2>/dev/null | head -1)
-  if [[ -z "$BPMN_FILE" ]]; then
-    BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn 2>/dev/null | head -1)
-  fi
+  BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/src/main/resources/"*.bpmn 2>/dev/null | head -1)
   if [[ -z "$BPMN_FILE" ]]; then
     echo "ERROR: No BPMN found — act1-checkpoint may be stale"
     exit 1
   fi
 
-  mkdir -p "solutions/vehicle-lookup/worker"
-  cp "$BUGGY_WORKER" "solutions/vehicle-lookup/worker/index.js"
+  mkdir -p "solutions/vehicle-eligibility-check/worker"
+  cp "$BUGGY_WORKER" "solutions/vehicle-eligibility-check/worker/index.js"
 
-  git add "solutions/vehicle-lookup/worker/index.js"
+  git add "solutions/vehicle-eligibility-check/worker/index.js"
   git commit -m "feat: add vehicle risk assessment worker"
   git push origin web-modeler
   echo "Buggy worker committed and pushed."

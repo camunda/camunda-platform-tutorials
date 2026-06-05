@@ -49,4 +49,4 @@ echo "Say: 'CI ran the CPT tests. The eligible vehicle ended at the ineligible e
 echo "      The DMN outputs vehicleScore and vehicleEligible — the BPMN reads riskScore and eligible."
 echo "      The gateway never saw eligible=true, so it took the default path.'"
 echo ""
-echo "When CI failure is visible, run: bash solutions/vehicle-lookup/demo/03-act2-fix.sh"
+echo "When CI failure is visible, run: bash solutions/vehicle-eligibility-check/demo/03-act2-fix.sh"

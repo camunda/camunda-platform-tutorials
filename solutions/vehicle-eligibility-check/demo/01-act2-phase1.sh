@@ -16,7 +16,7 @@
 # =============================================================================
 set -euo pipefail
 
-# Resolve repo root from script location (scripts live at solutions/vehicle-lookup/demo/)
+# Resolve repo root from script location (scripts live at solutions/vehicle-eligibility-check/demo/)
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO"
 
@@ -26,12 +26,8 @@ git fetch origin web-modeler
 git checkout web-modeler 2>/dev/null || git checkout -b web-modeler origin/web-modeler
 git reset --hard origin/web-modeler
 
-# Web Modeler names the file and folder from the diagram title, which may change each run.
-# Check vehicle-eligibility-check/ first (current Web Modeler sync target), fall back to vehicle-lookup/.
-BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/"*.bpmn 2>/dev/null | head -1)
-if [[ -z "$BPMN_FILE" ]]; then
-  BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn 2>/dev/null | head -1)
-fi
+# Web Modeler GitHub sync writes BPMN into src/main/resources/ (the Maven layout it picks up).
+BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/src/main/resources/"*.bpmn 2>/dev/null | head -1)
 if [[ -z "$BPMN_FILE" ]]; then
   echo "ERROR: No BPMN found — Act 1 sync did not complete"
   exit 1
@@ -49,7 +45,7 @@ echo "---"
 
 echo ""
 echo "=== Copying CPT scaffold to test/ ==="
-SCAFFOLD="solutions/vehicle-lookup/demo/cpt-scaffold"
+SCAFFOLD="solutions/vehicle-eligibility-check/demo/cpt-scaffold"
 DEST="solutions/vehicle-eligibility-check/test"
 mkdir -p "$DEST"
 cp -r "$SCAFFOLD/." "$DEST/"
@@ -63,4 +59,4 @@ echo ""
 echo "=== PRESENTER: Open solutions/vehicle-eligibility-check/README.md in Claude Code, then paste the prompt above. ==="
 echo "=== Say: 'Claude reads the README, the BPMN, and the DMN. It knows the routing logic, the element IDs, and what to fill in.' ==="
 echo ""
-echo "When Claude Code updates the scenarios file, run: bash solutions/vehicle-lookup/demo/02-act2-pr.sh"
+echo "When Claude Code updates the scenarios file, run: bash solutions/vehicle-eligibility-check/demo/02-act2-pr.sh"
