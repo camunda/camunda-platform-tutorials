@@ -47,6 +47,10 @@ echo ""
 echo "=== Copying CPT scaffold to test/ ==="
 SCAFFOLD="solutions/vehicle-eligibility-check/demo/cpt-scaffold"
 DEST="solutions/vehicle-eligibility-check/test"
+# web-modeler branch lacks demo/ — materialize scaffold from main
+if [[ ! -d "$SCAFFOLD" ]]; then
+  git checkout main -- "$SCAFFOLD"
+fi
 mkdir -p "$DEST"
 cp -r "$SCAFFOLD/." "$DEST/"
 echo "Scaffold copied to $DEST"
