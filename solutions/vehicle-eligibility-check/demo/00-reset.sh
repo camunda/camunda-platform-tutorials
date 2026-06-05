@@ -6,17 +6,19 @@
 #
 # act0  Before Act 1: web-modeler rewound to pre-BPMN state. Use to restart
 #       from the beginning. Presenter must re-run Web Modeler Act 1.
-# act1  After Act 1: BPMN + DMN present (column names intentionally wrong),
-#       no CPT tests. Use to skip Act 1 and jump straight to Act 2. [DEFAULT]
+# act1  After Act 2: BPMN + fixed DMN + CPT tests on web-modeler, ready for
+#       Act 3 merge. Also resets main to pre-act2-main (buggy DMN, no tests)
+#       so the PR diff shows the column fix red/green. [DEFAULT]
 #
 # References: /gartner setup steps 3 (repo state) and 7 (kill stale workers)
 # After reset: run /gartner setup at T-10 min
 #
 # BRITTLE: Checkpoints are snapshots of a prior run. Web Modeler Copilot
 # produces different output each time (variable names, task IDs). After a
-# successful full run, update act1-checkpoint:
-#   git tag -f act1-checkpoint <sha-of-web-modeler-sync-commit>
-#   git push --force origin act1-checkpoint
+# successful full run, update both tags:
+#   git tag -f pre-act2-main <sha-of-web-modeler-sync-commit>   # BPMN + buggy DMN
+#   git tag -f act1-checkpoint <sha-after-cpt-and-dmn-fix>      # BPMN + fixed DMN + tests
+#   git push --force origin pre-act2-main act1-checkpoint
 # =============================================================================
 set -euo pipefail
 
@@ -59,9 +61,10 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Step 3: Rewind web-modeler to checkpoint.
+# Step 3: Rewind web-modeler to checkpoint + reset main to pre-act2 baseline.
 # act0 → act0-checkpoint (no BPMN synced yet)
-# act1 → act1-checkpoint (BPMN + DMN present, column names wrong, no CPT tests)
+# act1 → act1-checkpoint (BPMN + fixed DMN + CPT tests — post-Act-2 state)
+#         main → pre-act2-main (BPMN + buggy DMN, no CPT tests)
 # ---------------------------------------------------------------------------
 CHECKPOINT_TAG="act1-checkpoint"
 [[ "$TARGET" == "act0" ]] && CHECKPOINT_TAG="act0-checkpoint"
@@ -76,13 +79,25 @@ git fetch origin
 git push --force origin "refs/tags/$CHECKPOINT_TAG:refs/heads/web-modeler"
 echo "BRANCH: web-modeler rewound to $CHECKPOINT_TAG"
 
+# For act1, also reset main to the pre-Act-2 state so Act 3 PR is always clean.
+# pre-act2-main = main + buggy DMN, no CPT tests; act1-checkpoint parent.
+if [[ "$TARGET" == "act1" ]]; then
+  if git rev-parse "pre-act2-main" >/dev/null 2>&1; then
+    git push --force origin "refs/tags/pre-act2-main:refs/heads/main"
+    echo "BRANCH: main rewound to pre-act2-main"
+  else
+    echo "WARN: tag 'pre-act2-main' not found; main not reset. PR may conflict."
+    echo "      Fetch with: git fetch origin refs/tags/pre-act2-main:refs/tags/pre-act2-main"
+  fi
+fi
+
 # Update local branch to match
 git checkout main
 git pull origin main
 git branch -D web-modeler 2>/dev/null || true
 git checkout -b web-modeler origin/web-modeler
 git checkout main
-echo "LOCAL: web-modeler local branch refreshed"
+echo "LOCAL: web-modeler + main local branches refreshed"
 echo ""
 
 if [[ "$TARGET" == "act0" ]]; then
