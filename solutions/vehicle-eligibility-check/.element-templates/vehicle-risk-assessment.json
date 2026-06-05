@@ -1,0 +1,45 @@
+{
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "name": "Vehicle Risk Assessment",
+  "id": "io.camunda.demo:vehicle-risk-assessment:1",
+  "version": 1,
+  "description": "Parses the NHTSA response and computes a risk score and eligibility decision. Reads vehicleApiResponse. Outputs vehicleInfo (make/model/year/type), riskScore (0–100), and eligible (boolean).",
+  "appliesTo": [
+    "bpmn:ServiceTask"
+  ],
+  "elementType": {
+    "value": "bpmn:ServiceTask"
+  },
+  "groups": [
+    {
+      "id": "output",
+      "label": "Output"
+    }
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "io.camunda.demo:vehicle-risk-assessment",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "type"
+      }
+    },
+    {
+      "label": "Risk threshold",
+      "description": "Maximum risk score for a vehicle to be considered eligible. Vehicles scoring above this threshold are flagged for review.",
+      "type": "Number",
+      "value": "70",
+      "group": "output",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "riskThreshold"
+      },
+      "constraints": {
+        "notEmpty": true,
+        "min": 0,
+        "max": 100
+      }
+    }
+  ]
+}
