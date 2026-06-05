@@ -18,6 +18,11 @@
 #
 # Why --repo HanselIdes/camunda-8-tutorials: gh defaults to the upstream
 # camunda/camunda-8-tutorials. Always specify the fork explicitly.
+# BRITTLE: Assumes Claude Code wrote index.js with a job type matching the
+# BPMN process ID. If Web Modeler Copilot generated different task IDs or job
+# types, the worker may poll the wrong job type and never complete. Verify:
+#   grep -n "jobType\|activateJobs\|type" solutions/vehicle-lookup/worker/index.js
+#   grep -n "zeebe:taskDefinition" solutions/vehicle-lookup/*.bpmn
 # =============================================================================
 set -euo pipefail
 

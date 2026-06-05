@@ -12,6 +12,13 @@
 #
 # Why hard-reset: web-modeler is owned by Web Modeler — we never commit to it
 # directly from Claude Code. Reset discards any local stale state.
+# BRITTLE: The Claude Code prompt below references 'vehicle-lookup.bpmn' by a
+# fixed path. Web Modeler may have renamed the file from the diagram title
+# (e.g., 'Vehicle Eligibility Check.bpmn'). The BPMN_FILE var below discovers
+# the actual filename — update the prompt text if it differs significantly.
+# Also: the prompt assumes a specific scoring algorithm and variable contract.
+# If Copilot generated different output variable names in Act 1, update the
+# prompt to match before pasting into Claude Code.
 # =============================================================================
 set -euo pipefail
 

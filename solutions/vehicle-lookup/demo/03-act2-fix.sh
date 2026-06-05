@@ -19,6 +19,15 @@
 #
 # Why /tmp/worker.log: keeps worker output accessible for tail without cluttering
 # the repo directory. Log is overwritten on each demo run.
+# BRITTLE: This script hardcodes 'vehicleScore' as the wrong variable name and
+# 'riskScore' as the correct one. Web Modeler Copilot may generate different
+# variable names each demo run. If it does, the sed won't match and CI will
+# still fail after the "fix". Check both files before running:
+#   grep -n "Score\|score\|risk\|vehicle" solutions/vehicle-lookup/worker/index.js
+#   grep -n "source=" solutions/vehicle-lookup/Vehicle*.bpmn 2>/dev/null || grep -n "source=" solutions/vehicle-lookup/vehicle*.bpmn
+# Update FROM_VAR and TO_VAR below if Copilot used different names.
+FROM_VAR="${FROM_VAR:-vehicleScore}"
+TO_VAR="${TO_VAR:-riskScore}"
 # =============================================================================
 set -euo pipefail
 
@@ -29,11 +38,11 @@ git checkout web-modeler
 # Discover BPMN filename dynamically — Web Modeler names it from the diagram title
 BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
 
-echo "=== Applying find-replace: vehicleScore → riskScore ==="
+echo "=== Applying find-replace: $FROM_VAR → $TO_VAR ==="
 # Fix all occurrences in the worker (variable name used in scoring and job completion)
-sed -i '' 's/vehicleScore/riskScore/g' "solutions/vehicle-lookup/worker/index.js"
+sed -i '' "s/$FROM_VAR/$TO_VAR/g" "solutions/vehicle-lookup/worker/index.js"
 # Fix the BPMN output mapping (zeebe:output source and target attributes)
-sed -i '' 's|<zeebe:output source="vehicleScore" target="vehicleScore" />|<zeebe:output source="riskScore" target="riskScore" />|g' "$BPMN_FILE"
+sed -i '' "s|source=\"$FROM_VAR\" target=\"$FROM_VAR\"|source=\"$TO_VAR\" target=\"$TO_VAR\"|g" "$BPMN_FILE"
 
 git add "solutions/vehicle-lookup/worker/index.js" "$BPMN_FILE"
 git commit -m "fix: rename vehicleScore to riskScore — aligns with variable schema"
