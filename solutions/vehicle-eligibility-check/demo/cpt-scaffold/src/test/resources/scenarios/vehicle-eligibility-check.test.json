@@ -7,12 +7,12 @@
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "REPLACE_PROCESS_DEFINITION_ID" },
+          "processDefinitionSelector": { "processDefinitionId": "vehicle-eligibility-check" },
           "variables": { "vin": "2HGFE2F57NH123456" }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "REPLACE_VIN_LOOKUP_TASK_ID" },
+          "jobSelector": { "elementId": "Activity_0k1w3q7" },
           "variables": {
             "year": 2023,
             "make": "HONDA",
@@ -22,17 +22,12 @@
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "REPLACE_ELIGIBILITY_TASK_ID" },
-          "variables": {}
-        },
-        {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "REPLACE_ELIGIBLE_DOWNSTREAM_TASK_ID" },
+          "jobSelector": { "elementId": "Activity_1c9x8wj" },
           "variables": {}
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "elementInstanceSelector": { "elementId": "REPLACE_ELIGIBLE_END_EVENT_ID" },
+          "elementInstanceSelector": { "elementId": "Event_1m2n3o4" },
           "expectedCount": 1
         }
       ]
@@ -43,12 +38,12 @@
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "REPLACE_PROCESS_DEFINITION_ID" },
+          "processDefinitionSelector": { "processDefinitionId": "vehicle-eligibility-check" },
           "variables": { "vin": "1FTFW1ET5EKE01234" }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "REPLACE_VIN_LOOKUP_TASK_ID" },
+          "jobSelector": { "elementId": "Activity_0k1w3q7" },
           "variables": {
             "year": 2015,
             "make": "FORD",
@@ -58,17 +53,12 @@
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "REPLACE_ELIGIBILITY_TASK_ID" },
-          "variables": {}
-        },
-        {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "REPLACE_INELIGIBLE_DOWNSTREAM_TASK_ID" },
+          "jobSelector": { "elementId": "Activity_1c9x8wj" },
           "variables": {}
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "elementInstanceSelector": { "elementId": "REPLACE_INELIGIBLE_END_EVENT_ID" },
+          "elementInstanceSelector": { "elementId": "Event_0d1e2f3" },
           "expectedCount": 1
         }
       ]
