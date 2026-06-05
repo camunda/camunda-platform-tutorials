@@ -45,7 +45,7 @@ echo "=== Applying find-replace: $FROM_VAR → $TO_VAR ==="
 # Fix all occurrences in the worker (variable name used in scoring and job completion)
 sed -i '' "s/$FROM_VAR/$TO_VAR/g" "solutions/vehicle-lookup/worker/index.js"
 # Fix the BPMN output mapping (zeebe:output source and target attributes)
-sed -i '' "s|source=\"$FROM_VAR\" target=\"$FROM_VAR\"|source=\"$TO_VAR\" target=\"$TO_VAR\"|g" "$BPMN_FILE"
+sed -i '' "s|source=\"=$FROM_VAR\" target=\"$FROM_VAR\"|source=\"=$TO_VAR\" target=\"$TO_VAR\"|g" "$BPMN_FILE"
 
 git add "solutions/vehicle-lookup/worker/index.js" "$BPMN_FILE"
 git commit -m "fix: rename vehicleScore to riskScore — aligns with variable schema"
