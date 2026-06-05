@@ -55,7 +55,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda.demo:vehicle-risk-assessment" />
         <zeebe:ioMapping>
-          <zeebe:output source="=riskScore" target="riskScore" />
+          <zeebe:output source="=vehicleScore" target="vehicleScore" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0y1b7qj</bpmn:incoming>

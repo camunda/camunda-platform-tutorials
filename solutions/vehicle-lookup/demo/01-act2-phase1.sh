@@ -3,22 +3,16 @@
 # act2-phase1.sh — Act 2 Phase 1: Pull BPMN + print Claude Code prompt
 # =============================================================================
 # Run this after: Act 1 Phase 1 complete (milestone v1 pushed to web-modeler)
-# Next script:    act2-pr.sh  (after Claude Code generates worker AND commit 2 pushed)
+# Next script:    02-act2-pr.sh  (after Claude Code updates scenarios file)
 #
 # What this does:
 #   1. Pulls the web-modeler branch so we have the BPMN Leila just synced
-#   2. Prints the first 30 lines so the presenter can show Claude reading raw XML
-#   3. Prints the exact Claude Code prompt for the presenter to paste
+#   2. Copies the CPT scaffold (pom.xml, ProcessTest.java, pre-staged scenarios) into test/
+#   3. Prints structural BPMN elements (skips base64 icon data) so presenter can narrate
+#   4. Prints the Claude Code prompt for the presenter to paste
 #
 # Why hard-reset: web-modeler is owned by Web Modeler — we never commit to it
 # directly from Claude Code. Reset discards any local stale state.
-# BRITTLE: The Claude Code prompt below references 'vehicle-lookup.bpmn' by a
-# fixed path. Web Modeler may have renamed the file from the diagram title
-# (e.g., 'Vehicle Eligibility Check.bpmn'). The BPMN_FILE var below discovers
-# the actual filename — update the prompt text if it differs significantly.
-# Also: the prompt assumes a specific scoring algorithm and variable contract.
-# If Copilot generated different output variable names in Act 1, update the
-# prompt to match before pasting into Claude Code.
 # =============================================================================
 set -euo pipefail
 
@@ -45,26 +39,28 @@ fi
 
 echo "BPMN: $BPMN_FILE"
 echo ""
-# Show raw XML so the presenter can narrate "Claude reads standard BPMN — no proprietary format"
-head -30 "$BPMN_FILE"
+# Show structural BPMN elements — skip base64 icon data embedded by Web Modeler
+echo "--- Process structure (from BPMN) ---"
+grep -E '(bpmn:process |bpmn:startEvent|bpmn:serviceTask|bpmn:businessRuleTask|bpmn:exclusiveGateway|bpmn:endEvent|bpmn:sequenceFlow)' "$BPMN_FILE" \
+  | grep -v 'base64' \
+  | sed 's/.*id="\([^"]*\)".*/\1/' \
+  | head -20
+echo "---"
 
 echo ""
+echo "=== Copying CPT scaffold to test/ ==="
+SCAFFOLD="solutions/vehicle-lookup/demo/cpt-scaffold"
+DEST="solutions/vehicle-eligibility-check/test"
+mkdir -p "$DEST"
+cp -r "$SCAFFOLD/." "$DEST/"
+echo "Scaffold copied to $DEST"
+echo ""
+
 echo "=== CLAUDE CODE PROMPT — paste into Claude Code ==="
 echo ""
-cat <<PROMPT
-  "Read $BPMN_FILE and find the service task that handles vehicle risk assessment.
-
-   Implement its Zeebe Node.js worker. The worker needs to integrate with
-   the process data coming from the NHTSA vehicle lookup — pull out the
-   vehicle details and run a simple scoring algorithm: start at 50, give
-   newer vehicles a break (2018+), and favor common passenger vehicles. If
-   the final score is 40 or under, the vehicle is eligible.
-
-   Use the Zeebe REST API directly with Node.js built-in http — no external
-   packages. The local Camunda instance runs at http://localhost:8080 with
-   basic auth demo:demo. Poll for jobs and complete them via the REST API.
-   Write to solutions/vehicle-lookup/worker/index.js."
-PROMPT
+echo "Finish building and testing the process according to the README."
 echo ""
-echo "=== PRESENTER: Switch to Claude Code. Paste prompt above. ==="
-echo "=== While Claude generates, narrate: \"Claude read the BPMN and knew exactly what to implement.\" ==="
+echo "=== PRESENTER: Open solutions/vehicle-eligibility-check/README.md in Claude Code, then paste the prompt above. ==="
+echo "=== Say: 'Claude reads the README, the BPMN, and the DMN. It knows the routing logic, the element IDs, and what to fill in.' ==="
+echo ""
+echo "When Claude Code updates the scenarios file, run: bash solutions/vehicle-lookup/demo/02-act2-pr.sh"

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.9/schema.json",
+  "testCases": [
+    {
+      "name": "Eligible vehicle routes to eligible end event",
+      "description": "2023 Honda Civic (PASSENGER CAR) — 2022+, passenger type, expect eligible path with risk score 5",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "REPLACE_PROCESS_DEFINITION_ID" },
+          "variables": { "vin": "2HGFE2F57NH123456" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "REPLACE_VIN_LOOKUP_TASK_ID" },
+          "variables": {
+            "year": 2023,
+            "make": "HONDA",
+            "model": "CIVIC",
+            "vehicle type": "PASSENGER CAR"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "REPLACE_ELIGIBILITY_TASK_ID" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "REPLACE_ELIGIBLE_DOWNSTREAM_TASK_ID" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "elementInstanceSelector": { "elementId": "REPLACE_ELIGIBLE_END_EVENT_ID" },
+          "expectedCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Ineligible vehicle routes to ineligible end event",
+      "description": "2015 Ford F-150 (TRUCK) — pre-2018, non-passenger type, expect ineligible path with risk score 50",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "REPLACE_PROCESS_DEFINITION_ID" },
+          "variables": { "vin": "1FTFW1ET5EKE01234" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "REPLACE_VIN_LOOKUP_TASK_ID" },
+          "variables": {
+            "year": 2015,
+            "make": "FORD",
+            "model": "F-150",
+            "vehicle type": "TRUCK"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "REPLACE_ELIGIBILITY_TASK_ID" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "REPLACE_INELIGIBLE_DOWNSTREAM_TASK_ID" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "elementInstanceSelector": { "elementId": "REPLACE_INELIGIBLE_END_EVENT_ID" },
+          "expectedCount": 1
+        }
+      ]
+    }
+  ]
+}

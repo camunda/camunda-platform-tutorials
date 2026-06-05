@@ -1,33 +1,16 @@
 #!/usr/bin/env bash
 # =============================================================================
-# act2-fix.sh — Act 2 Phase 2b: Fix variable drift, deploy, start instance
+# act2-fix.sh — Act 2 Phase 2b: Fix DMN output column names, push, CI passes
 # =============================================================================
 # Run this after: CI failure is visible to the audience
 # Next script:    04-act3-merge.sh  (after Act 3 Run Play confirmed in Web Modeler)
 #
 # What this does:
-#   1. Renames vehicleScore → riskScore in both the worker and the BPMN output
-#      mapping. The worker intentionally uses the wrong variable name to trigger
-#      a CI failure — this find-replace is the "pro-code moment" of the demo.
-#   2. Commits and pushes the fix so CI re-runs and passes
-#   3. Kills any stale worker process, starts a fresh one against local Camunda
-#   4. Deploys the BPMN to the local c8run instance
-#   5. Starts a process instance with the test VIN and shows the worker result
-#
-# Why source ~/.zshrc: c8ctl reads CAMUNDA_CLIENT_ID / CAMUNDA_CLIENT_SECRET
-# from the shell profile. Without it, deploy and instance creation fail silently.
-#
-# Why /tmp/worker.log: keeps worker output accessible for tail without cluttering
-# the repo directory. Log is overwritten on each demo run.
-# BRITTLE: This script hardcodes 'vehicleScore' as the wrong variable name and
-# 'riskScore' as the correct one. Web Modeler Copilot may generate different
-# variable names each demo run. If it does, the sed won't match and CI will
-# still fail after the "fix". Check both files before running:
-#   grep -n "Score\|score\|risk\|vehicle" solutions/vehicle-lookup/worker/index.js
-#   grep -n "source=" solutions/vehicle-eligibility-check/*.bpmn 2>/dev/null || grep -n "source=" solutions/vehicle-lookup/*.bpmn
-# Update FROM_VAR and TO_VAR below if Copilot used different names.
-FROM_VAR="${FROM_VAR:-vehicleScore}"
-TO_VAR="${TO_VAR:-riskScore}"
+#   1. Renames vehicleScore → riskScore and vehicleEligible → eligible in the DMN
+#      output column names. The DMN intentionally uses wrong names to trigger CI
+#      failure — this targeted fix is the "pro-code moment" of the demo.
+#   2. Commits and pushes. CI re-runs, CPT tests pass, eligible vehicle reaches
+#      the correct end event.
 # =============================================================================
 set -euo pipefail
 
@@ -35,52 +18,25 @@ REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO"
 
 git checkout web-modeler
-# Discover BPMN filename — check vehicle-eligibility-check/ first (current Web Modeler sync target)
-BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/"*.bpmn 2>/dev/null | head -1)
-if [[ -z "$BPMN_FILE" ]]; then
-  BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
-fi
 
-echo "=== Applying find-replace: $FROM_VAR → $TO_VAR ==="
-# Fix all occurrences in the worker (variable name used in scoring and job completion)
-sed -i '' "s/$FROM_VAR/$TO_VAR/g" "solutions/vehicle-lookup/worker/index.js"
-# Fix the BPMN output mapping (zeebe:output source and target attributes)
-sed -i '' "s|source=\"=$FROM_VAR\" target=\"$FROM_VAR\"|source=\"=$TO_VAR\" target=\"$TO_VAR\"|g" "$BPMN_FILE"
+DMN_FILE="solutions/vehicle-eligibility-check/vehicle-eligibility.dmn"
 
-git add "solutions/vehicle-lookup/worker/index.js" "$BPMN_FILE"
-git commit -m "fix: rename vehicleScore to riskScore — aligns with variable schema"
+echo "=== Applying fix: vehicleScore → riskScore, vehicleEligible → eligible ==="
+sed -i '' 's/vehicleScore/riskScore/g' "$DMN_FILE"
+sed -i '' 's/vehicleEligible/eligible/g' "$DMN_FILE"
+
+echo "Fixed output column names:"
+grep -E 'name="(riskScore|eligible|vehicleScore|vehicleEligible)"' "$DMN_FILE"
+
+git add "$DMN_FILE"
+git commit -m "fix: correct DMN output column names (riskScore, eligible)"
 git push origin web-modeler
 echo "Fix pushed. CI re-running."
 
 echo ""
-echo "=== Starting worker ==="
-# Kill any prior worker from a previous demo run to avoid duplicate job completion
-pkill -f "node.*index.js" 2>/dev/null && echo "Killed stale worker" || true
-sleep 1
-cd "$REPO/solutions/vehicle-lookup/worker"
-nohup node index.js > /tmp/worker.log 2>&1 &
-echo "Worker PID: $!"
-sleep 3
-tail -3 /tmp/worker.log
-
+echo "=== ACT 2 COMPLETE ==="
+echo "Say: 'Two name changes in the DMN. The gateway now sees eligible=true."
+echo "      The eligible vehicle reaches the right end event.'"
 echo ""
-echo "=== Deploying BPMN ==="
-cd "$REPO"
-# c8ctl credentials come from env vars set in .zshrc
-source ~/.zshrc
-c8ctl deploy "$BPMN_FILE"
-
-echo ""
-echo "=== Starting process instance ==="
-# Test VIN: 2023 Honda Civic — scores eligible (riskScore ≤ 40)
-c8ctl create pi --id=vehicle-eligibility-check --variables='{"vin":"2HGFE2F57NH123456"}'
-sleep 5
-echo ""
-echo "Worker result:"
-tail -5 /tmp/worker.log
-
-echo ""
-echo "=== PRESENTER: Switch to Operate → http://localhost:8080 ==="
-echo "=== Show completed instance, tokens at eligible end event. ==="
-echo ""
-echo "When ready for Act 3, run: bash solutions/vehicle-lookup/demo/04-act3-merge.sh"
+echo "Ask presenter to confirm before Act 3."
+echo "When ready, run: bash solutions/vehicle-lookup/demo/04-act3-merge.sh"

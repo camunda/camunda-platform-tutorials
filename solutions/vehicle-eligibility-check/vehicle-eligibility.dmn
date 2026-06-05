@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="Definitions_vehicleEligibility"
+             name="Vehicle Eligibility"
+             namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="vehicleEligibility" name="Vehicle Eligibility">
+    <decisionTable id="decisionTable_1" hitPolicy="FIRST">
+      <input id="input_year" label="Vehicle Year">
+        <inputExpression typeRef="integer">
+          <text>year</text>
+        </inputExpression>
+      </input>
+      <input id="input_vehicleType" label="Vehicle Type">
+        <inputExpression typeRef="string">
+          <text>`vehicle type`</text>
+        </inputExpression>
+      </input>
+      <output id="output_riskScore" label="Vehicle Score" name="riskScore" typeRef="integer" />
+      <output id="output_eligible" label="Vehicle Eligible" name="eligible" typeRef="boolean" />
+      <rule id="rule1">
+        <inputEntry id="ie1_1"><text><![CDATA[>= 2022]]></text></inputEntry>
+        <inputEntry id="ie1_2"><text>"PASSENGER CAR","MOTORCYCLE","MULTIPURPOSE PASSENGER VEHICLE (MPV)"</text></inputEntry>
+        <outputEntry id="oe1_1"><text>5</text></outputEntry>
+        <outputEntry id="oe1_2"><text>true</text></outputEntry>
+      </rule>
+      <rule id="rule2">
+        <inputEntry id="ie2_1"><text><![CDATA[>= 2022]]></text></inputEntry>
+        <inputEntry id="ie2_2"><text></text></inputEntry>
+        <outputEntry id="oe2_1"><text>30</text></outputEntry>
+        <outputEntry id="oe2_2"><text>true</text></outputEntry>
+      </rule>
+      <rule id="rule3">
+        <inputEntry id="ie3_1"><text>[2018..2021]</text></inputEntry>
+        <inputEntry id="ie3_2"><text>"PASSENGER CAR","MOTORCYCLE","MULTIPURPOSE PASSENGER VEHICLE (MPV)"</text></inputEntry>
+        <outputEntry id="oe3_1"><text>15</text></outputEntry>
+        <outputEntry id="oe3_2"><text>true</text></outputEntry>
+      </rule>
+      <rule id="rule4">
+        <inputEntry id="ie4_1"><text>[2018..2021]</text></inputEntry>
+        <inputEntry id="ie4_2"><text></text></inputEntry>
+        <outputEntry id="oe4_1"><text>40</text></outputEntry>
+        <outputEntry id="oe4_2"><text>true</text></outputEntry>
+      </rule>
+      <rule id="rule5">
+        <inputEntry id="ie5_1"><text><![CDATA[< 2018]]></text></inputEntry>
+        <inputEntry id="ie5_2"><text>"PASSENGER CAR","MOTORCYCLE","MULTIPURPOSE PASSENGER VEHICLE (MPV)"</text></inputEntry>
+        <outputEntry id="oe5_1"><text>25</text></outputEntry>
+        <outputEntry id="oe5_2"><text>true</text></outputEntry>
+      </rule>
+      <rule id="rule6">
+        <inputEntry id="ie6_1"><text><![CDATA[< 2018]]></text></inputEntry>
+        <inputEntry id="ie6_2"><text></text></inputEntry>
+        <outputEntry id="oe6_1"><text>50</text></outputEntry>
+        <outputEntry id="oe6_2"><text>false</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
