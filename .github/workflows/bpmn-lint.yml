@@ -32,12 +32,18 @@ jobs:
       - name: Find changed BPMN/DMN files
         id: changed
         run: |
-          FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.sha }} \
+          ALL=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.sha }} \
             | grep -E '\.(bpmn|dmn)$' \
             | grep -v '/target/' \
             | tr '\n' ' ')
-          echo "files=$FILES" >> "$GITHUB_OUTPUT"
-          echo "Changed BPMN/DMN files: $FILES"
+          BPMN_ONLY=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.sha }} \
+            | grep -E '\.bpmn$' \
+            | grep -v '/target/' \
+            | tr '\n' ' ')
+          echo "files=$ALL" >> "$GITHUB_OUTPUT"
+          echo "bpmn_files=$BPMN_ONLY" >> "$GITHUB_OUTPUT"
+          echo "Changed BPMN/DMN files: $ALL"
+          echo "Changed BPMN-only files: $BPMN_ONLY"
 
       - name: Check XML well-formedness (changed files only)
         if: steps.changed.outputs.files != ''
@@ -56,6 +62,6 @@ jobs:
             exit 1
           fi
 
-      - name: Run bpmnlint (changed files only)
-        if: steps.changed.outputs.files != ''
-        run: npx bpmnlint --config .bpmnlintrc ${{ steps.changed.outputs.files }}
+      - name: Run bpmnlint (BPMN files only)
+        if: steps.changed.outputs.bpmn_files != ''
+        run: npx bpmnlint --config .bpmnlintrc ${{ steps.changed.outputs.bpmn_files }}

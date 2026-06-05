@@ -1040,7 +1040,44 @@
           },
           "status": 200
         }
-      ]
+      ],
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Parsed response body from NHTSA API",
+          "examples": [
+            {
+              "Results": [
+                {
+                  "Variable": "Make",
+                  "Value": "HONDA"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "Results": {
+              "type": "array",
+              "description": "Array of Variable/Value pairs from NHTSA decode",
+              "examples": [
+                [
+                  {
+                    "Variable": "Make",
+                    "Value": "HONDA"
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        "status": {
+          "type": "integer",
+          "description": "HTTP status code",
+          "examples": [
+            200
+          ]
+        }
+      }
     },
     "vehicleInfo": {
       "title": "Vehicle info",
@@ -1053,7 +1090,37 @@
           "year": "2021",
           "vehicleType": "PASSENGER CAR"
         }
-      ]
+      ],
+      "properties": {
+        "make": {
+          "type": "string",
+          "description": "Vehicle manufacturer",
+          "examples": [
+            "HONDA"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "description": "Vehicle model name",
+          "examples": [
+            "CIVIC"
+          ]
+        },
+        "year": {
+          "type": "integer",
+          "description": "Model year",
+          "examples": [
+            2021
+          ]
+        },
+        "vehicleType": {
+          "type": "string",
+          "description": "NHTSA vehicle type classification",
+          "examples": [
+            "PASSENGER CAR"
+          ]
+        }
+      }
     },
     "vendorProofText": {
       "title": "Vendor Proof Text",
