@@ -45,6 +45,6 @@ cat <<'CLOSING'
 TOTAL TARGET: 5:30 | HARD CAP: 7:00
 
 === POST-DEMO RESET ===
-  cd ~/GitHub/camunda-8-tutorials-fork && bash reset-demo.sh
+  cd ~/GitHub/camunda-8-tutorials-fork && bash solutions/vehicle-lookup/demo/00-reset.sh act1
   Web Modeler: Vehicle Lookup.bpmn → History → restore "scaffold" milestone
 CLOSING
