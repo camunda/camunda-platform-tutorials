@@ -3,7 +3,7 @@
 # act2-fix.sh — Act 2 Phase 2b: Fix variable drift, deploy, start instance
 # =============================================================================
 # Run this after: CI failure is visible to the audience
-# Next script:    act3-merge.sh  (after Act 3 Run Play confirmed in Web Modeler)
+# Next script:    04-act3-merge.sh  (after Act 3 Run Play confirmed in Web Modeler)
 #
 # What this does:
 #   1. Renames vehicleScore → riskScore in both the worker and the BPMN output
@@ -71,4 +71,4 @@ echo ""
 echo "=== PRESENTER: Switch to Operate → http://localhost:8080 ==="
 echo "=== Show completed instance, tokens at eligible end event. ==="
 echo ""
-echo "When ready for Act 3, run: bash solutions/vehicle-lookup/demo/act3-merge.sh"
+echo "When ready for Act 3, run: bash solutions/vehicle-lookup/demo/04-act3-merge.sh"

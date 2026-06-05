@@ -4,7 +4,7 @@
 # =============================================================================
 # Run this after: Claude Code has written worker/index.js AND commit 2 pushed
 #                 (commit 2 = FEEL expression applied in Web Modeler + synced)
-# Next script:    act2-fix.sh  (after CI failure is visible to the audience)
+# Next script:    03-act2-fix.sh  (after CI failure is visible to the audience)
 #
 # What this does:
 #   1. Commits Claude Code's worker file alongside the BPMN (which may have
@@ -57,4 +57,4 @@ echo ""
 echo "=== PRESENTER: Switch to GitHub Actions tab. Show CI failure in ~20-30s. ==="
 echo "=== Say: 'CI caught a variable drift: vehicleScore referenced in BPMN but not in variable schema.' ==="
 echo ""
-echo "When CI failure is visible, run: bash solutions/vehicle-lookup/demo/act2-fix.sh"
+echo "When CI failure is visible, run: bash solutions/vehicle-lookup/demo/03-act2-fix.sh"
