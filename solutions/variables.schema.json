@@ -1066,7 +1066,33 @@
                     "Value": "HONDA"
                   }
                 ]
-              ]
+              ],
+              "items": {
+                "type": "object",
+                "description": "Single NHTSA decode result entry",
+                "examples": [
+                  {
+                    "Variable": "Make",
+                    "Value": "HONDA"
+                  }
+                ],
+                "properties": {
+                  "Variable": {
+                    "type": "string",
+                    "description": "Field name",
+                    "examples": [
+                      "Make"
+                    ]
+                  },
+                  "Value": {
+                    "type": "string",
+                    "description": "Field value",
+                    "examples": [
+                      "HONDA"
+                    ]
+                  }
+                }
+              }
             }
           }
         },
