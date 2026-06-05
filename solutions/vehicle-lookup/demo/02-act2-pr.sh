@@ -22,7 +22,7 @@
 # BPMN process ID. If Web Modeler Copilot generated different task IDs or job
 # types, the worker may poll the wrong job type and never complete. Verify:
 #   grep -n "jobType\|activateJobs\|type" solutions/vehicle-lookup/worker/index.js
-#   grep -n "zeebe:taskDefinition" solutions/vehicle-lookup/*.bpmn
+#   grep -n "zeebe:taskDefinition" solutions/vehicle-eligibility-check/*.bpmn 2>/dev/null || grep -n "zeebe:taskDefinition" solutions/vehicle-lookup/*.bpmn
 # =============================================================================
 set -euo pipefail
 
@@ -31,8 +31,11 @@ cd "$REPO"
 
 git checkout web-modeler
 
-# Discover BPMN filename dynamically — Web Modeler names it from the diagram title
-BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
+# Discover BPMN — check vehicle-eligibility-check/ first (current Web Modeler sync target)
+BPMN_FILE=$(ls "solutions/vehicle-eligibility-check/"*.bpmn 2>/dev/null | head -1)
+if [[ -z "$BPMN_FILE" ]]; then
+  BPMN_FILE=$(ls "solutions/vehicle-lookup/"*.bpmn | head -1)
+fi
 
 echo "=== Staging worker + BPMN ==="
 git add "solutions/vehicle-lookup/worker/index.js" "$BPMN_FILE"
