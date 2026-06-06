@@ -17,8 +17,8 @@
           <text>`vehicle type`</text>
         </inputExpression>
       </input>
-      <output id="output_vehicleScore" label="Vehicle Score" name="vehicleScore" typeRef="integer" />
-      <output id="output_vehicleEligible" label="Vehicle Eligible" name="vehicleEligible" typeRef="boolean" />
+      <output id="output_riskScore" label="Vehicle Score" name="riskScore" typeRef="integer" />
+      <output id="output_eligible" label="Vehicle Eligible" name="eligible" typeRef="boolean" />
       <rule id="rule1">
         <inputEntry id="ie1_1"><text><![CDATA[>= 2022]]></text></inputEntry>
         <inputEntry id="ie1_2"><text>"PASSENGER CAR","MOTORCYCLE","MULTIPURPOSE PASSENGER VEHICLE (MPV)"</text></inputEntry>
