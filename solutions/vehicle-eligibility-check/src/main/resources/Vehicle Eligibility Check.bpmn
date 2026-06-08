@@ -2,10 +2,10 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:ns1="modeler" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:ns0="xmlns" id="bpmn_copilot_Definition_id" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="204af60" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0" ns0:modeler="http://camunda.org/schema/modeler/1.0" ns1:executionPlatform="Camunda Cloud" ns1:executionPlatformVersion="8.6">
   <bpmn:process id="vehicle-eligibility-check" name="Vehicle Eligibility Check" processType="None" isClosed="false" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="VIN Received">
-      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0y1b1x5</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_VinLookup" />
-    <bpmn:serviceTask id="Activity_VinLookup" name="Look up Vehicle Details" zeebe:modelerTemplate="io.camunda.demo:nhtsa-vehicle-lookup:1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAARGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAASoAMABAAAAAEAAAASAAAAAJqpslUAAAHJaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj42NDwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj42NDwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgohBDnEAAAC70lEQVQ4EWVTy27TQBS9Y4/tJE3jpLSlVGy6YUERUtdssmCHECp8B68FEhK/UAn6LVXX/ADlD6qmUcUiNIikae3YnhnOGScglVHiOPdx7j3n3lFy65yfnx+mafqmKIpbHhHnnIRhKNPp9GhnZ+eFUgompxioT09PP6+vrUmkA0SKy8qiD6D/QJaGqqpkNps9Pzs7OwTI2yWYTtPOu063K6OcOCLKzHxOiYR5UYovt0Cx1jJCysrI1t3N14PBgB29h9GpHxdDN4k25MvXCwmUkpcPm/L00bZc32TyezoTpdDp4jhHIJFf47FYU8pKqymQ4GB3d/eDpgPUJQoC8Ge9+mitpdVsAGhpWTjQd7OxLVqH0gbQcDh8Bs9HD8QQi4CidJJVdVWiW+skieuQoixRBaAoCrOzFiVQPE5anIqqO4LXItGwtcUx0COfIwbJ7CnPCwjBKUFG41Qj8UOER/mkBVDdUayVhEFNZQn5jxjfap4MQT847M76EKTWGlXoNwetwtTUWJqH4zbG1N2BCjQgO1CKvR8P/rUaneLNSYWJlACjLv7gh2CXlyPoFElZVjKZTDCpFbnJM8mzHuxCW9zv99c8Na4H9bFe8hrIl/GgoItxtppN6fW6KKt8MWqYXWfSSzsP9vdfHQCoFroCJXa0FJwYJGlh5yJyapEEHJfnwrwKlCMd6TAMuppSWGWFGpUIwqdmRrtx0m635d7WBnSqCzK+/lIQ7lQizdaK9WvLZGrEFfBsEEwKpBRBnyRJREex99Fv8AAubAn8GnFaNPvkoGZzIzpEuh+mSKPRkDvY7uz6ygNUpsIu4UKCHu8hSwWBBhN0TlAsmaStWPbup+jKSdrQMpleSYmSHL21lQcPAnSHDti1wjtZ+IkDhBR1Pi/nm+1CPj1Z99x543lZ4ReDWx4ol3jdYIhBketBavzlEBDC1dB6PP75+Pj46O92eaWFfwvpdDrVaDTaX11N9zAh5GJi6AQHMIurEWr1/eTk2x9kjr6jHDAdRwAAAABJRU5ErkJggg==" implementation="##WebService">
+    <bpmn:sequenceFlow id="Flow_0y1b1x5" sourceRef="StartEvent_1" targetRef="Activity_LookupVin" />
+    <bpmn:serviceTask id="Activity_LookupVin" name="Look Up Vehicle Details" zeebe:modelerTemplate="io.camunda.demo:nhtsa-vehicle-lookup:1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAARGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAASoAMABAAAAAEAAAASAAAAAJqpslUAAAHJaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj42NDwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj42NDwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgohBDnEAAAC70lEQVQ4EWVTy27TQBS9Y4/tJE3jpLSlVGy6YUERUtdssmCHECp8B68FEhK/UAn6LVXX/ADlD6qmUcUiNIikae3YnhnOGScglVHiOPdx7j3n3lFy65yfnx+mafqmKIpbHhHnnIRhKNPp9GhnZ+eFUgompxioT09PP6+vrUmkA0SKy8qiD6D/QJaGqqpkNps9Pzs7OwTI2yWYTtPOu063K6OcOCLKzHxOiYR5UYovt0Cx1jJCysrI1t3N14PBgB29h9GpHxdDN4k25MvXCwmUkpcPm/L00bZc32TyezoTpdDp4jhHIJFf47FYU8pKqymQ4GB3d/eDpgPUJQoC8Ge9+mitpdVsAGhpWTjQd7OxLVqH0gbQcDh8Bs9HD8QQi4CidJJVdVWiW+skieuQoixRBaAoCrOzFiVQPE5anIqqO4LXItGwtcUx0COfIwbJ7CnPCwjBKUFG41Qj8UOER/mkBVDdUayVhEFNZQn5jxjfap4MQT847M76EKTWGlXoNwetwtTUWJqH4zbG1N2BCjQgO1CKvR8P/rUaneLNSYWJlACjLv7gh2CXlyPoFElZVjKZTDCpFbnJM8mzHuxCW9zv99c8Na4H9bFe8hrIl/GgoItxtppN6fW6KKt8MWqYXWfSSzsP9vdfHQCoFroCJXa0FJwYJGlh5yJyapEEHJfnwrwKlCMd6TAMuppSWGWFGpUIwqdmRrtx0m635d7WBnSqCzK+/lIQ7lQizdaK9WvLZGrEFfBsEEwKpBRBnyRJREex99Fv8AAubAn8GnFaNPvkoGZzIzpEuh+mSKPRkDvY7uz6ygNUpsIu4UKCHu8hSwWBBhN0TlAsmaStWPbup+jKSdrQMpleSYmSHL21lQcPAnSHDti1wjtZ+IkDhBR1Pi/nm+1CPj1Z99x543lZ4ReDWx4ol3jdYIhBketBavzlEBDC1dB6PP75+Pj46O92eaWFfwvpdDrVaDTaX11N9zAh5GJi6AQHMIurEWr1/eTk2x9kjr6jHDAdRwAAAABJRU5ErkJggg==" implementation="##WebService">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" />
         <zeebe:ioMapping>
@@ -18,42 +18,42 @@
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="resultVariable" value="response" />
-          <zeebe:header key="resultExpression" value="={&#10;      vehicleInfo: {&#10;        make: response.body.Results[Variable=&#34;Make&#34;][1].Value,&#10;        model: response.body.Results[Variable=&#34;Model&#34;][1].Value,&#10;        year: number(response.body.Results[Variable=&#34;Model Year&#34;][1].Value),&#10;        vehicleType: response.body.Results[Variable=&#34;Vehicle Type&#34;][1].Value&#10;      }&#10;    }" />
+          <zeebe:header key="resultExpression" value="={&#10;  // 1. Define a helper function to find a value in the results list&#10;  getValue: function(varName) &#10;    (response.body.Results[Variable = varName])[1].Value,&#10;&#10;  // 2. Use the function to build the vehicleInfo context&#10;  vehicleInfo: {&#10;    make: getValue(&#34;Make&#34;),&#10;    model: getValue(&#34;Model&#34;),&#10;    year: number(getValue(&#34;Model Year&#34;)),&#10;    vehicleType: getValue(&#34;Vehicle Type&#34;)&#10;  }&#10;  &#10;// 3. Return only the vehicleInfo context&#10;}.vehicleInfo" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1</bpmn:incoming>
-      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+      <bpmn:incoming>Flow_0y1b1x5</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u3y4z6</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_2" sourceRef="Activity_VinLookup" targetRef="Activity_DetermineEligibility" />
-    <bpmn:sequenceFlow id="Flow_3" sourceRef="Activity_DetermineEligibility" targetRef="Gateway_EligibilityCheck" />
-    <bpmn:exclusiveGateway id="Gateway_EligibilityCheck" name="Eligible for Promo?" default="Flow_Ineligible">
-      <bpmn:incoming>Flow_3</bpmn:incoming>
+    <bpmn:sequenceFlow id="Flow_1u3y4z6" sourceRef="Activity_LookupVin" targetRef="Activity_DetermineEligibility" />
+    <bpmn:sequenceFlow id="Flow_0p8s7q1" sourceRef="Activity_DetermineEligibility" targetRef="Gateway_IsEligible" />
+    <bpmn:exclusiveGateway id="Gateway_IsEligible" name="Eligible for Promo?" default="Flow_Ineligible">
+      <bpmn:incoming>Flow_0p8s7q1</bpmn:incoming>
       <bpmn:outgoing>Flow_Eligible</bpmn:outgoing>
       <bpmn:outgoing>Flow_Ineligible</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_Eligible" name="Yes" sourceRef="Gateway_EligibilityCheck" targetRef="Activity_AddToPromo">
+    <bpmn:sequenceFlow id="Flow_Eligible" name="Yes" sourceRef="Gateway_IsEligible" targetRef="Activity_NotifyEligible">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=isEligible</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:task id="Activity_AddToPromo" name="Add to Promo List">
+    <bpmn:task id="Activity_NotifyEligible" name="Notify Customer of Eligibility">
       <bpmn:incoming>Flow_Eligible</bpmn:incoming>
-      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1a2b3c4</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_4" sourceRef="Activity_AddToPromo" targetRef="Event_Eligible" />
-    <bpmn:endEvent id="Event_Eligible" name="Eligibility Confirmed">
-      <bpmn:incoming>Flow_4</bpmn:incoming>
+    <bpmn:sequenceFlow id="Flow_1a2b3c4" sourceRef="Activity_NotifyEligible" targetRef="EndEvent_Eligible" />
+    <bpmn:endEvent id="EndEvent_Eligible" name="Promo Process Started">
+      <bpmn:incoming>Flow_1a2b3c4</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_Ineligible" name="No" sourceRef="Gateway_EligibilityCheck" targetRef="Activity_LogIneligible" />
-    <bpmn:task id="Activity_LogIneligible" name="Log Ineligibility">
+    <bpmn:sequenceFlow id="Flow_Ineligible" name="No" sourceRef="Gateway_IsEligible" targetRef="Activity_NotifyIneligible" />
+    <bpmn:task id="Activity_NotifyIneligible" name="Notify Customer of Ineligibility">
       <bpmn:incoming>Flow_Ineligible</bpmn:incoming>
-      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_4c3b2a1</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_5" sourceRef="Activity_LogIneligible" targetRef="Event_Ineligible" />
-    <bpmn:endEvent id="Event_Ineligible" name="Ineligibility Confirmed">
-      <bpmn:incoming>Flow_5</bpmn:incoming>
+    <bpmn:sequenceFlow id="Flow_4c3b2a1" sourceRef="Activity_NotifyIneligible" targetRef="EndEvent_Ineligible" />
+    <bpmn:endEvent id="EndEvent_Ineligible" name="Process Ended">
+      <bpmn:incoming>Flow_4c3b2a1</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:task id="Activity_DetermineEligibility" name="Determine Eligibility">
-      <bpmn:incoming>Flow_2</bpmn:incoming>
-      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+      <bpmn:incoming>Flow_1u3y4z6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0p8s7q1</bpmn:outgoing>
     </bpmn:task>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_vehicle-eligibility-check">
@@ -61,39 +61,39 @@
       <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="57" y="52" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_VinLookup_di" bpmnElement="Activity_VinLookup">
+      <bpmndi:BPMNShape id="Activity_LookupVin_di" bpmnElement="Activity_LookupVin">
         <dc:Bounds x="175" y="30" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_EligibilityCheck_di" bpmnElement="Gateway_EligibilityCheck" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_IsEligible_di" bpmnElement="Gateway_IsEligible" isMarkerVisible="true">
         <dc:Bounds x="500" y="45" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="499" y="7.5" width="52" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_AddToPromo_di" bpmnElement="Activity_AddToPromo">
+      <bpmndi:BPMNShape id="Activity_NotifyEligible_di" bpmnElement="Activity_NotifyEligible">
         <dc:Bounds x="625" y="30" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_Eligible_di" bpmnElement="Event_Eligible">
+      <bpmndi:BPMNShape id="EndEvent_Eligible_di" bpmnElement="EndEvent_Eligible">
         <dc:Bounds x="807" y="52" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_LogIneligible_di" bpmnElement="Activity_LogIneligible">
+      <bpmndi:BPMNShape id="Activity_NotifyIneligible_di" bpmnElement="Activity_NotifyIneligible">
         <dc:Bounds x="625" y="170" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_Ineligible_di" bpmnElement="Event_Ineligible">
+      <bpmndi:BPMNShape id="EndEvent_Ineligible_di" bpmnElement="EndEvent_Ineligible">
         <dc:Bounds x="807" y="192" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0aadol2_di" bpmnElement="Activity_DetermineEligibility">
+      <bpmndi:BPMNShape id="Activity_0rlrof9_di" bpmnElement="Activity_DetermineEligibility">
         <dc:Bounds x="325" y="30" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+      <bpmndi:BPMNEdge id="Flow_0y1b1x5_di" bpmnElement="Flow_0y1b1x5">
         <di:waypoint x="93" y="70" />
         <di:waypoint x="175" y="70" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+      <bpmndi:BPMNEdge id="Flow_1u3y4z6_di" bpmnElement="Flow_1u3y4z6">
         <di:waypoint x="275" y="70" />
         <di:waypoint x="325" y="70" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+      <bpmndi:BPMNEdge id="Flow_0p8s7q1_di" bpmnElement="Flow_0p8s7q1">
         <di:waypoint x="425" y="70" />
         <di:waypoint x="500" y="70" />
       </bpmndi:BPMNEdge>
@@ -101,7 +101,7 @@
         <di:waypoint x="550" y="70" />
         <di:waypoint x="625" y="70" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+      <bpmndi:BPMNEdge id="Flow_1a2b3c4_di" bpmnElement="Flow_1a2b3c4">
         <di:waypoint x="725" y="70" />
         <di:waypoint x="807" y="70" />
       </bpmndi:BPMNEdge>
@@ -110,7 +110,7 @@
         <di:waypoint x="525" y="210" />
         <di:waypoint x="625" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+      <bpmndi:BPMNEdge id="Flow_4c3b2a1_di" bpmnElement="Flow_4c3b2a1">
         <di:waypoint x="725" y="210" />
         <di:waypoint x="807" y="210" />
       </bpmndi:BPMNEdge>
