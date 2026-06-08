@@ -2,55 +2,55 @@
   "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.9/schema.json",
   "testCases": [
     {
-      "name": "Eligible vehicle routes to eligible end event",
-      "description": "2023 Honda Civic (PASSENGER CAR) — 2022+, passenger type; DMN evaluates to eligible=true",
+      "name": "Eligible vehicle — routes to eligible end event",
+      "description": "2023 Honda Civic (PASSENGER CAR) — 2022+, passenger type; DMN rule 1 evaluates to eligible=true, riskScore=5",
       "instructions": [
+        {
+          "type": "MOCK_JOB_WORKER_COMPLETE_JOB",
+          "jobType": "io.camunda:http-json:1",
+          "variables": {
+            "year": 2023,
+            "make": "HONDA",
+            "model": "CIVIC",
+            "vehicletype": "PASSENGER CAR"
+          }
+        },
         {
           "type": "CREATE_PROCESS_INSTANCE",
           "processDefinitionSelector": { "processDefinitionId": "vehicle-eligibility-check" },
           "variables": { "vin": "2HGFE2F57NH123456" }
         },
         {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Activity_0k5j4qf" },
-          "variables": {
-            "year": 2023,
-            "make": "HONDA",
-            "model": "CIVIC",
-            "vehicle type": "PASSENGER CAR"
-          }
-        },
-        {
           "type": "ASSERT_ELEMENT_INSTANCES",
           "processInstanceSelector": { "processDefinitionId": "vehicle-eligibility-check" },
-          "elementSelectors": [{ "elementId": "Event_1n4k3h2" }],
+          "elementSelectors": [{ "elementId": "EndEvent_Eligible" }],
           "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "Ineligible vehicle routes to ineligible end event",
-      "description": "2015 Ford F-150 (TRUCK) — pre-2018, non-passenger type; DMN evaluates to eligible=false",
+      "name": "Ineligible vehicle — routes to ineligible end event",
+      "description": "2015 Ford F-150 (TRUCK) — pre-2018, non-passenger type; DMN rule 6 evaluates to eligible=false, riskScore=50",
       "instructions": [
+        {
+          "type": "MOCK_JOB_WORKER_COMPLETE_JOB",
+          "jobType": "io.camunda:http-json:1",
+          "variables": {
+            "year": 2015,
+            "make": "FORD",
+            "model": "F-150",
+            "vehicletype": "TRUCK"
+          }
+        },
         {
           "type": "CREATE_PROCESS_INSTANCE",
           "processDefinitionSelector": { "processDefinitionId": "vehicle-eligibility-check" },
           "variables": { "vin": "1FTFW1ET5EKE01234" }
         },
         {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Activity_0k5j4qf" },
-          "variables": {
-            "year": 2015,
-            "make": "FORD",
-            "model": "F-150",
-            "vehicle type": "TRUCK"
-          }
-        },
-        {
           "type": "ASSERT_ELEMENT_INSTANCES",
           "processInstanceSelector": { "processDefinitionId": "vehicle-eligibility-check" },
-          "elementSelectors": [{ "elementId": "Event_0f8w2e1" }],
+          "elementSelectors": [{ "elementId": "EndEvent_Ineligible" }],
           "state": "IS_COMPLETED"
         }
       ]

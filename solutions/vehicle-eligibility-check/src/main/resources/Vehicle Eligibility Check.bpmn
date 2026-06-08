@@ -32,7 +32,7 @@
       <bpmn:outgoing>Flow_Ineligible</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_Eligible" name="Yes" sourceRef="Gateway_IsEligible" targetRef="Activity_NotifyEligible">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=isEligible</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=eligible</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:task id="Activity_NotifyEligible" name="Notify Customer of Eligibility">
       <bpmn:incoming>Flow_Eligible</bpmn:incoming>
@@ -51,10 +51,17 @@
     <bpmn:endEvent id="EndEvent_Ineligible" name="Process Ended">
       <bpmn:incoming>Flow_4c3b2a1</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:task id="Activity_DetermineEligibility" name="Determine Eligibility">
+    <bpmn:businessRuleTask id="Activity_DetermineEligibility" name="Determine Eligibility">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="vehicleEligibility" resultVariable="eligibilityResult" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=eligibilityResult.riskScore" target="riskScore" />
+          <zeebe:output source="=eligibilityResult.eligible" target="eligible" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1u3y4z6</bpmn:incoming>
       <bpmn:outgoing>Flow_0p8s7q1</bpmn:outgoing>
-    </bpmn:task>
+    </bpmn:businessRuleTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_vehicle-eligibility-check">
     <bpmndi:BPMNPlane id="BPMNPlane_vehicle-eligibility-check" bpmnElement="vehicle-eligibility-check">
