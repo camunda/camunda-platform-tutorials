@@ -12,7 +12,7 @@
       </input>
       <input id="input_vehicleType" label="Vehicle Type">
         <inputExpression id="inputExpression_vehicleType" typeRef="string">
-          <text>vehicletype</text>
+          <text>vehicleType</text>
         </inputExpression>
       </input>
       <output id="output_riskScore" label="Risk Score" name="riskScore" typeRef="integer" />
