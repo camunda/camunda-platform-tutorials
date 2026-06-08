@@ -2,64 +2,56 @@
   "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.9/schema.json",
   "testCases": [
     {
-      "name": "Eligible vehicle routes to eligible end event",
-      "description": "2023 Honda Civic (PASSENGER CAR) — 2022+, passenger type, expect eligible path with risk score 5",
+      "name": "Eligible vehicle — routes to eligible end event",
+      "description": "2023 Honda Civic (PASSENGER CAR) — 2022+, passenger type; DMN rule 1 evaluates to eligible=true, riskScore=5",
       "instructions": [
+        {
+          "type": "MOCK_JOB_WORKER_COMPLETE_JOB",
+          "jobType": "io.camunda:http-json:1",
+          "variables": {
+            "year": 2023,
+            "make": "HONDA",
+            "model": "CIVIC",
+            "vehicletype": "PASSENGER CAR"
+          }
+        },
         {
           "type": "CREATE_PROCESS_INSTANCE",
           "processDefinitionSelector": { "processDefinitionId": "vehicle-eligibility-check" },
           "variables": { "vin": "2HGFE2F57NH123456" }
         },
         {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Activity_0k1w3q7" },
-          "variables": {
-            "year": 2023,
-            "make": "HONDA",
-            "model": "CIVIC",
-            "vehicle type": "PASSENGER CAR"
-          }
-        },
-        {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Activity_1c9x8wj" },
-          "variables": {}
-        },
-        {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "elementInstanceSelector": { "elementId": "Event_1m2n3o4" },
-          "expectedCount": 1
+          "processInstanceSelector": { "processDefinitionId": "vehicle-eligibility-check" },
+          "elementSelectors": [{ "elementId": "EndEvent_Eligible" }],
+          "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "Ineligible vehicle routes to ineligible end event",
-      "description": "2015 Ford F-150 (TRUCK) — pre-2018, non-passenger type, expect ineligible path with risk score 50",
+      "name": "Ineligible vehicle — routes to ineligible end event",
+      "description": "2015 Ford F-150 (TRUCK) — pre-2018, non-passenger type; DMN rule 6 evaluates to eligible=false, riskScore=50",
       "instructions": [
+        {
+          "type": "MOCK_JOB_WORKER_COMPLETE_JOB",
+          "jobType": "io.camunda:http-json:1",
+          "variables": {
+            "year": 2015,
+            "make": "FORD",
+            "model": "F-150",
+            "vehicletype": "TRUCK"
+          }
+        },
         {
           "type": "CREATE_PROCESS_INSTANCE",
           "processDefinitionSelector": { "processDefinitionId": "vehicle-eligibility-check" },
           "variables": { "vin": "1FTFW1ET5EKE01234" }
         },
         {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Activity_0k1w3q7" },
-          "variables": {
-            "year": 2015,
-            "make": "FORD",
-            "model": "F-150",
-            "vehicle type": "TRUCK"
-          }
-        },
-        {
-          "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Activity_1c9x8wj" },
-          "variables": {}
-        },
-        {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "elementInstanceSelector": { "elementId": "Event_0d1e2f3" },
-          "expectedCount": 1
+          "processInstanceSelector": { "processDefinitionId": "vehicle-eligibility-check" },
+          "elementSelectors": [{ "elementId": "EndEvent_Ineligible" }],
+          "state": "IS_COMPLETED"
         }
       ]
     }

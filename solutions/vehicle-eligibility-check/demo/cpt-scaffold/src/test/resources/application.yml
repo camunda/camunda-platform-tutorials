@@ -1,6 +1,6 @@
 camunda:
   process-test:
-    runtime-mode: shared
+    runtime-mode: MANAGED
 
 logging:
   level:
