@@ -85,6 +85,22 @@ if [[ "$TARGET" == "act1" ]]; then
   if git rev-parse "pre-act2-main" >/dev/null 2>&1; then
     git push --force origin "refs/tags/pre-act2-main:refs/heads/main"
     echo "BRANCH: main rewound to pre-act2-main"
+
+    # CRITICAL: verify act1-checkpoint is a linear descendant of pre-act2-main.
+    # If not, the PR will have mergeable_state=dirty and GitHub will silently suppress
+    # all pull_request CI — no checks fire, no errors, just silence.
+    PRE=$(git rev-parse pre-act2-main)
+    ACT1=$(git rev-parse act1-checkpoint)
+    if git merge-base --is-ancestor "$PRE" "$ACT1" 2>/dev/null; then
+      echo "ANCESTRY: act1-checkpoint descends from pre-act2-main ✓"
+    else
+      echo ""
+      echo "ERROR: act1-checkpoint does NOT descend from pre-act2-main."
+      echo "       The PR will be dirty and CI will not fire."
+      echo "       Rebuild checkpoints using the hygiene steps in SKILL.md before the demo."
+      echo "       (act1-checkpoint must be rebased onto pre-act2-main)"
+      exit 1
+    fi
   else
     echo "WARN: tag 'pre-act2-main' not found; main not reset. PR may conflict."
     echo "      Fetch with: git fetch origin refs/tags/pre-act2-main:refs/tags/pre-act2-main"
