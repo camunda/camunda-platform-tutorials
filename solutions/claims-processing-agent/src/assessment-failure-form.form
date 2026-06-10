@@ -1,0 +1,78 @@
+{
+  "id": "assessment-failure-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 16,
+  "type": "default",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Assessment Failure - Supervisor Action Required\nThe AI assessment connector encountered an error and could not complete. Please review and decide how to proceed.",
+      "id": "header_title"
+    },
+    {
+      "type": "separator",
+      "id": "sep_claim"
+    },
+    {
+      "type": "text",
+      "text": "### Affected Claim",
+      "id": "header_claim"
+    },
+    {
+      "type": "expression",
+      "key": "claimId_display",
+      "label": "Claim ID",
+      "expression": "=claimId",
+      "id": "field_claimId_display",
+      "readonly": true
+    },
+    {
+      "type": "expression",
+      "key": "customerId_display",
+      "label": "Customer ID",
+      "expression": "=customerId",
+      "id": "field_customerId_display",
+      "readonly": true
+    },
+    {
+      "type": "expression",
+      "key": "damageDescription_display",
+      "label": "Reported Damage",
+      "expression": "=damageDescription",
+      "id": "field_damageDescription_display",
+      "readonly": true
+    },
+    {
+      "type": "separator",
+      "id": "sep_action"
+    },
+    {
+      "type": "text",
+      "text": "### Supervisor Action",
+      "id": "header_action"
+    },
+    {
+      "type": "select",
+      "key": "failureAction",
+      "label": "Action",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Retry Assessment", "value": "RETRY" },
+        { "label": "Escalate to Senior Adjuster", "value": "ESCALATE" },
+        { "label": "Close Claim - Unable to Process", "value": "CLOSE" }
+      ],
+      "id": "field_failureAction"
+    },
+    {
+      "type": "textarea",
+      "key": "supervisorNotes",
+      "label": "Supervisor Notes",
+      "validate": { "required": true },
+      "rows": 4,
+      "id": "field_supervisorNotes"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "id": "claim-submission-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 16,
+  "type": "default",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Claim Submission\nPlease fill in all required fields and attach supporting documents.",
+      "id": "header_title"
+    },
+    {
+      "type": "separator",
+      "id": "sep_personal"
+    },
+    {
+      "type": "text",
+      "text": "### Personal Details",
+      "id": "header_personal"
+    },
+    {
+      "type": "textfield",
+      "key": "customerName",
+      "label": "Full Name",
+      "defaultValue": "Maria Kovacs",
+      "validate": { "required": true },
+      "id": "field_customerName"
+    },
+    {
+      "type": "textfield",
+      "key": "customerId",
+      "label": "Customer ID",
+      "defaultValue": "CUST-4521",
+      "validate": { "required": true },
+      "description": "Your customer ID from your insurance card (e.g. CUST-4521)",
+      "id": "field_customerId"
+    },
+    {
+      "type": "textfield",
+      "key": "customerEmail",
+      "label": "Email Address",
+      "defaultValue": "maria.kovacs@email.com",
+      "validate": {
+        "required": true,
+        "pattern": { "value": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", "message": "Enter a valid email address" }
+      },
+      "id": "field_customerEmail"
+    },
+    {
+      "type": "separator",
+      "id": "sep_claim"
+    },
+    {
+      "type": "text",
+      "text": "### Claim Information",
+      "id": "header_claim"
+    },
+    {
+      "type": "textfield",
+      "key": "claimId",
+      "label": "Claim Reference ID",
+      "defaultValue": "CLM-2025-0042",
+      "validate": { "required": true },
+      "description": "Your claim reference number (e.g. CLM-2025-0042)",
+      "id": "field_claimId"
+    },
+    {
+      "type": "select",
+      "key": "claimType",
+      "label": "Claim Type",
+      "defaultValue": "collision",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Collision", "value": "collision" },
+        { "label": "Theft", "value": "theft" },
+        { "label": "Fire Damage", "value": "fire" },
+        { "label": "Water / Flood Damage", "value": "water" },
+        { "label": "Vandalism", "value": "vandalism" },
+        { "label": "Other", "value": "other" }
+      ],
+      "id": "field_claimType"
+    },
+    {
+      "type": "datetime",
+      "key": "incidentDate",
+      "label": "Date of Incident",
+      "subtype": "date",
+      "defaultValue": "2026-06-01",
+      "validate": { "required": true },
+      "id": "field_incidentDate"
+    },
+    {
+      "type": "textarea",
+      "key": "damageDescription",
+      "label": "Damage Description",
+      "defaultValue": "Rear-end collision at traffic light. Other driver confirmed at fault. Police report filed on-site (report #WR-2026-44821). Damage to rear bumper and trunk. Repair estimate from certified body shop attached.",
+      "validate": { "required": true, "minLength": 20 },
+      "description": "Describe what happened and what was damaged in detail.",
+      "rows": 5,
+      "id": "field_damageDescription"
+    },
+    {
+      "type": "separator",
+      "id": "sep_docs"
+    },
+    {
+      "type": "text",
+      "text": "### Supporting Documents",
+      "id": "header_docs"
+    },
+    {
+      "type": "filepicker",
+      "key": "claimDocuments",
+      "label": "Attach Documents",
+      "multiple": true,
+      "accept": ".pdf,.jpg,.jpeg,.png",
+      "description": "Attach photos of the damage, repair estimates, police reports, or any other relevant documents.",
+      "id": "field_documents"
+    }
+  ]
+}

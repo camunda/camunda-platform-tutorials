@@ -1,0 +1,74 @@
+{
+  "id": "request-additional-docs-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 16,
+  "type": "default",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Additional Documents Required\nThe AI agent has identified missing documentation for this claim. Please contact the customer and confirm receipt.",
+      "id": "header_title"
+    },
+    {
+      "type": "separator",
+      "id": "sep_claim"
+    },
+    {
+      "type": "text",
+      "text": "### Claim Reference",
+      "id": "header_claim"
+    },
+    {
+      "type": "expression",
+      "key": "claimId_display",
+      "label": "Claim ID",
+      "expression": "=claimId",
+      "id": "field_claimId_display",
+      "readonly": true
+    },
+    {
+      "type": "separator",
+      "id": "sep_missing"
+    },
+    {
+      "type": "text",
+      "text": "### Documents Requested by AI Agent",
+      "id": "header_missing"
+    },
+    {
+      "type": "expression",
+      "key": "missingDocuments_display",
+      "label": "Missing Documents",
+      "expression": "=missingDocuments",
+      "id": "field_missingDocuments_display",
+      "readonly": true
+    },
+    {
+      "type": "separator",
+      "id": "sep_action"
+    },
+    {
+      "type": "text",
+      "text": "### Processor Action",
+      "id": "header_action"
+    },
+    {
+      "type": "textarea",
+      "key": "processorNotes",
+      "label": "Notes (optional)",
+      "description": "Add any relevant notes about the document request.",
+      "rows": 3,
+      "id": "field_processorNotes"
+    },
+    {
+      "type": "checkbox",
+      "key": "documentsReceived",
+      "label": "All requested documents have been received from the customer",
+      "validate": { "required": true },
+      "id": "field_documentsReceived"
+    }
+  ]
+}

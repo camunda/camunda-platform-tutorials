@@ -1,0 +1,163 @@
+{
+  "id": "escalated-claim-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 16,
+  "type": "default",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Escalated Claim - Adjuster Review\nThis claim was escalated and requires a manual adjuster decision.",
+      "id": "header_title"
+    },
+    {
+      "type": "separator",
+      "id": "sep_details"
+    },
+    {
+      "type": "text",
+      "text": "### Claim Details",
+      "id": "header_details"
+    },
+    {
+      "type": "textfield",
+      "key": "claimId",
+      "label": "Claim ID",
+      "readonly": true,
+      "id": "field_claimId"
+    },
+    {
+      "type": "textfield",
+      "key": "customerId",
+      "label": "Customer ID",
+      "readonly": true,
+      "id": "field_customerId"
+    },
+    {
+      "type": "textfield",
+      "key": "customerName",
+      "label": "Customer Name",
+      "readonly": true,
+      "id": "field_customerName"
+    },
+    {
+      "type": "textarea",
+      "key": "damageDescription",
+      "label": "Reported Damage",
+      "readonly": true,
+      "rows": 4,
+      "id": "field_damageDescription"
+    },
+    {
+      "type": "separator",
+      "id": "sep_assessment"
+    },
+    {
+      "type": "text",
+      "text": "### AI Assessment Report",
+      "id": "header_assessment"
+    },
+    {
+      "type": "textarea",
+      "key": "assessmentReport",
+      "label": "Assessment (from AI agent)",
+      "readonly": true,
+      "rows": 10,
+      "id": "field_assessmentReport"
+    },
+    {
+      "type": "separator",
+      "id": "sep_judge"
+    },
+    {
+      "type": "text",
+      "text": "### Judge Verdict",
+      "id": "header_judge"
+    },
+    {
+      "type": "textfield",
+      "key": "judgeDecision",
+      "label": "Judge Decision",
+      "readonly": true,
+      "id": "field_judgeDecision"
+    },
+    {
+      "type": "textarea",
+      "key": "judgeReasoning",
+      "label": "Judge Reasoning",
+      "readonly": true,
+      "rows": 4,
+      "id": "field_judgeReasoning"
+    },
+    {
+      "type": "textfield",
+      "key": "judgeConfidence",
+      "label": "Judge Confidence",
+      "readonly": true,
+      "id": "field_judgeConfidence"
+    },
+    {
+      "type": "textfield",
+      "key": "suggestedSettlementAmount",
+      "label": "Suggested Settlement (USD, AI recommendation)",
+      "readonly": true,
+      "id": "field_suggestedSettlementAmount"
+    },
+    {
+      "type": "separator",
+      "id": "sep_escalation"
+    },
+    {
+      "type": "text",
+      "text": "### Agent Self-Escalation (if applicable)",
+      "id": "header_escalation"
+    },
+    {
+      "type": "textarea",
+      "key": "escalationReason",
+      "label": "Reason (only if the agent self-escalated)",
+      "readonly": true,
+      "rows": 3,
+      "id": "field_escalationReason"
+    },
+    {
+      "type": "separator",
+      "id": "sep_decision"
+    },
+    {
+      "type": "text",
+      "text": "### Adjuster Decision",
+      "id": "header_decision"
+    },
+    {
+      "type": "select",
+      "key": "adjusterResolution",
+      "label": "Resolution",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Approve - Pay Claim", "value": "APPROVE" },
+        { "label": "Deny - Insufficient Evidence", "value": "DENY" },
+        { "label": "Deny - Fraud Suspected", "value": "DENY_FRAUD" },
+        { "label": "Request Further Investigation", "value": "INVESTIGATE" }
+      ],
+      "id": "field_adjusterResolution"
+    },
+    {
+      "type": "number",
+      "key": "adjusterSettlementAmount",
+      "label": "Settlement Amount (USD, enter 0 if denying)",
+      "validate": { "min": 0 },
+      "id": "field_settlementAmount"
+    },
+    {
+      "type": "textarea",
+      "key": "adjusterNotes",
+      "label": "Adjuster Notes",
+      "validate": { "required": true },
+      "rows": 4,
+      "id": "field_adjusterNotes"
+    }
+  ]
+}

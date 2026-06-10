@@ -1,0 +1,131 @@
+{
+  "id": "manual-review-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 16,
+  "type": "default",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Manual Claim Review\nThe AI judge flagged this claim for manual review. Evaluate the assessment and make a final decision.",
+      "id": "header_title"
+    },
+    {
+      "type": "separator",
+      "id": "sep_claim"
+    },
+    {
+      "type": "text",
+      "text": "### Claim Overview",
+      "id": "header_claim"
+    },
+    {
+      "type": "textfield",
+      "key": "claimId",
+      "label": "Claim ID",
+      "readonly": true,
+      "id": "field_claimId"
+    },
+    {
+      "type": "textfield",
+      "key": "customerName",
+      "label": "Customer",
+      "readonly": true,
+      "id": "field_customerName"
+    },
+    {
+      "type": "textfield",
+      "key": "claimType",
+      "label": "Claim Type",
+      "readonly": true,
+      "id": "field_claimType"
+    },
+    {
+      "type": "separator",
+      "id": "sep_assessment"
+    },
+    {
+      "type": "text",
+      "text": "### AI Assessment Report",
+      "id": "header_assessment"
+    },
+    {
+      "type": "textarea",
+      "key": "assessmentReport",
+      "label": "Assessment (from AI agent)",
+      "readonly": true,
+      "rows": 10,
+      "id": "field_assessmentReport"
+    },
+    {
+      "type": "separator",
+      "id": "sep_judge"
+    },
+    {
+      "type": "text",
+      "text": "### Judge Reasoning",
+      "id": "header_judge"
+    },
+    {
+      "type": "textarea",
+      "key": "judgeReasoning",
+      "label": "Judge Reasoning",
+      "readonly": true,
+      "rows": 4,
+      "id": "field_judgeReasoning"
+    },
+    {
+      "type": "textfield",
+      "key": "judgeConfidence",
+      "label": "Judge Confidence",
+      "readonly": true,
+      "id": "field_judgeConfidence"
+    },
+    {
+      "type": "textfield",
+      "key": "suggestedSettlementAmount",
+      "label": "Suggested Settlement (USD, AI recommendation)",
+      "readonly": true,
+      "id": "field_suggestedSettlementAmount"
+    },
+    {
+      "type": "separator",
+      "id": "sep_decision"
+    },
+    {
+      "type": "text",
+      "text": "### Your Decision",
+      "id": "header_decision"
+    },
+    {
+      "type": "select",
+      "key": "reviewerDecision",
+      "label": "Final Decision",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Approve - Pay Claim", "value": "APPROVE" },
+        { "label": "Approve with Adjustment", "value": "APPROVE_ADJUSTED" },
+        { "label": "Deny - Insufficient Evidence", "value": "DENY" },
+        { "label": "Deny - Policy Exclusion", "value": "DENY_EXCLUSION" }
+      ],
+      "id": "field_reviewerDecision"
+    },
+    {
+      "type": "number",
+      "key": "reviewerSettlementAmount",
+      "label": "Final Settlement Amount (USD)",
+      "validate": { "required": true, "min": 0 },
+      "id": "field_reviewerSettlementAmount"
+    },
+    {
+      "type": "textarea",
+      "key": "reviewNotes",
+      "label": "Review Notes",
+      "validate": { "required": true },
+      "rows": 4,
+      "id": "field_reviewNotes"
+    }
+  ]
+}
