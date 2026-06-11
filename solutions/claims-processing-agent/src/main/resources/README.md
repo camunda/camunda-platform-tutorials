@@ -163,12 +163,12 @@ The first question any regulated customer asks is: how do you test something non
 
 This section answers it. Using the same claims-processing-agent BPMN, it demonstrates:
 - AI-assisted test generation from a process definition (pro-code, Claude Code)
-- Deterministic assertions on agentic behavior (low-code, Web Modeler Test tab)
-- Regression detection before production (model swap: Opus to Haiku)
+- Deterministic assertions on agentic behavior, played back in the Web Modeler Play tab (low-code)
+- Regression detection before production (a system-prompt change that degrades agent quality)
 - CI/CD gate on the same test artifacts (pipeline portability)
 
-Two surfaces: Claude Code for generation and pro-code execution; Web Modeler Test tab for low-code
-runs and manual segment tests.
+Two surfaces: Claude Code for generation and pro-code execution; the Web Modeler Play tab for
+low-code playback of the end-to-end scenarios.
 
 ---
 
@@ -176,11 +176,11 @@ runs and manual segment tests.
 
 In addition to the cluster prerequisites above:
 
-- [ ] Claude Code installed with `/camunda-process-test` skill available
+- [ ] Claude Code installed with the `/camunda-process-test` skill available (Camunda Process Test 8.9.8)
 - [ ] Java 21 + Maven installed locally
 - [ ] `solutions/claims-processing-agent/` opened in Claude Code terminal
-- [ ] Camunda Modeler open with `claims-processing-agent.bpmn` loaded
-- [ ] Test tab visible in Web Modeler (8.10 snapshot build)
+- [ ] Web Modeler open on the process: [claims-processing-agent](https://modeler.camunda.io/diagrams/cd448596-a3d9-4a7f-b0bf-e99d41f51d53--claims-processing-agent?v=0,0,1)
+- [ ] Play tab visible in Web Modeler (8.10 snapshot build)
 
 ---
 
@@ -196,7 +196,10 @@ Open a terminal in `solutions/claims-processing-agent/`. Run:
 /camunda-process-test
 ```
 
-Point the skill at `src/main/resources/claims-processing-agent.bpmn`.
+Point the skill at `src/main/resources/claims-processing-agent.bpmn` **and** at the
+`Testing & Acceptance Criteria` section of this README. The test plan is the context the skill
+generates against: it gives the skill the requirements, the expected outcomes, and the scenario
+catalogue, so the generated suite maps to documented criteria rather than guessing.
 
 Expected output: CPT test JSON files written to `src/main/resources/`. Show the generated files
 in the file tree.
@@ -223,57 +226,51 @@ fail, with a statistical threshold."
 
 ---
 
-### Surface 2: Camunda Modeler — Test tab
+### Surface 2: Web Modeler — Play tab
 
-**Step 3: Open the Test tab**
+**Step 3: Sync the process application, then open the Play tab**
 
-Switch to Camunda Modeler. Navigate to the Test tab for the claims-processing-agent process.
+First sync the process application so Web Modeler picks up the generated test artifacts. Show
+GitHub Desktop, review the changed files, and move them over (commit and push) so Web Modeler's
+Git sync pulls them in. Then switch to Web Modeler and open the Play tab for the
+claims-processing-agent process.
 
-The generated test files from Step 1 are present in `src/main/resources/` and visible in the tab.
+The end-to-end scenarios from [`claims-processing-agent test scenarios.json`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json) are now present and runnable in the Play tab.
 
-*Narration*: "The same files. A business analyst or low-code developer can now run and modify
-these without touching Java. This is what Play became: a dedicated QA surface."
-
----
-
-**Step 4: Add a segment test**
-
-In the Test tab, add one segment test manually targeting the assessment agent sub-process.
-
-Run the full suite. Show green across all segments. Point at the assertion results: expected
-behavioral output vs. actual, structured pass/fail per segment.
-
-*Narration*: "Each segment is independent and reusable. You are not running the whole process
-every time — you are targeting what changed."
+*Narration*: "The same scenarios. A business analyst or low-code developer can now run them without
+touching Java. This is what Play became: a dedicated QA surface."
 
 ---
 
-**Step 5: Introduce a regression**
+**Step 4: Introduce a regression**
 
-In the BPMN connector config for the assessment agent, change the LLM model from Opus to Haiku.
-Save. Re-run the test suite in the Test tab.
+Open the assessment agent's system prompt in the BPMN connector config. Weaken it: remove the
+instruction that requires the agent to enumerate specific fraud indicators and justify its
+decision. Save, sync, and re-run the end-to-end scenarios.
 
-Show: one or more assertion failures. Point at:
-- Which segment failed
-- Expected behavioral output (Opus-level policy interpretation)
-- Actual behavioral output (degraded Haiku response)
+Show: one or more quality assertions fail. Point at:
+- Which scenario failed
+- The LLM-as-judge feedback explaining why the report no longer meets the bar (missing fraud
+  enumeration, weaker justification)
+- That routing can still be correct: the regression is in quality, which the judge catches
 
-*Narration*: "A well-meaning engineer cuts model cost before a release — something a team
-actually does. The test caught a quality regression. The agent's policy interpretation changed.
-This is what you know before production, not after an incident."
+*Narration*: "An engineer simplifies the system prompt before a release — something a team
+actually does. Routing still works, so a shallow test passes. But the agentic quality gate catches
+it: the report stopped enumerating fraud indicators. This is what you know before production, not
+after an incident."
 
 ---
 
 ### Surface 1 again: CI/CD gate
 
-**Step 6: Create a PR and show the pipeline gate**
+**Step 5: Create a PR and show the pipeline gate**
 
-Revert the model change (or leave it — the gate should fail either way to show the mechanism).
+Revert the prompt change (or leave it — the gate should fail either way to show the mechanism).
 Create a PR. Show CI picking up the test JSON from `src/main/resources/`.
 
 Point at:
 - The test files running in CI without conversion or duplication
-- The pipeline failing on the same assertion that failed in Step 5
+- The pipeline failing on the same assertion that failed in Step 4
 
 *Narration*: "The same file that runs in Web Modeler runs in the pipeline. No conversion, no
 duplication. The breaking change would have been caught here too. The gate holds in CI, not
@@ -281,11 +278,12 @@ just locally."
 
 ---
 
-**Optional: Mathieu hand-off**
+**Optional: go deeper into the code**
 
-After Step 6, Mathieu shows how the CPT test inputs are structured for the claims-processing-agent
-specifically — evaluation hooks, conditional instructions, statistical threshold config. Technical
-depth for engineering-heavy audiences.
+For engineering-heavy audiences, open the test sources directly and walk the structure: the CPT
+instruction JSON, the LLM-as-judge assertions, and the integration profile. The
+`Testing & Acceptance Criteria` section below documents how each requirement maps to a test, and
+the `Where the tests live` table deep-links every artifact.
 
 ---
 
@@ -297,10 +295,11 @@ depth for engineering-heavy audiences.
 > fraud case. We generate a test suite from the BPMN in one step. We run it: green across the
 > board. Deterministic pass/fail on non-deterministic AI.
 >
-> Now watch what happens when I introduce a realistic breaking change. A well-meaning engineer
-> downgrades the model from Opus to Haiku to cut costs before a release. Re-run. Fail. The test
-> caught a quality regression — the agent's policy interpretation changed in a way that matters
-> for production.
+> Now watch what happens when I introduce a realistic breaking change. An engineer simplifies the
+> assessment agent's system prompt before a release, dropping the instruction to enumerate fraud
+> indicators. Routing still works, so a shallow test passes. Re-run the quality gate. Fail. The
+> LLM-as-judge caught a quality regression: the report stopped documenting the fraud signals in a
+> way that matters for production.
 >
 > The same test file runs in Web Modeler and in the CI/CD pipeline. The gate holds in both places.
 > You know before production. Not after."
@@ -309,16 +308,16 @@ depth for engineering-heavy audiences.
 
 ## Time estimate
 
+Estimates below are unconfirmed and need a dry-run to validate.
+
 | Step | Surface | Time |
 |------|---------|------|
 | Generate tests | Claude Code | 3 min |
 | Run agentic methods locally | Claude Code | 4 min |
-| Open Test tab, show imported tests | Web Modeler | 2 min |
-| Add segment test, run green suite | Web Modeler | 5 min |
-| Opus to Haiku regression + assertion failure | Web Modeler | 5 min |
+| Sync app, open Play tab, run scenarios | Web Modeler | 4 min |
+| System-prompt regression + quality-assertion failure | Web Modeler | 5 min |
 | PR creation + CI gate | Claude Code / CI | 5 min |
-| Mathieu CPT input walkthrough (optional) | Claude Code | 5 min |
-| **Total** | | **~24-29 min** |
+| **Total** | | **~21 min (unconfirmed)** |
 
 ---
 
@@ -326,10 +325,10 @@ depth for engineering-heavy audiences.
 
 | Epic | Confidence | Shown in demo |
 |------|------------|---------------|
-| Play-to-Test Transition (#3169) | 4 | Yes — Test tab is the entry point |
-| Test Process Segments (#2896) | 5 | Yes — segment run in Step 4 |
-| Low-Code Test Assertions (#3496) | 4 | Yes — assertion results in Steps 4 and 5 |
-| Low-Code CI/CD Compatibility (#3498) | 5 | Yes — Step 6 |
+| Play-to-Test Transition (#3169) | 4 | Yes — Play tab is the entry point |
+| Test Process Segments (#2896) | 5 | Separate demo — Dominic, on the Test Studio internal prototype |
+| Low-Code Test Assertions (#3496) | 4 | Separate demo — Dominic, on the Test Studio internal prototype |
+| Low-Code CI/CD Compatibility (#3498) | 5 | Yes — Step 5 |
 | Test generation via Claude Code (#3557) | Shipped | Yes — Step 1 |
 | Non-Flaky Agentic Test Execution (#3495) | 3 | No — confirm with Husna before adding |
 | Low-Code Test Reports (#3497) | 3 | No — confirm with Husna before adding |
@@ -344,6 +343,138 @@ depth for engineering-heavy audiences.
 |---------|-------|-----|
 | `/camunda-process-test` skill not found | Skill not installed in Claude Code | Install from `~/.claude/skills/` — see setup guide |
 | `mvn test` fails with connection error | No local Zeebe connection | Tests use in-memory Zeebe via CPT — check `pom.xml` dependencies |
-| Test tab does not show generated files | Files not in `src/main/resources/` | Confirm skill wrote to correct path; reload Modeler |
-| All assertions pass after Haiku switch | Segment not asserting on quality | Confirm assertion targets agent output text, not just process completion |
+| Play tab does not show generated scenarios | Process application not synced | Sync via GitHub Desktop so Web Modeler pulls the files; confirm they are in `src/main/resources/` |
+| All assertions pass after the prompt change | Assertion not gating on quality | Confirm the LLM-as-judge assertion targets the agent report text, not just process completion |
+| Integration tests fail with 429 / rate limit | `claim-demo.free.beeceptor.com` free tier is 50 requests/day; daily quota exhausted | Wait for the daily reset, or stub the tool endpoints with WireMock so tests do not call the public mock |
 | CI does not pick up test JSON | Schema mismatch or wrong file location | Confirm files match `cpt-test-cases.schema.json` and are in `src/main/resources/` |
+
+---
+
+---
+
+# Testing & Acceptance Criteria
+
+This section documents what the test suite guarantees and which layer proves each requirement. The process is non-deterministic at runtime, the verdict is deterministic: every requirement below maps to a test that passes or fails.
+
+Use this section as the brief before generating the suite. It is the context to hand the `/camunda-process-test` skill in Step 1, and the material to narrate while the skill runs: the requirements, the expected outcomes, and the scenario catalogue.
+
+The requirements are high-level and illustrative. They describe a fictional claims-processing policy for Camunda Insurance so the test intent is readable without the BPMN open.
+
+## How the process decides
+
+Two AI roles, separate concerns:
+
+- The **assessment agent** (`Agent_ClaimsAssessment`, ad-hoc sub-process) gathers evidence through tools and returns a structured report. Its `decision` field (`APPROVE`, `MANUAL_REVIEW`, `ESCALATE`) maps to `claimDecision` and drives the gateway.
+- The **quality judge** (`Agent_Judge`, displayed as `Quality Judge`) is an independent LLM-as-judge. It does not route the claim. It scores the assessment's quality (`agentQualityScore`, `qualityFeedback`) so a degraded model is visible before production.
+
+## Three test layers, three guarantees
+
+| Layer | Question it answers | External systems | Acceptance signal | Run |
+|-------------------------|------------------------------------------------|------------------------------|------------------------------------------------------------|----------------------------------------------|
+| **Process tests**       | Does the workflow route every claim correctly? | Mocked (canned agent and judge output, mocked tool jobs) | 100% BPMN element and sequence-flow reachability           | `mvn test`                                   |
+| **Segment integration tests** | Does each external system behave correctly on its own? | Real, one at a time          | Every agent, connector, and service task exercised; quality gated by LLM-as-judge | `mvn test -P integration-test` |
+| **Process integration tests** | Does the whole thing work for real?            | Real, all together           | Realistic varied-data scenarios reach the correct outcome | `mvn test -P integration-test`; the end-to-end scenarios also play back in the Web Modeler Play tab |
+
+All three layers run locally and in CI. The process tests are the commit gate and run on every push via [`.github/workflows/test-suites.yml`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/.github/workflows/test-suites.yml) (`mvn test`). The segment integration and process integration tests run under the `integration-test` profile and need Docker, the Connectors runtime, and AWS Bedrock credentials (the repo-root `.env` locally, the same values as CI secrets). The end-to-end scenarios additionally play back in the Web Modeler Play tab from [`claims-processing-agent test scenarios.json`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json).
+
+## Requirements to test layer
+
+### Process requirements (PR) — proven by the process tests
+
+| ID | Requirement | Verified by | Comment |
+|------|----------------------------------------------------------------------------|--------------------------------------------------|---------|
+| PR-1 | Every claim reaches exactly one terminal state. No instance stalls.        | 100% coverage across all 6 scenarios             | — |
+| PR-2 | A clean low-risk claim is approved without human touch.                    | `clean claim — agent approves`                   | — |
+| PR-3 | An ambiguous claim with no clear fraud signal goes to manual review.       | `borderline claim — agent routes to manual review` | — |
+| PR-4 | A claim with fraud indicators is escalated to a human adjuster.            | `high-fraud claim — agent escalates`             | — |
+| PR-5 | Missing documents trigger a request, then assessment resumes.              | `agent requests documents`                       | — |
+| PR-6 | The agent can escalate a claim it cannot resolve, mid-assessment.          | `agent cannot complete — EscalateToHuman`        | — |
+| PR-7 | An assessment-agent failure routes to a supervisor and never drops the claim. | `AHSP throws error — handled by supervisor`   | — |
+
+### Segment integration requirements (SIR) — proven by the segment integration tests
+
+| ID | Requirement | Verified by | Status |
+|------|----------------------------------------------------------------------------|--------------------------------------------------|-----------|
+| SIR-1 | PolicyLookup returns status, coverage, deductible, and fraud-risk score.   | [`ClaimsExternalSystemsIT.policyLookupInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | TODO — pending integration run |
+| SIR-2 | GetCustomerProfile returns tier, account standing, and fraud history.      | [`ClaimsExternalSystemsIT.getCustomerProfileInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | TODO — pending integration run |
+| SIR-3 | CalculateDamageEstimate returns an amount, category, and anomaly flags.    | [`ClaimsExternalSystemsIT.calculateDamageEstimateInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | TODO — pending integration run |
+| SIR-4 | The assessment report covers policy, documents, fraud, and a recommendation. | [`ClaimsExternalSystemsIT.assessmentReportQualityOnFraudClaim`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge) | TODO — pending integration run |
+| SIR-5 | The judge produces a quality score consistent with the assessment.         | [`ClaimsExternalSystemsIT.judgeQualityScoreIsConsistent`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge) | TODO — pending integration run |
+| SIR-6 | Each tool builds its request from the supplied claim or customer identifier. | [`ClaimsExternalSystemsIT`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) connector segments | TODO — pending integration run |
+
+Semantic similarity is expressed today as a judge-based equivalence check (`hasVariableSatisfiesJudge` with a reference expectation). Native embedding-similarity assertions are not in the pinned CPT release (`8.9.8`); when they ship, SIR-4 moves to `hasVariableSatisfiesSimilarity`.
+
+### Process integration requirements (PIR) — proven by the process integration tests
+
+| ID | Requirement | Verified by | Status |
+|-------|----------------------------------------------------------------------------|--------------------------------------------------|-----------|
+| PIR-1 | A realistic multi-signal fraud claim escalates; the adjuster task carries the full report. | [`ClaimsProcessingAgentIT.highFraudClaimEscalates`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | TODO — pending integration run |
+| PIR-2 | A realistic clean claim completes through both agents.                     | [`ClaimsProcessingAgentIT.cleanClaimCompletes`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | TODO — pending integration run |
+| PIR-3 | Collision, theft, flood, and liability claims each run both agents and reach a terminal state under the live model. | [`ClaimsProcessingAgentIT.variedClaimTypesTraverse`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | TODO — pending integration run |
+
+The `Comment` column flags anything outstanding: an em-dash means the test passes in its layer; `TODO` marks a test that is written but not yet passing. Test reports: every layer writes JUnit XML to `target/surefire-reports/` (the file CI surfaces, for example `TEST-io.camunda.tests.ProcessTest.xml`), and the process layer also writes the CPT coverage report to `target/coverage-report/report.html`. In a pull request, check `target/surefire-reports/` in the CI run for pass or fail per test class.
+
+**Beeceptor quota.** The segment and process integration layers call the shared `claim-demo.free.beeceptor.com` mock, whose free tier allows 50 requests per day. Each agentic run spends several tool calls, so a handful of full runs can exhaust the daily quota; once spent, the tool calls return rate-limit errors (not assertion failures) until the quota resets the next day. Budget runs accordingly. The process layer is unaffected (its tools are mocked). To run the integration layers without touching the quota, stub the three tool endpoints with WireMock so they stop depending on a shared public mock; see the connectors-runtime WireMock pattern.
+
+### End-to-end scenario catalogue
+
+Each scenario feeds realistic claim data to the live agents and asserts the outcome a human would expect. The agent makes the routing call, so these scenarios verify that real model behavior matches policy, not just that the wiring traverses. Source: [`claims-processing-agent test scenarios.json`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json).
+
+| # | Scenario | Expected outcome | Terminal element | Requirement |
+|---|------------------------------------------------------------------------------|----------------------------------------------------------------|------------------------|---------|
+| 1 | Well-documented €500 parking-lot collision, active policy, clean history      | Automatically approved, no human touch                         | `End_ClaimApproved`    | PR-2    |
+| 2 | Poorly-documented €5,000 flood claim, no photos or repair proof attached      | Returned to the customer for the missing documentation, then assessed once received | `RequestAdditionalDocuments` | PR-5    |
+| 3 | €48,000 total-loss claim, collision coverage added 8 days before the incident, prior fraud investigation | Escalated to a human adjuster as suspected fraud               | `Task_HumanReview`     | PR-4    |
+| 4 | Ambiguous €12,000 overnight theft, no witnesses, medium risk, no hard fraud signal | Sent to an adjuster for manual review                          | `Task_ManualReview`    | PR-3    |
+| 5 | €3,000 liability claim where the assessment agent connector times out         | Assessment failure caught and handed to a supervisor, claim re-queued | `Task_HandleError`     | PR-7    |
+
+Scenarios 1 to 4 exercise the four agent-driven routing outcomes; scenario 5 exercises the failure path independent of the model. The `Requirement` column links each scenario back to the routing requirement it realizes with live data: the process tests prove the requirement deterministically with mocked output, and the matching scenario proves the same outcome holds under the real model. Routing in scenarios 1 to 4 depends on live model judgment, so the tests assert the expected terminal element with a retry window and treat a borderline model call (for example scenario 4 landing on escalation instead of manual review) as a quality signal to investigate, not an immediate failure.
+
+**Web Modeler playback.** Scenarios 1 to 4 are saved as live-replay scenarios in [`claims-processing-agent test scenarios.json`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json) for the Web Modeler Play tab: each creates the instance, lets the real agents run on the cluster, completes the human step the outcome requires, and asserts completion. The fifth replay scenario is an agent-initiated escalation (PR-6), which is a real model outcome. Scenario 5 in the table above (a forced connector failure, PR-7) cannot be reproduced by live replay and stays in the process-test layer only. Live replay depends on the `claim-demo.free.beeceptor.com` mock returning data consistent with each claim id, so the agent reaches the intended branch.
+
+## Where the tests live
+
+Web Modeler does not track the test source paths, so these deep-link to the repository (`HanselIdes/camunda-8-tutorials`, branch `demo`).
+
+| Artifact | Location |
+|------------------------------|----------|
+| Process test scenarios (mocked) | [test-cases/CamundaInsurance_ClaimsProcessing.test.json](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/resources/test-cases/CamundaInsurance_ClaimsProcessing.test.json) |
+| Web Modeler playback scenarios | [claims-processing-agent test scenarios.json](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json) |
+| Process test runner          | [ProcessTest.java](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ProcessTest.java) |
+| Integration A — isolation IT | [ClaimsExternalSystemsIT.java](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) |
+| Integration A — tools harness BPMN | [test-claims-tools.bpmn](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/resources/bpmn/test-claims-tools.bpmn) |
+| Integration B — end-to-end IT | [ClaimsProcessingAgentIT.java](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) |
+| Integration profile config   | [application-integration.yml](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/resources/application-integration.yml) |
+| Test harness build           | [test/pom.xml](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/pom.xml) |
+
+## Refreshing mock data after a model swap
+
+The process tests mock the agent and judge with canned output. When the model or its prompts change, that output drifts and the mocks go stale. Both integration tests log a `CAPTURE` line with the live `agent` variable after each run. To refresh:
+
+1. Run an integration test against the new model (`mvn test -P integration-test`).
+2. Copy the captured `agent` JSON from the log into the matching scenario's `COMPLETE_JOB_AD_HOC_SUB_PROCESS` block in the process test file.
+3. Re-run `mvn test` and confirm the routing assertions still hold.
+
+This keeps the fast mocked gate honest against what the real model now produces.
+
+## Running each layer
+
+**Process tests (commit gate):**
+```bash
+cd solutions/claims-processing-agent/test
+mvn test
+```
+Output: `Tests run: 6, Failures: 0` and `CamundaInsurance_ClaimsProcessing: 100%`. Coverage report at `target/coverage-report/report.html`.
+
+**Integration A and B (on demand):**
+```bash
+cd solutions/claims-processing-agent/test
+env $(cat ../../../.env | grep -v '^#' | xargs) mvn test -P integration-test
+```
+Requires Docker running, a filled `.env` (AWS Bedrock keys), and a judge provider key for the quality assertions. The agents call real Bedrock; the service tools call `claim-demo.free.beeceptor.com`.
+
+## What the tests do not assert
+
+Reachability and routing, not data values. A process test never asserts the exact dollar amount a service task returns, only that the claim reached the element the rule selected. The one exception is the agentic quality gate: the judge and the LLM-as-judge assertions evaluate the meaning of the agent's report, because the report is the unit under test when the model or its prompt changes.
+
+The integration tests do not assert side effects on external systems. A real connector call is exercised, but downstream state in those systems is out of scope. There is no testing of form UI either. External side effects and form rendering are always mocked or out of scope across every layer.

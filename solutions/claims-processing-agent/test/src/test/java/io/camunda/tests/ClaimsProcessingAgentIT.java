@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * Prerequisites:
  *   - Docker running
  *   - .env at repo root with AWS_BEDROCK_* vars filled in
- *   - Run from test/: env $(cat ../../.env | grep -v '^#' | xargs) mvn test -P integration-test
+ *   - Run from test/: env $(cat ../../../.env | grep -v '^#' | xargs) mvn test -P integration-test
  *
  * Assessment: 3 tool calls + 2 Bedrock roundtrips ≈ 60–120s. @Timeout allows 6 minutes.
  */
@@ -123,6 +125,36 @@ public class ClaimsProcessingAgentIT {
 
         completeTask(instance.getProcessInstanceKey(), "Task_HumanReview",
             Map.of("adjusterResolution", "DENY", "adjusterNotes", "IT test: fraud confirmed by agent."));
+
+        assertThatProcessInstance(instance).isCompleted();
+    }
+
+    // =========================================================================
+    // Test 3 — varied claim types (E2E-3)
+    // Each claim type runs both agents and reaches a terminal state under the live
+    // model. Routing is the model's call, so this asserts traversal and completion,
+    // not a specific branch.
+    // =========================================================================
+
+    @ParameterizedTest(name = "{0} claim runs both agents and reaches a terminal state")
+    @CsvSource({
+        "collision, Rear-end collision at a junction. Bumper and trunk damage. Estimate $2100.",
+        "theft,     Vehicle stolen from a driveway overnight. No witnesses. Police report filed.",
+        "flood,     Basement and garage flooded after heavy rain. Water damage to vehicle.",
+        "liability, Third-party liability claim. Disputed fault. Two conflicting statements."
+    })
+    @Timeout(360)
+    void variedClaimTypesTraverse(String claimType, String damageDescription) {
+        var instance = startProcess(
+            "CLM-IT-VAR-" + claimType, "CUST-IT-VAR", claimType,
+            damageDescription, "2026-05-15");
+
+        // Both agents must run regardless of which branch the model selects.
+        assertThatProcessInstance(instance)
+            .hasCompletedElements(byId("Agent_ClaimsAssessment"), byId("Agent_Judge"));
+
+        // Resolve any human task the routing produced, then expect completion.
+        completeAnyPendingUserTask(instance.getProcessInstanceKey());
 
         assertThatProcessInstance(instance).isCompleted();
     }

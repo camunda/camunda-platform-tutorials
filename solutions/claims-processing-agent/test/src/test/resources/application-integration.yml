@@ -5,12 +5,14 @@
 # Service tools call claim-demo.free.beeceptor.com — no extra secrets needed.
 #
 # Run from the test/ directory:
-#   env $(cat ../../.env | grep -v '^#' | xargs) mvn test -P integration-test
+#   env $(cat ../../../.env | grep -v '^#' | xargs) mvn test -P integration-test
 
 camunda:
   process-test:
     runtime-mode: managed
     connectors-enabled: true
+    # Connectors bundle is versioned independently of the CPT library (8.9.8);
+    # 8.9.5 is the latest published camunda/connectors-bundle tag.
     connectors-docker-image-version: 8.9.5
     # Relaxed-binding form avoids Spring Boot 4 circular placeholder detection.
     # AWS_BEDROCK_ACCESS_KEY env var → aws.bedrock.access.key Spring property.
@@ -19,6 +21,17 @@ camunda:
       AWS_BEDROCK_ACCESS_KEY: ${aws.bedrock.access.key}
       AWS_BEDROCK_SECRET_KEY: ${aws.bedrock.secret.key}
       AWS_BEDROCK_MODEL: ${aws.bedrock.model}
+    # LLM-as-judge provider for the agentic quality assertions (CR-4, CR-5).
+    # Reuses the same Bedrock credentials as the connector runtime.
+    judge:
+      threshold: 0.7
+      chat-model:
+        provider: amazon-bedrock
+        model: ${aws.bedrock.model}
+        region: ${aws.bedrock.region}
+        credentials:
+          access-key: ${aws.bedrock.access.key}
+          secret-key: ${aws.bedrock.secret.key}
 
 logging:
   level:

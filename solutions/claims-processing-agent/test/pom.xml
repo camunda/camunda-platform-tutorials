@@ -24,7 +24,7 @@
 
           mvn test -P integration-test      Integration tests (embedded Zeebe + Connectors runtime).
                                             Requires: Docker, AWS Bedrock env vars.
-                                            Run: env $(cat ../.env | grep -v '^#' | xargs) mvn test -P integration-test
+                                            Run: env $(cat ../../../.env | grep -v '^#' | xargs) mvn test -P integration-test
     </description>
 
     <properties>
@@ -32,7 +32,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <camunda.version>8.9.0-rc4</camunda.version>
+        <camunda.version>8.9.8</camunda.version>
     </properties>
 
     <repositories>

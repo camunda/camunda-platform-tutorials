@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_TestClaimsTools"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!--
+    Connector / service-task isolation harness for claims-processing-agent (Integration A).
+
+    Each branch exercises one external service tool on its own, against the same
+    beeceptor endpoints the production tools call. The fromAi(...) inputs of the
+    in-agent tools are rewritten here to plain process variables, supplied per test
+    via startBeforeElement(...).variables(...) — which bypasses the gateway. The
+    start event and gateway exist only to keep the model valid and reachable; process
+    routing is out of scope here. Each test asserts only that its connector completed.
+
+    Run with the Connectors runtime enabled (mvn test -P integration-test).
+  -->
+  <bpmn:process id="test-claims-tools" name="Claims tools — connector isolation" isExecutable="true">
+
+    <bpmn:startEvent id="Start" name="Select tool">
+      <bpmn:outgoing>Flow_Start_Gateway</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_Start_Gateway" sourceRef="Start" targetRef="Gateway_SelectTool" />
+    <bpmn:exclusiveGateway id="Gateway_SelectTool" name="Which tool?" default="Flow_Gateway_PolicyLookup">
+      <bpmn:incoming>Flow_Start_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_PolicyLookup</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_GetCustomerProfile</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_CalculateDamageEstimate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Branch 1: PolicyLookup -->
+    <bpmn:sequenceFlow id="Flow_Gateway_PolicyLookup" name="policy" sourceRef="Gateway_SelectTool" targetRef="PolicyLookup" />
+    <bpmn:serviceTask id="PolicyLookup" name="Look up policy">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="GET" target="method" />
+          <zeebe:input source="=&#34;https://claim-demo.free.beeceptor.com/claims/&#34; + claimId" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+          <zeebe:output source="=toolCallResult" target="toolCallResult" />
+          <zeebe:output source="=toolCallResult.status" target="policyStatus" />
+          <zeebe:output source="=toolCallResult.fraudRiskScore" target="fraudRiskScore" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_PolicyLookup</bpmn:incoming>
+      <bpmn:outgoing>Flow_PolicyLookup_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_PolicyLookup_End" sourceRef="PolicyLookup" targetRef="End_PolicyLookup" />
+    <bpmn:endEvent id="End_PolicyLookup" name="Policy looked up">
+      <bpmn:incoming>Flow_PolicyLookup_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Branch 2: GetCustomerProfile -->
+    <bpmn:sequenceFlow id="Flow_Gateway_GetCustomerProfile" name="customer" sourceRef="Gateway_SelectTool" targetRef="GetCustomerProfile">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=tool = "customer"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="GetCustomerProfile" name="Get customer profile">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="GET" target="method" />
+          <zeebe:input source="=&#34;https://claim-demo.free.beeceptor.com/customers/&#34; + customerId" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+          <zeebe:output source="=toolCallResult" target="toolCallResult" />
+          <zeebe:output source="=toolCallResult.riskRating" target="riskRating" />
+          <zeebe:output source="=toolCallResult.fraudHistory" target="fraudHistory" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_GetCustomerProfile</bpmn:incoming>
+      <bpmn:outgoing>Flow_GetCustomerProfile_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_GetCustomerProfile_End" sourceRef="GetCustomerProfile" targetRef="End_GetCustomerProfile" />
+    <bpmn:endEvent id="End_GetCustomerProfile" name="Profile fetched">
+      <bpmn:incoming>Flow_GetCustomerProfile_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Branch 3: CalculateDamageEstimate -->
+    <bpmn:sequenceFlow id="Flow_Gateway_CalculateDamageEstimate" name="estimate" sourceRef="Gateway_SelectTool" targetRef="CalculateDamageEstimate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=tool = "estimate"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="CalculateDamageEstimate" name="Calculate damage estimate">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="=&#34;https://claim-demo.free.beeceptor.com/claims/&#34; + claimId + &#34;/estimate&#34;" target="url" />
+          <zeebe:input source="={damageDescription: damageDescription}" target="body" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+          <zeebe:output source="=toolCallResult" target="toolCallResult" />
+          <zeebe:output source="=toolCallResult.estimatedAmount" target="damageEstimate" />
+          <zeebe:output source="=toolCallResult.repairCategory" target="damageCategory" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_CalculateDamageEstimate</bpmn:incoming>
+      <bpmn:outgoing>Flow_CalculateDamageEstimate_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_CalculateDamageEstimate_End" sourceRef="CalculateDamageEstimate" targetRef="End_CalculateDamageEstimate" />
+    <bpmn:endEvent id="End_CalculateDamageEstimate" name="Estimate calculated">
+      <bpmn:incoming>Flow_CalculateDamageEstimate_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="test-claims-tools">
+      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
+        <dc:Bounds x="152" y="200" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="146" y="243" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_SelectTool_di" bpmnElement="Gateway_SelectTool" isMarkerVisible="true">
+        <dc:Bounds x="245" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="240" y="165" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PolicyLookup_di" bpmnElement="PolicyLookup">
+        <dc:Bounds x="400" y="58" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PolicyLookup_di" bpmnElement="End_PolicyLookup">
+        <dc:Bounds x="562" y="80" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="123" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GetCustomerProfile_di" bpmnElement="GetCustomerProfile">
+        <dc:Bounds x="400" y="178" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_GetCustomerProfile_di" bpmnElement="End_GetCustomerProfile">
+        <dc:Bounds x="562" y="200" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="545" y="243" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CalculateDamageEstimate_di" bpmnElement="CalculateDamageEstimate">
+        <dc:Bounds x="400" y="298" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_CalculateDamageEstimate_di" bpmnElement="End_CalculateDamageEstimate">
+        <dc:Bounds x="562" y="320" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="363" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Start_Gateway_di" bpmnElement="Flow_Start_Gateway">
+        <di:waypoint x="188" y="218" />
+        <di:waypoint x="245" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Gateway_PolicyLookup_di" bpmnElement="Flow_Gateway_PolicyLookup">
+        <di:waypoint x="270" y="195" />
+        <di:waypoint x="270" y="98" />
+        <di:waypoint x="400" y="98" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PolicyLookup_End_di" bpmnElement="Flow_PolicyLookup_End">
+        <di:waypoint x="500" y="98" />
+        <di:waypoint x="562" y="98" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Gateway_GetCustomerProfile_di" bpmnElement="Flow_Gateway_GetCustomerProfile">
+        <di:waypoint x="295" y="220" />
+        <di:waypoint x="400" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GetCustomerProfile_End_di" bpmnElement="Flow_GetCustomerProfile_End">
+        <di:waypoint x="500" y="218" />
+        <di:waypoint x="562" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Gateway_CalculateDamageEstimate_di" bpmnElement="Flow_Gateway_CalculateDamageEstimate">
+        <di:waypoint x="270" y="245" />
+        <di:waypoint x="270" y="338" />
+        <di:waypoint x="400" y="338" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CalculateDamageEstimate_End_di" bpmnElement="Flow_CalculateDamageEstimate_End">
+        <di:waypoint x="500" y="338" />
+        <di:waypoint x="562" y="338" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
