@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.6</version>
     </parent>
 
     <groupId>io.camunda</groupId>
@@ -34,24 +34,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--
-            8.9.0 GA is not yet on Maven Central. Use the SNAPSHOT from Camunda's public
-            artifactory. Update to a GA release (e.g. 8.9.1) once it ships to Maven Central.
-            Check: https://search.maven.org/search?q=camunda-process-test-spring
-        -->
-        <camunda.version>8.9.0-rc4</camunda.version>
+        <camunda.version>8.9.8</camunda.version>
     </properties>
 
-    <repositories>
-        <!-- Camunda public artifactory — hosts 8.9.x SNAPSHOT builds -->
-        <repository>
-            <id>camunda-public-artifactory</id>
-            <name>Camunda Public Artifactory</name>
-            <url>https://artifacts.camunda.com/artifactory/public/</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
