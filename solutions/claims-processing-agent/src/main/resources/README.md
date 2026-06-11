@@ -402,7 +402,7 @@ All three layers run locally and in CI. The process tests are the commit gate an
 | SIR-5 | The judge produces a quality score consistent with the assessment.         | [`ClaimsExternalSystemsIT.judgeQualityScoreIsConsistent`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge) | TODO — pending integration run |
 | SIR-6 | Each tool builds its request from the supplied claim or customer identifier. | [`ClaimsExternalSystemsIT`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) connector segments | TODO — pending integration run |
 
-Semantic similarity is expressed today as a judge-based equivalence check (`hasVariableSatisfiesJudge` with a reference expectation). Native embedding-similarity assertions are not in the pinned CPT release (`8.9.8`); when they ship, SIR-4 moves to `hasVariableSatisfiesSimilarity`.
+Semantic similarity is expressed today as a judge-based equivalence check (`hasVariableSatisfiesJudge` with a reference expectation). Native semantic-similarity assertions — `hasVariableSimilarTo` / `hasLocalVariableSimilarTo`, backed by a configured embedding model (`camunda.process-test.similarity.embedding-model`) and tuned with `withSemanticSimilarityConfig(...)` — ship in Camunda 8.10 (8.10.0-alpha1). The harness is pinned to CPT 8.9.8, which does not include them, so SIR-4 uses the judge check until the harness moves to 8.10.
 
 ### Process integration requirements (PIR) — proven by the process integration tests
 
