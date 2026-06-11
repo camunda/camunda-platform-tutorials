@@ -4,10 +4,18 @@ import io.camunda.process.test.api.CamundaSpringProcessTest;
 import io.camunda.process.test.api.TestDeployment;
 import io.camunda.process.test.api.testCases.TestCase;
 import io.camunda.process.test.api.testCases.TestCaseRunner;
-import io.camunda.process.test.api.testCases.TestCaseSource;
+import io.camunda.process.test.impl.testCases.TestCasesReader;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * CPT process-routing tests for claims-processing-agent.
@@ -33,9 +41,23 @@ public class ProcessTest {
     @Autowired
     private TestCaseRunner testCaseRunner;
 
-    @ParameterizedTest
-    @TestCaseSource
-    void shouldPass(final TestCase testCase, final String filename) {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("testCases")
+    void shouldPass(final TestCase testCase) {
         testCaseRunner.run(testCase);
+    }
+
+    static Stream<Arguments> testCases() throws IOException {
+        var reader = new TestCasesReader();
+        InputStream is = Objects.requireNonNull(
+            ProcessTest.class.getClassLoader()
+                .getResourceAsStream("test-cases/CamundaInsurance_ClaimsProcessing.test.json"),
+            "test-cases/CamundaInsurance_ClaimsProcessing.test.json not found on classpath"
+        );
+        return reader.read(is).getTestCases().stream().map(tc -> {
+            String display = tc.getName()
+                + tc.getDescription().map(d -> ": " + d).orElse("");
+            return Arguments.of(Named.of(display, tc));
+        });
     }
 }
