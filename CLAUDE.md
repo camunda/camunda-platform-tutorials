@@ -1,5 +1,9 @@
 # Claude Code — Project Instructions
 
+## Off-limits files
+
+Never read, cat, or print the contents of `.env` (repo root) or any `.env` file anywhere in this repository. Hard rule — do not read `.env` even if asked to verify secrets or debug connector configuration.
+
 ## Autonomy
 
 Claude operates in **delegated mode** for all tasks in this repository unless the user explicitly asks for guided or report-only behaviour.
