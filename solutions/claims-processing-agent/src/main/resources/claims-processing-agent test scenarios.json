@@ -1,0 +1,124 @@
+{
+  "processId": "CamundaInsurance_ClaimsProcessing",
+  "testCases": [
+    {
+      "name": "Default - Escalation",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "variables": {
+            "customerName": "Maria Kovacs",
+            "customerId": "CUST-4521",
+            "customerEmail": "maria.kovacs@email.com",
+            "claimId": "CLM-2025-0042",
+            "claimType": "collision",
+            "incidentDate": "2026-06-01",
+            "damageDescription": "Rear-end collision at traffic light. Other driver confirmed at fault. Police report filed on-site (report #WR-2026-44821). Damage to rear bumper and trunk. Repair estimate from certified body shop attached.",
+            "claimDocuments": null
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "Task_HumanReview"
+          },
+          "variables": {
+            "claimId": "CLM-2025-0042",
+            "customerId": "CUST-4521",
+            "customerName": "Maria Kovacs",
+            "damageDescription": "Rear-end collision at traffic light. Other driver confirmed at fault. Police report filed on-site (report #WR-2026-44821). Damage to rear bumper and trunk. Repair estimate from certified body shop attached.",
+            "assessmentReport": "<thinking>\nNow I have all the information needed to compile the full assessment.\n\n**Summary of fraud indicators:**\n\n1. **From PolicyLookup:**\n   - fraudRiskScore: \"high\"\n   - fraudFlags: 3\n   - Collision coverage added 12 days before the incident date (May 20, 2026 - incident seems to be around June 1, 2026)\n   - Police report number WR-2026-44821 not found in regional registry\n   - Third claim filed by this policy within 60 days\n\n2. **From CalculateDamageEstimate:**\n   - estimateConfidence: \"low\"\n   - Claimed amount ($47,800) is 5.2x the vehicle market value ($9,200)\n   - Reported damage (rear bumper, trunk) is inconsistent with a total-loss estimate\n   - Estimate submitted by a body shop with prior flagged claims\n\n3. **From GetCustomerProfile:**\n   - riskRating: \"high\"\n   - fraudHistory: true\n   - priorFraudInvestigations: 2\n   - openInvestigations: 1 (there's currently an open investigation)\n   - claimsThisYear: 4\n   - claimsLast3Years: 5 (all 5 total claims are in the last 3 years)\n   - lastClaimAmount: $18,500 (collision type) just 16 days ago (May 10, 2026)\n   - paymentHistory: late_payments\n   - memberSince: 2025-11-02 (very recent member)\n\nThis is a very high-risk claim with multiple serious fraud indicators. I should set fraudSuspected: true and document all fraud indicators.\n\n**Policy validation:**\n- Policy is active, comprehensive, covers collision\n- Coverage limit: $50,000\n- Deductible: $500\n- But the fraud flags are very concerning\n\n**Documents:**\n- The customer mentioned a police report (#WR-2026-44821) and a repair estimate from a certified body shop - but the police report wasn't found in the regional registry and the body shop has prior flagged claims. The description is detailed enough to proceed with assessment.\n- I'll set documentsVerified: true since documents were submitted (repair estimate attached, police report referenced), even though they raise flags.\n\n**Damage estimate:** $47,800\n- But the vehicle market value is $9,200\n- This is clearly anomalous\n\n**Recommended action:** Flag for fraud investigation / deny or suspend pending investigation.\n\nLet me compile the final JSON report.\n\nFor documentsVerified: The customer submitted a repair estimate (attached) and referenced a police report. The police report wasn't found in the registry, which is a fraud flag, but the claim description is detailed and documents were submitted. I'll set documentsVerified: true since documents were submitted, but note the issues as fraud indicators.\n\nActually, thinking about this more carefully - the police report not being found in the registry is a fraud indicator, not a document sufficiency issue. The repair estimate was attached. So documentsVerified: true seems right.\n\nRecommended action: \"Suspend claim pending fraud investigation. Do not approve payment. Refer to Special Investigations Unit (SIU) immediately.\"\n</thinking>\n\nAll three tools have returned. The results are comprehensive — and deeply concerning. Here is the complete assessment:\n\n---\n\n```json\n{\n  \"claimSummary\": \"Maria Kovacs (CUST-4521) filed claim CLM-2025-0042 under policy POL-2024-8847 for a reported rear-end collision at a traffic light, citing damage to the rear bumper and trunk. A certified body shop repair estimate was attached and a police report (#WR-2026-44821) was referenced. The policy is active with collision coverage and a $50,000 limit. However, the claim triggers an exceptionally high number of fraud indicators across all three assessment tools: the damage estimate of $47,800 is 5.2x the vehicle's market value of $9,200; collision coverage was added only 12 days before the incident; the referenced police report cannot be found in the regional registry; the submitting body shop has a history of flagged claims; and the customer has 2 prior fraud investigations, an open investigation, and 4 claims filed this calendar year alone.\",\n  \"policyValidated\": true,\n  \"documentsVerified\": true,\n  \"damageEstimate\": 47800,\n  \"fraudIndicators\": \"POLICY-LEVEL: (1) High fraud risk score flagged by policy system; (2) 3 fraud flags on policy record; (3) Collision coverage added just 12 days before the incident date (added 2026-05-20); (4) Police report #WR-2026-44821 not found in regional registry; (5) Third claim filed under this policy within 60 days. DAMAGE-ESTIMATE-LEVEL: (6) Claimed repair amount ($47,800) is 5.2x the vehicle's market value ($9,200); (7) Reported damage scope (rear bumper, trunk) is inconsistent with a total-loss estimate; (8) Repair estimate submitted by a body shop with prior flagged claims; (9) Estimate confidence rated LOW. CUSTOMER-PROFILE-LEVEL: (10) Customer risk rating: HIGH; (11) Confirmed prior fraud history on account; (12) 2 prior fraud investigations; (13) 1 currently open investigation; (14) 4 claims filed this calendar year; (15) 5 total claims all within the last 3 years; (16) Previous claim of $18,500 (collision) filed only 16 days prior on 2026-05-10; (17) Account payment history flagged as late_payments; (18) Policy and membership only 7 months old (inception 2025-11-02).\",\n  \"fraudSuspected\": true,\n  \"recommendedAction\": \"SUSPEND CLAIM IMMEDIATELY. Do not approve or issue any payment. Refer to Special Investigations Unit (SIU) for full fraud investigation. Key priorities: (1) Independently verify police report #WR-2026-44821 with the issuing authority; (2) Audit the attached body shop repair estimate and the shop's relationship with this customer; (3) Investigate the timing of collision coverage addition relative to the incident date; (4) Review the 3 claims filed on this policy in the past 60 days, including the $18,500 collision claim from 2026-05-10; (5) Cross-reference with the currently open investigation on CUST-4521.\",\n  \"reportComplete\": true\n}\n```\n\n---\n\n### 🔴 Assessment Highlights\n\n| Check | Result |\n|---|---|\n| Policy Active | ✅ Yes — Comprehensive, Collision covered, expires 2026-12-31 |\n| Coverage Limit / Deductible | $50,000 / $500 |\n| Documents Submitted | ✅ Yes — Body shop estimate attached, police report referenced |\n| Damage Estimate | $47,800 (vs. vehicle market value of only **$9,200**) |\n| Fraud Suspected | 🚨 **YES — 18 compounding fraud indicators** |\n\n### ⚠️ Most Critical Red Flags\n1. **Coverage timing:** Collision coverage added **just 12 days before** the reported incident — a classic pre-staging signal.\n2. **Unverifiable police report:** Report #WR-2026-44821 **does not exist** in the regional registry.\n3. **Grossly inflated estimate:** The claimed $47,800 is **5.2× the car's actual market value** of $9,200, filed as a \"total loss\" for what was described as bumper and trunk damage.\n4. **Flagged body shop:** The repair estimate comes from a shop with a **prior history of fraudulent claims**.\n5. **Repeat behavior:** Customer has **2 prior fraud investigations**, **1 currently open**, and filed **4 claims this year** — including a $18,500 collision claim just **16 days ago**.\n\nThis claim should be **immediately suspended** and handed to the **Special Investigations Unit (SIU)** before any further action is taken.",
+            "judgeDecision": "ESCALATE",
+            "judgeReasoning": "This claim triggers every major escalation criterion simultaneously, making it one of the highest-risk profiles reviewable. Specific escalation triggers fired: (1) fraudSuspected=true explicitly set in the assessment report; (2) Collision coverage added only 12 days before the incident — a textbook pre-staging indicator and a hard escalation rule; (3) Claimed damage estimate of $47,800 is 5.2x the vehicle's market value of $9,200 — far exceeding vehicle value, another hard escalation rule; (4) Confirmed prior fraud history on the customer account with 2 prior fraud investigations and 1 currently open investigation — hard escalation rule; (5) Police report #WR-2026-44821 is unverifiable — not found in the regional registry, satisfying the unverifiable incident details escalation rule; (6) 4 claims filed this calendar year, 3 claims under this policy within 60 days, and a $18,500 collision claim filed just 16 days prior — satisfying the multiple claims in short period escalation rule. Beyond the hard triggers, compounding risk factors include: the repair estimate was submitted by a body shop with a documented history of flagged claims; the reported damage (rear bumper, trunk) is physically inconsistent with the total-loss categorisation of the estimate; the damage estimate confidence was rated LOW by the estimation engine; the policy itself is only 7 months old; and the customer account carries a high risk rating with a history of late payments. All 6 independent escalation rules are satisfied concurrently. There is no basis whatsoever for APPROVE or MANUAL_REVIEW. This claim must be immediately referred to the Special Investigations Unit (SIU) with a hold on any disbursement.",
+            "judgeConfidence": "0.99",
+            "suggestedSettlementAmount": "0",
+            "escalationReason": "",
+            "adjusterResolution": "APPROVE",
+            "adjusterSettlementAmount": 1000,
+            "adjusterNotes": "it's worth it"
+          }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ],
+      "metadata": {
+        "processInstanceId": 4503599627451224,
+        "coveredFlowNodes": [
+          {
+            "flowNodeId": "Start_ClaimForm",
+            "elementType": "bpmn:StartEvent"
+          },
+          {
+            "flowNodeId": "Agent_ClaimsAssessment",
+            "elementType": "bpmn:AdHocSubProcess"
+          },
+          {
+            "flowNodeId": "Agent_ClaimsAssessment#innerInstance"
+          },
+          {
+            "flowNodeId": "PolicyLookup",
+            "elementType": "bpmn:ServiceTask"
+          },
+          {
+            "flowNodeId": "Agent_ClaimsAssessment#innerInstance"
+          },
+          {
+            "flowNodeId": "CalculateDamageEstimate",
+            "elementType": "bpmn:ServiceTask"
+          },
+          {
+            "flowNodeId": "Agent_ClaimsAssessment#innerInstance"
+          },
+          {
+            "flowNodeId": "GetCustomerProfile",
+            "elementType": "bpmn:ServiceTask"
+          },
+          {
+            "flowNodeId": "Agent_Judge",
+            "elementType": "bpmn:ServiceTask"
+          },
+          {
+            "flowNodeId": "Gateway_JudgeDecision",
+            "elementType": "bpmn:ExclusiveGateway"
+          },
+          {
+            "flowNodeId": "Event_EscalateThrow",
+            "elementType": "bpmn:IntermediateThrowEvent"
+          },
+          {
+            "flowNodeId": "SubProcess_HumanControl",
+            "elementType": "bpmn:SubProcess"
+          },
+          {
+            "flowNodeId": "Start_HumanEscalation",
+            "elementType": "bpmn:StartEvent"
+          },
+          {
+            "flowNodeId": "Task_HumanReview",
+            "elementType": "bpmn:UserTask"
+          },
+          {
+            "flowNodeId": "End_HumanResolved",
+            "elementType": "bpmn:EndEvent"
+          }
+        ],
+        "coveredSequenceFlows": [
+          "Flow_StartToAHSP",
+          "Flow_AHSPToJudge",
+          "Flow_JudgeToGW",
+          "Flow_GWToEscalate",
+          "Flow_HumanStart",
+          "Flow_HumanToNotify"
+        ]
+      }
+    }
+  ]
+}

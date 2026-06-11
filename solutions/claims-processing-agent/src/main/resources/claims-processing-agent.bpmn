@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="204af60" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:escalation id="Escalation_Claims" name="Claims Escalation" escalationCode="claims_escalation" />
-<bpmn:process id="CamundaInsurance_ClaimsProcessing" name="Claims Processing Agent" isExecutable="true">
+  <bpmn:process id="CamundaInsurance_ClaimsProcessing" name="Claims Processing Agent" isExecutable="true">
     <bpmn:startEvent id="Start_ClaimForm" name="Claim submitted with documents">
       <bpmn:documentation>Customer submits: personal details (customerId, customerEmail, name), claim information (claimId, claimType, damageDescription, incidentDate), and supporting documents (photos, repair estimates, police reports) uploaded via the form.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="claim-submission-form" />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;customerName&#34;: &#34;Maria Kovacs&#34;,&#10;  &#34;customerId&#34;: &#34;CUST-4521&#34;,&#10;  &#34;customerEmail&#34;: &#34;maria.kovacs@email.com&#34;,&#10;  &#34;claimId&#34;: &#34;CLM-2025-0042&#34;,&#10;  &#34;claimType&#34;: &#34;collision&#34;,&#10;  &#34;incidentDate&#34;: &#34;2026-06-01&#34;,&#10;  &#34;damageDescription&#34;: &#34;Rear-end collision at traffic light. Other driver confirmed at fault. Police report filed on-site (report #WR-2026-44821). Damage to rear bumper and trunk. Repair estimate from certified body shop attached.&#34;,&#10;  &#34;claimDocuments&#34;: null&#10;}" />
+        </zeebe:properties>
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_StartToAHSP</bpmn:outgoing>
     </bpmn:startEvent>
@@ -19,7 +22,7 @@
           <zeebe:input source="{{secrets.AWS_BEDROCK_ACCESS_KEY}}" target="provider.bedrock.authentication.accessKey" />
           <zeebe:input source="{{secrets.AWS_BEDROCK_SECRET_KEY}}" target="provider.bedrock.authentication.secretKey" />
           <zeebe:input source="{{secrets.AWS_BEDROCK_MODEL}}" target="provider.bedrock.model.model" />
-          <zeebe:input source="=&#34;You are a claims assessment agent for Camunda Insurance. The customer has submitted their claim form including personal details, claim description, and optionally supporting documents (photos, repair estimates, police reports) which if present are attached to this request. Use ALL THREE tools in this sequence: (1) PolicyLookup - validates policy coverage and fraud flags; call it with the claimId. (2) GetCustomerProfile - retrieves customer fraud history and risk rating; call it with the customerId (format CUST-####, NOT the claimId - these are different identifiers). (3) CalculateDamageEstimate - computes repair estimate and anomaly flags; call it with the claimId. DOCUMENTS: if supporting documents are attached, use their content as evidence when forming your assessment. Set documentsVerified: true if documents are present and sufficient, or if no documents were submitted but the damage description is detailed enough to proceed. Set documentsVerified: false only if the claim description is so vague that assessment is impossible. Do NOT use RequestAdditionalDocuments or EscalateToHuman just because documents are absent - the damage description is sufficient evidence. REASONING TRACES: before every tool call, briefly narrate why using: &lt;thinking&gt;[what you know so far and why you are calling this tool]&lt;/thinking&gt;. This is required. FRAUD HANDLING: if any tool returns fraud signals (fraudRiskScore high, fraudFlags present, fraudHistory true, priorFraudInvestigations, anomalyFlags) document ALL of them in the fraudIndicators field as a summary string and set fraudSuspected: true. Do NOT use EscalateToHuman because of fraud suspicion - complete the full assessment and let the judge decide. Reserve EscalateToHuman ONLY for genuine cannot-complete situations: critical data unavailable or tools failing repeatedly. When done return JSON only: {claimSummary: string, policyValidated: boolean, documentsVerified: boolean, damageEstimate: number, fraudIndicators: string, fraudSuspected: boolean, recommendedAction: string, reportComplete: boolean}&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;You are a claims assessment agent for Camunda Insurance. The customer has submitted their claim form including personal details, claim description, and optionally supporting documents (photos, repair estimates, police reports) which if present are attached to this request. Use ALL THREE tools in this sequence: (1) PolicyLookup - validates policy coverage and fraud flags; call it with the claimId. (2) GetCustomerProfile - retrieves customer fraud history and risk rating; call it with the customerId (format CUST-####, NOT the claimId - these are different identifiers). (3) CalculateDamageEstimate - computes repair estimate and anomaly flags; call it with the claimId. DOCUMENTS: if supporting documents are attached, use their content as evidence when forming your assessment. Set documentsVerified: true if documents are present and sufficient, or if no documents were submitted but the damage description is detailed enough to proceed. Set documentsVerified: false only if the claim description is so vague that assessment is impossible. Do NOT use RequestAdditionalDocuments or EscalateToHuman just because documents are absent - the damage description is sufficient evidence. REASONING TRACES: before every tool call, briefly narrate why using: &#60;thinking&#62;[what you know so far and why you are calling this tool]&#60;/thinking&#62;. This is required. FRAUD HANDLING: if any tool returns fraud signals (fraudRiskScore high, fraudFlags present, fraudHistory true, priorFraudInvestigations, anomalyFlags) document ALL of them in the fraudIndicators field as a summary string and set fraudSuspected: true. Do NOT use EscalateToHuman because of fraud suspicion - complete the full assessment and let the judge decide. Reserve EscalateToHuman ONLY for genuine cannot-complete situations: critical data unavailable or tools failing repeatedly. When done return JSON only: {claimSummary: string, policyValidated: boolean, documentsVerified: boolean, damageEstimate: number, fraudIndicators: string, fraudSuspected: boolean, recommendedAction: string, reportComplete: boolean}&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=&#34;Assess claim ID &#34; + claimId + &#34;. Customer reported: &#34; + damageDescription" target="data.userPrompt.prompt" />
           <zeebe:input source="=if is defined(claimDocuments) then claimDocuments else null" target="data.userPrompt.documents" />
           <zeebe:input target="agentContext" />
@@ -47,15 +50,15 @@
         <bpmn:documentation>Look up insurance policy by claim ID. Returns policy holder name, coverage type, limits, and active status. Call first to confirm the claim has valid coverage.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
-          <zeebe:ioMapping>
+          <zeebe:ioMapping values="[object Object],[object Object],[object Object]">
             <zeebe:input source="=fromAi(toolCall.claimId, &#34;Claim ID to look up policy for&#34;, &#34;string&#34;)" target="claimId" />
+            <zeebe:input source="=false" target="ignoreNullValues" />
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="GET" target="method" />
             <zeebe:input source="=&#34;https://claim-demo.free.beeceptor.com/claims/&#34; + toolCall.claimId" target="url" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
             <zeebe:input source="=20" target="readTimeoutInSeconds" />
-            <zeebe:input source="=false" target="ignoreNullValues" />
             <zeebe:output source="=toolCallResult" target="toolCallResult" />
             <zeebe:output source="=toolCallResult.policyNumber" target="policyNumber" />
             <zeebe:output source="=toolCallResult.status" target="policyStatus" />
@@ -274,10 +277,6 @@
         <dc:Bounds x="248" y="80" width="520" height="280" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="RequestAdditionalDocuments_di" bpmnElement="RequestAdditionalDocuments">
-        <dc:Bounds x="618" y="250" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PolicyLookup_di" bpmnElement="PolicyLookup">
         <dc:Bounds x="298" y="250" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -286,15 +285,19 @@
         <dc:Bounds x="298" y="120" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CalculateDamageEstimate_di" bpmnElement="CalculateDamageEstimate">
+        <dc:Bounds x="458" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RequestAdditionalDocuments_di" bpmnElement="RequestAdditionalDocuments">
+        <dc:Bounds x="618" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EscalateToHuman_di" bpmnElement="EscalateToHuman">
         <dc:Bounds x="650" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="626" y="185" width="84" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="CalculateDamageEstimate_di" bpmnElement="CalculateDamageEstimate">
-        <dc:Bounds x="458" y="180" width="100" height="80" />
-        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_HandleError_di" bpmnElement="Task_HandleError">
         <dc:Bounds x="458" y="420" width="100" height="80" />
