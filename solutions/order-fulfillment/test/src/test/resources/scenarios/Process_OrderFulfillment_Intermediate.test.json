@@ -74,6 +74,54 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "fetch goods delayed - customer informed about delay",
+      "description": "Order received and payment retrieved. Fetching goods runs past 2 days, firing the non-interrupting delay timer. Customer is informed about the delay.",
+      "instructions": [
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "Msg_OrderReceived",
+          "correlationKey": "",
+          "variables": {
+            "orderId": "ORD003",
+            "customerId": "CUST003",
+            "items": [{ "sku": "ITEM003", "quantity": 1 }]
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_RetrievePayment" },
+          "variables": { "paymentId": "PAY003", "paymentStatus": "success" }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_OrderFulfillment_Intermediate" },
+          "elementSelectors": [{ "elementId": "Activity_0tmo7ip" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P3D"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_OrderFulfillment_Intermediate" },
+          "elementSelectors": [{ "elementId": "Activity_1ihyrlw" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_1ihyrlw" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_OrderFulfillment_Intermediate" },
+          "elementSelectors": [{ "elementId": "Event_1dqrfkm" }],
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) Msg_OrderReceived message triggers process correctly with real message broker; (2) Activity_RetrievePayment calls real payment gateway and verifies payment is captured; (3) Activity_0tmo7ip (Fetch goods) calls real warehouse management system; (4) Activity_15rdezk (Ship goods) calls real shipping/logistics API and returns valid tracking number; (5) Non-interrupting timer boundary event on Activity_0tmo7ip requires time acceleration to test."

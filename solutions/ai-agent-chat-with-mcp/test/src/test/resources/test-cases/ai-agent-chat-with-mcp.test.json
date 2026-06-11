@@ -70,17 +70,7 @@
           "variables": {
             "agent": {
               "responseText": "I attempted to list files but encountered an error.",
-              "context": {
-                "state": "READY",
-                "metrics": { "modelCalls": 1, "tokenUsage": { "inputTokenCount": 80, "outputTokenCount": 30 } },
-                "conversation": {
-                  "type": "in-process",
-                  "messages": [
-                    { "role": "user", "content": [{ "type": "text", "text": "List files in my home directory" }] },
-                    { "role": "assistant", "content": [{ "type": "text", "text": "I attempted to list files but encountered an error." }] }
-                  ]
-                }
-              }
+              "context": { "state": "READY" }
             }
           },
           "completionConditionFulfilled": true
@@ -99,19 +89,7 @@
           "variables": {
             "agent": {
               "responseText": "Successfully listed /home: user1, user2",
-              "context": {
-                "state": "READY",
-                "metrics": { "modelCalls": 2, "tokenUsage": { "inputTokenCount": 150, "outputTokenCount": 60 } },
-                "conversation": {
-                  "type": "in-process",
-                  "messages": [
-                    { "role": "user", "content": [{ "type": "text", "text": "List files in my home directory" }] },
-                    { "role": "assistant", "content": [{ "type": "text", "text": "I attempted to list files but encountered an error." }] },
-                    { "role": "user", "content": [{ "type": "text", "text": "Try listing /home instead" }] },
-                    { "role": "assistant", "content": [{ "type": "text", "text": "Successfully listed /home: user1, user2" }] }
-                  ]
-                }
-              }
+              "context": { "state": "READY" }
             }
           },
           "completionConditionFulfilled": true
@@ -127,7 +105,313 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "tool activation - OpenMemory, Deepwiki, Time and SuperfluxProduct",
+      "description": "Agent activates the standalone MCP tools (OpenMemory, Deepwiki, Time) and the Superflux script tool in one cycle, then finishes.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "variables": {
+            "inputText": "Remember my name, look up the camunda repo, tell me the time and superflux 2 and 3",
+            "inputDocuments": []
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "activateElements": [
+            { "elementId": "OpenMemory", "variables": { "toolCall": { "method": "tools/call", "params": { "name": "add_memory", "arguments": { "text": "User name is Eric" } }, "_meta": { "id": "tc-mem-1", "name": "openmemory" } } } },
+            { "elementId": "Deepwiki", "variables": { "toolCall": { "method": "tools/call", "params": { "name": "read_wiki_structure", "arguments": { "repoName": "camunda/camunda" } }, "_meta": { "id": "tc-dw-1", "name": "deepwiki" } } } },
+            { "elementId": "Time", "variables": { "toolCall": { "method": "tools/call", "params": { "name": "get_current_time", "arguments": { "timezone": "Europe/Berlin" } }, "_meta": { "id": "tc-time-1", "name": "time" } } } },
+            { "elementId": "SuperfluxProduct", "variables": { "toolCall": { "a": 2, "b": 3, "_meta": { "id": "tc-sf-1", "name": "SuperfluxProduct" } } } }
+          ]
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "OpenMemory" },
+          "variables": { "toolCallResult": { "content": [{ "type": "text", "text": "Memory stored" }] } }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Deepwiki" },
+          "variables": { "toolCallResult": { "content": [{ "type": "text", "text": "Repo structure: docs, src" }] } }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Time" },
+          "variables": { "toolCallResult": { "content": [{ "type": "text", "text": "2026-06-11T12:00:00+02:00" }] } }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [
+            { "elementId": "OpenMemory" },
+            { "elementId": "Deepwiki" },
+            { "elementId": "Time" },
+            { "elementId": "SuperfluxProduct" }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "variables": {
+            "agent": {
+              "responseText": "Done: stored your name, read the repo wiki, current time is noon, superflux of 2 and 3 is 15.",
+              "context": { "state": "READY" }
+            }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "User_Feedback" },
+          "variables": { "userSatisfied": true }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "filesystem read tool - no confirmation needed",
+      "description": "Agent activates the Filesystem MCP flow with a read-only tool (tools/list). The 'Needs confirmation?' gateway routes the 'no' branch straight to the Filesystem tool.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "variables": {
+            "inputText": "List the allowed directories",
+            "inputDocuments": []
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "activateElements": [
+            { "elementId": "Filesystem_MCP_Flow", "variables": { "toolCall": { "method": "tools/list", "params": {}, "_meta": { "id": "tc-fs-list", "name": "filesystem" } } } }
+          ]
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [{ "elementId": "Filesystem" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Filesystem" },
+          "variables": { "toolCallResult": { "content": [{ "type": "text", "text": "/home, /tmp" }] } }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [
+            { "elementId": "Filesystem_MCP_Flow" },
+            { "elementId": "Gateway_115zcj9" },
+            { "elementId": "Gateway_join_FS" },
+            { "elementId": "Filesystem" }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "variables": {
+            "agent": { "responseText": "Allowed directories: /home, /tmp", "context": { "state": "READY" } }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "User_Feedback" },
+          "variables": { "userSatisfied": true }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "filesystem write tool - confirmation requested and allowed",
+      "description": "Agent activates the Filesystem MCP flow with a write tool. The 'Needs confirmation?' gateway routes to the Ask-for-confirmation user task. User allows execution, so the Filesystem tool runs.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "variables": {
+            "inputText": "Write a file to /home/notes.txt",
+            "inputDocuments": []
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "activateElements": [
+            { "elementId": "Filesystem_MCP_Flow", "variables": { "toolCall": { "method": "tools/call", "params": { "name": "write_file", "arguments": { "path": "/home/notes.txt", "content": "hello" } }, "_meta": { "id": "tc-fs-write", "name": "filesystem" } } } }
+          ]
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [{ "elementId": "Activity_0mdux6v" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0mdux6v" },
+          "variables": { "toolCallAllowed": true }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [{ "elementId": "Filesystem" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Filesystem" },
+          "variables": { "toolCallResult": { "content": [{ "type": "text", "text": "File written" }] } }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [
+            { "elementId": "Activity_0mdux6v" },
+            { "elementId": "Gateway_0fgu5ui" },
+            { "elementId": "Filesystem" }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "variables": {
+            "agent": { "responseText": "File written to /home/notes.txt", "context": { "state": "READY" } }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "User_Feedback" },
+          "variables": { "userSatisfied": true }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "filesystem write tool - confirmation requested and denied",
+      "description": "Agent activates the Filesystem MCP flow with a write tool. User denies execution, so the 'Execution allowed?' gateway routes to the 'MCP execution not allowed' throw event.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "variables": {
+            "inputText": "Delete /home/important.txt",
+            "inputDocuments": []
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "activateElements": [
+            { "elementId": "Filesystem_MCP_Flow", "variables": { "toolCall": { "method": "tools/call", "params": { "name": "delete_file", "arguments": { "path": "/home/important.txt" } }, "_meta": { "id": "tc-fs-del", "name": "filesystem" } } } }
+          ]
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [{ "elementId": "Activity_0mdux6v" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0mdux6v" },
+          "variables": { "toolCallAllowed": false }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [{ "elementId": "Event_1e3tdvb" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "variables": {
+            "agent": { "responseText": "Tool call was not allowed by the user.", "context": { "state": "READY" } }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "User_Feedback" },
+          "variables": { "userSatisfied": true }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "message event subprocess - non-interrupting message handled during agent run",
+      "description": "While the AI agent job is active, a correlated message triggers the non-interrupting event subprocess (On Message -> Handle message -> End).",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "variables": {
+            "inputText": "Process this with a side message",
+            "inputDocuments": []
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "ai-agent-message",
+          "correlationKey": "ai-agent-message",
+          "variables": { "messageFromEvent": "side-channel update" }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "elementSelectors": [
+            { "elementId": "On_Message" },
+            { "elementId": "Handle_Message" },
+            { "elementId": "End_Event_Sub_Process_mcp" }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "variables": {
+            "agent": { "responseText": "Handled the request and the side message.", "context": { "state": "READY" } }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "User_Feedback" },
+          "variables": { "userSatisfied": true }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "ai-agent-chat-with-mcp" },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
-  ],
-  "_integrationTestNotes": "Integration tests should verify: (1) AI_Agent adHocSubProcess invokes real AWS Bedrock (Claude Sonnet) via aiagent-job-worker; (2) OpenMemory MCP client tool calls reach real OpenMemory server; (3) Filesystem MCP client tool calls reach real filesystem MCP server; (4) Activity_0mdux6v (Ask for confirmation) user task fires when filesystem tool requires user approval; (5) Full agent loop with real LLM may require longer timeouts."
+  ]
 }

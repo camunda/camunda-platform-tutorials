@@ -67,6 +67,174 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "SLA breached - escalation email sent via event subprocess",
+      "description": "Inquiry awaits an answer past the 2-day SLA, so the non-interrupting SLA-check event subprocess fires and an escalation email is sent.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "variables": {
+            "inquiryId": "INQ002",
+            "customerEmail": "customer@example.com",
+            "inquiry": "Where is my refund?"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "AnswerInquireTask"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT49H"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "SendEscalationEmailTask"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "EscalationEmailSentEndEvent"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "no reply received - SLA timer expires",
+      "description": "Response is sent but no customer reply arrives within one day, so the 1-day timer fires and the process ends with reply not received.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "variables": {
+            "inquiryId": "INQ003",
+            "customerEmail": "customer@example.com",
+            "inquiry": "Can I change my delivery address?"
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "AnswerInquireTask"
+          },
+          "variables": {
+            "response": "Yes, you can update it in your account settings."
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "SendResponseTask"
+          },
+          "variables": {}
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT25H"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "OneDayTimer"
+            },
+            {
+              "elementId": "ReplyNotReceivedEvent"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "inquiry retracted - retraction message received during answer",
+      "description": "While the agent is answering, the user retracts the inquiry, the message boundary fires and the process ends with inquiry retracted.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "variables": {
+            "inquiryId": "INQ004",
+            "customerEmail": "customer@example.com",
+            "inquiry": "Please cancel my support request."
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "AnswerInquireTask"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "Retraction",
+          "correlationKey": "exampleKey",
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "RetractionReceivedEvent"
+            },
+            {
+              "elementId": "Event_0mvom7y"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "template-enforcing-sla-1ktq8my"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) SendResponseTask (HTTP connector) sends real HTTP request to the customer's endpoint with the inquiry response; (2) SendEscalationEmailTask (HTTP connector) sends a real escalation email when SLA timer fires (requires time acceleration or a 2-day wait); (3) Timer boundary events (SLA escalation) require time acceleration in integration tests."

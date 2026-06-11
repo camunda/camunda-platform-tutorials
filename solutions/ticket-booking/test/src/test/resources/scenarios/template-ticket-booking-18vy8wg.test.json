@@ -41,6 +41,58 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "payment times out - booking cancelled",
+      "description": "Seats reserved, payment requested, but the payment-received event never arrives within 5 minutes. The interrupting timer fires and the booking is cancelled.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "template-ticket-booking-18vy8wg" },
+          "variables": {
+            "customerId": "CUST002",
+            "eventId": "EVT002",
+            "seats": ["B1", "B2"]
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "ReserveSeatsActivity" },
+          "variables": { "reservationId": "RES002" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0lox1kf" },
+          "variables": { "paymentRequestId": "PAY002" }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "template-ticket-booking-18vy8wg" },
+          "elementSelectors": [{ "elementId": "WaitForPaymentReceivedEvent" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT6M"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "template-ticket-booking-18vy8wg" },
+          "elementSelectors": [{ "elementId": "AfterFiveMinutesTimer" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "template-ticket-booking-18vy8wg" },
+          "elementSelectors": [{ "elementId": "Event_05eni0s" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "template-ticket-booking-18vy8wg" },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) ReserveSeatsActivity (HTTP connector) calls real seat reservation API and holds seats; (2) Activity_0lox1kf (Request Payment) calls real payment gateway and returns payment URL/reference; (3) msg-payment-received message is published by the real payment webhook handler with the paymentRequestId as correlation key; (4) Activity_0etdda4 (Generate Ticket) calls real ticket generation service; (5) Timer boundary event (AfterFiveMinutesTimer) requires time acceleration or real 5-minute wait in integration tests. NOTE: Error_11kp03o (ErrorSeatsNotAvailable) is defined in the BPMN but has no error boundary event on ReserveSeatsActivity or process-level catch — throwing this error from the job would cause an unhandled incident. If seats-not-available handling is desired, a BPMN change is needed: add an error boundary event on ReserveSeatsActivity that catches ErrorSeatsNotAvailable and routes to the Booking cancelled end event (Event_05eni0s)."

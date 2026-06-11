@@ -253,6 +253,101 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "reminder timer fires - line manager reminded",
+      "description": "Approval is not completed within 2 days, so the non-interrupting reminder timer (R/P2D) fires. The line manager acknowledges the reminder, then approves; the request is logged and the employee notified.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "absence-request-process-10w7pa5-16gc7a1"
+          },
+          "variables": {
+            "employeeName": "Dan Late",
+            "department": "sales",
+            "policy": "flexibleTimeOff",
+            "absenceStartDate": "2025-07-01",
+            "absenceEndDate": "2025-07-03"
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "RequestAbsenceTask"
+          },
+          "variables": {
+            "employeeName": "Dan Late"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "absence-request-process-10w7pa5-16gc7a1"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "ApproveAbsenceTask"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P3D"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "absence-request-process-10w7pa5-16gc7a1"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "GetAndConfirmReminderTask"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "GetAndConfirmReminderTask"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "ApproveAbsenceTask"
+          },
+          "variables": {
+            "approvalResult": "approved"
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "LogAbsenceTask"
+          },
+          "variables": {
+            "absenceLogged": true
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "GetNotification"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "absence-request-process-10w7pa5-16gc7a1"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "This process has no external service connectors — all user tasks are native Zeebe user tasks (zeebe:userTask) and one service task (GetLineManagerTask). Integration tests should verify: (1) GetLineManagerTask job worker correctly assigns a line manager based on the employee department variable; (2) end-to-end flow with a real Zeebe cluster."

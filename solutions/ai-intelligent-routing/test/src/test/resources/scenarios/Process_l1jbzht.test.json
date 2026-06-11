@@ -207,6 +207,160 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "default routing - unrecognised route lands on default team",
+      "description": "Customer enters an ambiguous inquiry. The AI returns a route that matches no department, so the default flow sends it to the default work task, which resolves it. Process ends at happy-end.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "Activity_03z512o"
+          },
+          "variables": {
+            "inquiry": "I'm not sure who can help me with this."
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "azure_openai_call"
+          },
+          "variables": {
+            "route": "OTHER"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_1ltiek0"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "Activity_1ltiek0"
+          },
+          "variables": {
+            "route": "resolved"
+          }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "route to different team - link throw and catch traversed",
+      "description": "AI routes to engineering. The agent decides the inquiry belongs to a different team, so the resolved gateway sends it through the link throw/catch pair back to routing. It routes to engineering again and the agent resolves it. Process ends at happy-end.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "Activity_03z512o"
+          },
+          "variables": {
+            "inquiry": "My integration is broken but it might be a billing issue too."
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "azure_openai_call"
+          },
+          "variables": {
+            "route": "ENGINEERING"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "activity_engineering_team"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "activity_engineering_team"
+          },
+          "variables": {
+            "route": "ENGINEERING"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_0ac11qa"
+            },
+            {
+              "elementId": "Event_057ugz2"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "activity_engineering_team"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "activity_engineering_team"
+          },
+          "variables": {
+            "route": "resolved"
+          }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_l1jbzht"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) Activity_03z512o (collect inquiry user task) renders the correct form and submits the inquiry variable; (2) azure_openai_call (Azure OpenAI connector) sends the inquiry to the real Azure OpenAI endpoint and receives a routing decision — verify the returned route value is one of SALES, ENGINEERING, or LEGAL; (3) each team's user task (activity_sales_team, activity_engineering_team, Activity_04j3j7a) is correctly assigned and completable by the relevant user; (4) the feedback loop routes back through azure_openai_call correctly when route=feedback is returned. Note: the gateway conditions were fixed from matches() to exact equality (=route = \"SALES\") — integration tests should confirm the AI model returns uppercase values matching these exact strings."

@@ -141,6 +141,203 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "insufficient inventory - restocked then fulfilled",
+      "description": "Hardware order, low price (no fraud check). First inventory check finds items unavailable, so the process throws 'insufficient inventory', waits for an 'inventory_updated' message, restarts hardware order processing, re-checks inventory (now available), and completes hardware fulfillment.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "variables": {
+            "orderId": "ORD004",
+            "customerId": "CUST004",
+            "orderItems": [
+              { "orderItemId": 222, "orderItemName": "Router", "item": { "type": "hardware" }, "type": "hardware", "price": 149.99, "reocurring": null },
+              { "orderItemId": 223, "orderItemName": "Monthly Service Fee", "item": { "type": "service" }, "type": "service", "price": 1.00, "reocurring": "monthly" }
+            ]
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "jobType": "check_and_reserve_inventory" },
+          "variables": { "areAllHardwareItemsAvailable": false }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "elementSelectors": [{ "elementId": "Event_1fuhcip" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "elementSelectors": [{ "elementId": "Event_182kkjw" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "inventory_updated",
+          "correlationKey": "ORD004",
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "elementSelectors": [
+            { "elementId": "Event_182kkjw" },
+            { "elementId": "Event_19y7b8u" },
+            { "elementId": "Event_0eeqlvh" }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "jobType": "check_and_reserve_inventory" },
+          "variables": { "areAllHardwareItemsAvailable": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0k3m6zy" },
+          "variables": { "trackingNumber": "TRK004" }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "tracking_information_received",
+          "correlationKey": "ORD004_222",
+          "variables": { "trackingNumber": "TRK004" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_13qigvi" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0d5nxde" },
+          "variables": { "paymentConfirmation": "PAY004" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_00cb2gw" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "fraud check runs - fraud detected via boundary, order aborted",
+      "description": "High-value hardware order triggers the fraud check. The fraud check service raises a 'fraud detected' error, firing the boundary event that routes to the 'fraud found' error end event. The enclosing fraud-check sub-process error boundary records the fraud attempt and aborts the order.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "variables": {
+            "orderId": "ORD005",
+            "customerId": "CUST005",
+            "orderItems": [
+              { "orderItemId": 333, "orderItemName": "Workstation", "item": { "type": "hardware" }, "type": "hardware", "price": 4200.00, "reocurring": null }
+            ]
+          }
+        },
+        {
+          "type": "THROW_BPMN_ERROR_FROM_JOB",
+          "jobSelector": { "elementId": "Activity_1rg0k6z" },
+          "errorCode": "fraud_detected",
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "elementSelectors": [{ "elementId": "Event_15g4dlg" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "elementSelectors": [{ "elementId": "Event_06m1k91" }],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0teyocj" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "fraud check runs - no fraud found, order fulfilled",
+      "description": "High-value mobile order triggers the fraud check. The fraud check service returns clean, reaching the 'no fraud found' end event. The fraud-check sub-process completes normally and the mobile order is fulfilled.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "variables": {
+            "orderId": "ORD006",
+            "customerId": "CUST006",
+            "orderItems": [
+              { "orderItemId": 444, "orderItemName": "Premium Mobile Plan", "item": { "type": "mobile" }, "type": "mobile", "price": 650.00, "reocurring": "monthly" },
+              { "orderItemId": 445, "orderItemName": "One-time Setup Fee", "item": { "type": "service" }, "type": "service", "price": 1.00, "reocurring": null }
+            ]
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1rg0k6z" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "elementSelectors": [{ "elementId": "Event_198nlm3" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1tjr8w6" },
+          "variables": { "mobileNumber": "+49123456700" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0yf9g2p" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "resource_activation_completed",
+          "correlationKey": "ORD006_444",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0fo7pq6" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0dwooye" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0lawqru" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "telco_service_order_fulfillment_retail" },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) Activity_0tiqi9e (Check and reserve inventory) calls real inventory management system; (2) Activity_1tjr8w6 (Reserve mobile number) calls real mobile number provisioning system; (3) Activity_0yf9g2p (Request resource activation) sends real activation request and Event_1nlbn8z awaits real activation confirmation message; (4) Activity_1rg0k6z (Perform fraud check) calls real fraud detection service; (5) Activity_0k3m6zy (Initialize shipping) calls real logistics system and Event_08o7bb6 awaits real tracking message; (6) Activity_0d5nxde (Claim one-time payment) and Activity_0dwooye (Set up monthly payments) call real payment/billing systems; (7) Multi-instance subprocesses require one job completion per order item in integration tests."

@@ -185,7 +185,627 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "credit score sufficient - rental completed",
+      "description": "Credit check needed (low-value car). Credit score >= 600 (sufficient). Checks pass, car available and ready, rental completed normally.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST004",
+            "bookingId": "BK004",
+            "rentalCarValue": 20000,
+            "rentDuration": "P4D"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0w37f54" },
+          "variables": { "creditScore": 700 }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR004", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0t5ihdz" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1n1lkhe" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_picked_up",
+          "correlationKey": "BK004",
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_returned",
+          "correlationKey": "BK004",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0itdlql" },
+          "variables": { "hasCarDamage": false }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0tq09jo" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1b9u86o" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0mnt805" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "car not ready - alternative accepted - restart then completed",
+      "description": "Reserved car fails inspection (not ready), compensation cancels the reservation, the alternative-car event subprocess proposes an alternative which the customer accepts, the availability check restarts, a ready car is found, and the rental completes.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST005",
+            "bookingId": "BK005",
+            "rentalCarValue": 30000,
+            "rentDuration": "P4D"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR005", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": false }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0k4m2k8" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Activity_0skmsoh" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0skmsoh" },
+          "variables": { "isAlternativeAccepted": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR005B", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0t5ihdz" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1n1lkhe" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_picked_up",
+          "correlationKey": "BK005",
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_returned",
+          "correlationKey": "BK005",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0itdlql" },
+          "variables": { "hasCarDamage": false }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0tq09jo" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1b9u86o" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0mnt805" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "car not ready - alternative not accepted - booking aborted",
+      "description": "Reserved car fails inspection, the alternative-car event subprocess proposes an alternative which the customer declines, escalating to the no-suitable-car boundary and aborting the booking.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST006",
+            "bookingId": "BK006",
+            "rentalCarValue": 30000
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR006", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": false }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0k4m2k8" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Activity_0skmsoh" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0skmsoh" },
+          "variables": { "isAlternativeAccepted": false }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Event_0jk2fom" }],
+          "state": "IS_ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "car unavailable - alternative not accepted - booking aborted",
+      "description": "The reserved car turns out to be unavailable (error boundary on the reservation task), the alternative-car event subprocess proposes an alternative which the customer declines, and the booking is aborted with no suitable car.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST007",
+            "bookingId": "BK007",
+            "rentalCarValue": 30000
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "THROW_BPMN_ERROR_FROM_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "errorCode": "car_unavailably_not_ready",
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Activity_0skmsoh" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0skmsoh" },
+          "variables": { "isAlternativeAccepted": false }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Event_0jk2fom" }],
+          "state": "IS_ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "invalid payment method - booking aborted",
+      "description": "Checks pass and a car is reserved, but payment-method verification fails. The booking-process error boundary fires, car availability is updated, and the booking is aborted as payment method invalid.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST008",
+            "bookingId": "BK008",
+            "rentalCarValue": 30000
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR008", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": true }
+        },
+        {
+          "type": "THROW_BPMN_ERROR_FROM_JOB",
+          "jobSelector": { "elementId": "Activity_0t5ihdz" },
+          "errorCode": "payment_method_invalid",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1g8uvah" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Event_0y8rqa0" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "renting period exceeded - full escalation then car returned",
+      "description": "The car is picked up but not returned within the rental period. The escalation timer fires, the escalation process runs reminders and contact steps to completion, the car is then returned after escalation, additional costs are calculated, and the rental completes.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST009",
+            "bookingId": "BK009",
+            "rentalCarValue": 30000,
+            "rentDuration": "P1D",
+            "rentCost": 140
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR009", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0t5ihdz" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1n1lkhe" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_picked_up",
+          "correlationKey": "BK009",
+          "variables": {}
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P2D"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_14dtln2" },
+          "variables": {}
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT31M"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Event_1ceyhvr" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P1D"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Event_0cbo5n8" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_returned",
+          "correlationKey": "BK009",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0itdlql" },
+          "variables": { "hasCarDamage": false }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0tq09jo" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1b9u86o" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0mnt805" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "car returned during escalation - boundary interrupts escalation",
+      "description": "The rental period is exceeded and escalation begins, but the car is returned while escalation is still running. The interrupting boundary cancels the escalation, additional costs are calculated, and the rental completes.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST010",
+            "bookingId": "BK010",
+            "rentalCarValue": 30000,
+            "rentDuration": "P1D",
+            "rentCost": 140
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR010", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0t5ihdz" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1n1lkhe" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_picked_up",
+          "correlationKey": "BK010",
+          "variables": {}
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P2D"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_14dtln2" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Event_1i1t8ra" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_returned",
+          "correlationKey": "BK010",
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "elementSelectors": [{ "elementId": "Activity_02xqc92" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0itdlql" },
+          "variables": { "hasCarDamage": false }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0tq09jo" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1b9u86o" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0mnt805" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "returned car damaged - damage handled then completed",
+      "description": "On return the car shows damage, the damage-handling task runs before payment, and the rental completes.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "variables": {
+            "customerId": "CUST011",
+            "bookingId": "BK011",
+            "rentalCarValue": 30000,
+            "rentDuration": "P4D"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0be5k9m" },
+          "variables": { "licenseValid": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0825j6e" },
+          "variables": { "carId": "CAR011", "isCarAvailable": true }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_05f95ch" },
+          "variables": { "isCarReady": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0t5ihdz" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1n1lkhe" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_picked_up",
+          "correlationKey": "BK011",
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "car_returned",
+          "correlationKey": "BK011",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0itdlql" },
+          "variables": { "hasCarDamage": true }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1leaiuz" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1b9u86o" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0mnt805" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0bgtcqq" },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
-  "_integrationTestNotes": "Integration tests should verify: (1) Activity_0be5k9m (Validate driver license) calls real license validation API; (2) Activity_0w37f54 (Get credit score) calls real credit bureau; (3) Activity_0825j6e (Check car availability) queries real inventory system; (4) Activity_0t5ihdz (Verify payment method) validates real payment; (5) Activity_1b9u86o (Process payment) makes real payment transaction; (6) PUBLISH_MESSAGE for car_picked_up and car_returned requires real external events — correlationKey is bookingId. Note: Activity_05f95ch (Inspect car) and Activity_0itdlql (Inspect returned car) are native Zeebe user tasks (zeebe:userTask) — use COMPLETE_USER_TASK. rentDuration must be provided as a FEEL duration string (e.g. 'P4D') for the event-based gateway timer; the timer is on the 'renting period exceeded' path and is evaluated when the event-based gateway activates after car_picked_up."
+  "_integrationTestNotes": "Integration tests should verify: (1) Activity_0be5k9m (Validate driver license) calls real license validation API; (2) Activity_0w37f54 (Get credit score) calls real credit bureau; (3) Activity_0825j6e (Check car availability) queries real inventory system; (4) Activity_0t5ihdz (Verify payment method) validates real payment; (5) Activity_1b9u86o (Process payment) makes real payment transaction; (6) PUBLISH_MESSAGE for car_picked_up and car_returned requires real external events — correlationKey is bookingId. Note: Activity_05f95ch (Inspect car) and Activity_0itdlql (Inspect returned car) are native Zeebe user tasks (zeebe:userTask) — use COMPLETE_USER_TASK. rentDuration must be provided as a FEEL duration string (e.g. 'P4D') for the event-based gateway timer; the timer is on the 'renting period exceeded' path and is evaluated when the event-based gateway activates after car_picked_up. COVERAGE NOTE: three elements on the 'alternative car not accepted' branch are unreachable in the engine and therefore excluded from coverage — Event_002iklj (boundary 'no suitable car available' on Activity_0oprw8j), Flow_0t0bv45, and Event_1g6kdwa (end 'booking aborted: no suitable car available'). The error end Event_0jk2fom inside the 'Proposal of alternative car' event subprocess throws Error_16ze7z8 ('alternative_car_not_accepted'), but Zeebe raises an UNHANDLED_ERROR_EVENT incident on Event_0jk2fom rather than propagating the error to the boundary Event_002iklj on the subprocess that hosts the event subprocess. (Escalation from the same event subprocess, Event_16l1i89 -> boundary Event_157ki77, does propagate and is covered.) The alternative-not-accepted test cases therefore assert that Event_0jk2fom completes; reaching Event_1g6kdwa would require remodelling the error catcher (for example, catching alternative_car_not_accepted at the top-level process scope)."
 }

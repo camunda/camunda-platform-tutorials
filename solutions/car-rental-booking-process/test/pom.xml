@@ -60,6 +60,7 @@
                     <include>car-rental-booking-process.bpmn</include>
                     <include>inspect-car.form</include>
                     <include>inspect-returned-car.form</include>
+                    <include>propose-alternative.form</include>
                 </includes>
             </testResource>
         </testResources>
