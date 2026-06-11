@@ -11,9 +11,9 @@ camunda:
   process-test:
     runtime-mode: managed
     connectors-enabled: true
-    # Connectors bundle is versioned independently of the CPT library (8.9.8);
-    # 8.9.5 is the latest published camunda/connectors-bundle tag.
-    connectors-docker-image-version: 8.9.5
+    # Connectors bundle image, aligned to the 8.10 runtime (8.10.0-alpha2 is the
+    # latest published camunda/connectors-bundle 8.10 tag).
+    connectors-docker-image-version: 8.10.0-alpha2
     # Relaxed-binding form avoids Spring Boot 4 circular placeholder detection.
     # AWS_BEDROCK_ACCESS_KEY env var → aws.bedrock.access.key Spring property.
     connectors-secrets:
@@ -29,6 +29,18 @@ camunda:
         provider: amazon-bedrock
         model: ${aws.bedrock.model}
         region: ${aws.bedrock.region}
+        credentials:
+          access-key: ${aws.bedrock.access.key}
+          secret-key: ${aws.bedrock.secret.key}
+    # Embedding model for semantic-similarity assertions (SIR-4). Bedrock Titan
+    # embeddings; the model need not match the agent or the judge.
+    similarity:
+      threshold: 0.5
+      embedding-model:
+        provider: amazon-bedrock
+        model: amazon.titan-embed-text-v2:0
+        region: ${aws.bedrock.region}
+        dimensions: 256
         credentials:
           access-key: ${aws.bedrock.access.key}
           secret-key: ${aws.bedrock.secret.key}

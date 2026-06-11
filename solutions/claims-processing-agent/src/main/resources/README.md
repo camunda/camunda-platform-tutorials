@@ -176,7 +176,7 @@ low-code playback of the end-to-end scenarios.
 
 In addition to the cluster prerequisites above:
 
-- [ ] Claude Code installed with the `/camunda-process-test` skill available (Camunda Process Test 8.9.8)
+- [ ] Claude Code installed with the `/camunda-process-test` skill available (Camunda Process Test 8.10.0-SNAPSHOT)
 - [ ] Java 21 + Maven installed locally
 - [ ] `solutions/claims-processing-agent/` opened in Claude Code terminal
 - [ ] Web Modeler open on the process: [claims-processing-agent](https://modeler.camunda.io/diagrams/cd448596-a3d9-4a7f-b0bf-e99d41f51d53--claims-processing-agent?v=0,0,1)
@@ -372,7 +372,7 @@ Two AI roles, separate concerns:
 | Layer | Question it answers | External systems | Acceptance signal | Run |
 |-------------------------|------------------------------------------------|------------------------------|------------------------------------------------------------|----------------------------------------------|
 | **Process tests**       | Does the workflow route every claim correctly? | Mocked (canned agent and judge output, mocked tool jobs) | 100% BPMN element and sequence-flow reachability           | `mvn test`                                   |
-| **Segment integration tests** | Does each external system behave correctly on its own? | Real, one at a time          | Every agent, connector, and service task exercised; quality gated by LLM-as-judge | `mvn test -P integration-test` |
+| **Segment integration tests** | Does each external system behave correctly on its own? | Real, one at a time          | Every agent, connector, and service task exercised; quality gated by LLM-as-judge and semantic similarity | `mvn test -P integration-test` |
 | **Process integration tests** | Does the whole thing work for real?            | Real, all together           | Realistic varied-data scenarios reach the correct outcome | `mvn test -P integration-test`; the end-to-end scenarios also play back in the Web Modeler Play tab |
 
 All three layers run locally and in CI. The process tests are the commit gate and run on every push via [`.github/workflows/test-suites.yml`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/.github/workflows/test-suites.yml) (`mvn test`). The segment integration and process integration tests run under the `integration-test` profile and need Docker, the Connectors runtime, and AWS Bedrock credentials (the repo-root `.env` locally, the same values as CI secrets). The end-to-end scenarios additionally play back in the Web Modeler Play tab from [`claims-processing-agent test scenarios.json`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json).
@@ -398,11 +398,11 @@ All three layers run locally and in CI. The process tests are the commit gate an
 | SIR-1 | PolicyLookup returns status, coverage, deductible, and fraud-risk score.   | [`ClaimsExternalSystemsIT.policyLookupInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | TODO — pending integration run |
 | SIR-2 | GetCustomerProfile returns tier, account standing, and fraud history.      | [`ClaimsExternalSystemsIT.getCustomerProfileInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | TODO — pending integration run |
 | SIR-3 | CalculateDamageEstimate returns an amount, category, and anomaly flags.    | [`ClaimsExternalSystemsIT.calculateDamageEstimateInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | TODO — pending integration run |
-| SIR-4 | The assessment report covers policy, documents, fraud, and a recommendation. | [`ClaimsExternalSystemsIT.assessmentReportQualityOnFraudClaim`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge) | TODO — pending integration run |
+| SIR-4 | The assessment report covers policy, documents, fraud, and a recommendation. | [`ClaimsExternalSystemsIT.assessmentReportSemanticSimilarity`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (semantic similarity), with a [`assessmentReportQualityOnFraudClaim`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) LLM-as-judge cross-check | TODO — pending integration run |
 | SIR-5 | The judge produces a quality score consistent with the assessment.         | [`ClaimsExternalSystemsIT.judgeQualityScoreIsConsistent`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge) | TODO — pending integration run |
 | SIR-6 | Each tool builds its request from the supplied claim or customer identifier. | [`ClaimsExternalSystemsIT`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) connector segments | TODO — pending integration run |
 
-Semantic similarity is expressed today as a judge-based equivalence check (`hasVariableSatisfiesJudge` with a reference expectation). Native semantic-similarity assertions — `hasVariableSimilarTo` / `hasLocalVariableSimilarTo`, backed by a configured embedding model (`camunda.process-test.similarity.embedding-model`) and tuned with `withSemanticSimilarityConfig(...)` — ship in Camunda 8.10 (8.10.0-alpha1). The harness is pinned to CPT 8.9.8, which does not include them, so SIR-4 uses the judge check until the harness moves to 8.10.
+SIR-4 is proven two ways. The primary check is a native semantic-similarity assertion — `hasVariableSimilarTo("assessmentReport", <reference>)`, backed by a Bedrock Titan embedding model (`camunda.process-test.similarity.embedding-model`) and tunable with `withSemanticSimilarityConfig(...)`. It compares the report against a reference assessment by cosine similarity (default threshold 0.5). An LLM-as-judge assertion (`hasVariableSatisfiesJudge`) runs as a cross-check on the same report. Semantic-similarity assertions require CPT 8.10 (shipped in 8.10.0-alpha1); the harness is pinned to `8.10.0-SNAPSHOT`.
 
 ### Process integration requirements (PIR) — proven by the process integration tests
 
@@ -464,7 +464,7 @@ This keeps the fast mocked gate honest against what the real model now produces.
 cd solutions/claims-processing-agent/test
 mvn test
 ```
-Output: `Tests run: 6, Failures: 0` and `CamundaInsurance_ClaimsProcessing: 100%`. Coverage report at `target/coverage-report/report.html`.
+Output: `Tests run: 6, Failures: 0`. Coverage is 100% of BPMN elements and sequence flows (the six scenarios are unchanged from the 8.9.x line that reported 100%). Note: on `8.10.0-SNAPSHOT` the HTML coverage-report generator can throw `Report resources not found` and skip `target/coverage-report/report.html`; the tests still pass and coverage is confirmed from the scenarios. This resolves when the harness moves to a stable 8.10 release.
 
 **Integration A and B (on demand):**
 ```bash

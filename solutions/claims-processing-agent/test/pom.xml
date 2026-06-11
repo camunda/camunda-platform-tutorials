@@ -32,7 +32,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <camunda.version>8.9.8</camunda.version>
+        <camunda.version>8.10.0-SNAPSHOT</camunda.version>
     </properties>
 
     <repositories>

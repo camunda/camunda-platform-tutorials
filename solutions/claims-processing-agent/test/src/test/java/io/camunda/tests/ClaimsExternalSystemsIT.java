@@ -67,12 +67,12 @@ public class ClaimsExternalSystemsIT {
     }
 
     // =========================================================================
-    // Group 1 — connector / service-task isolation (CR-1, CR-2, CR-3, CR-6)
+    // Group 1 — connector / service-task isolation (SIR-1, SIR-2, SIR-3, SIR-6)
     // =========================================================================
 
     @Test
     @Timeout(180)
-    @DisplayName("CR-1: PolicyLookup connector returns a policy for a known claim")
+    @DisplayName("SIR-1: PolicyLookup connector returns a policy for a known claim")
     void policyLookupInIsolation() {
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(TOOLS_PROCESS)
@@ -88,7 +88,7 @@ public class ClaimsExternalSystemsIT {
 
     @Test
     @Timeout(180)
-    @DisplayName("CR-2: GetCustomerProfile connector returns a profile for a known customer")
+    @DisplayName("SIR-2: GetCustomerProfile connector returns a profile for a known customer")
     void getCustomerProfileInIsolation() {
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(TOOLS_PROCESS)
@@ -104,7 +104,7 @@ public class ClaimsExternalSystemsIT {
 
     @Test
     @Timeout(180)
-    @DisplayName("CR-3: CalculateDamageEstimate connector returns an estimate for a described loss")
+    @DisplayName("SIR-3: CalculateDamageEstimate connector returns an estimate for a described loss")
     void calculateDamageEstimateInIsolation() {
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(TOOLS_PROCESS)
@@ -121,12 +121,12 @@ public class ClaimsExternalSystemsIT {
     }
 
     // =========================================================================
-    // Group 2 — agent quality, LLM-as-judge (CR-4, CR-5)
+    // Group 2 — agent quality, LLM-as-judge (SIR-4, SIR-5)
     // =========================================================================
 
     @Test
     @Timeout(360)
-    @DisplayName("CR-4: assessment agent report identifies fraud signals and recommends escalation")
+    @DisplayName("SIR-4 (judge): assessment report identifies fraud signals and recommends escalation")
     void assessmentReportQualityOnFraudClaim() {
         var instance = startMainProcess(
             "CLM-IT-Q1", "CUST-IT-999", "collision",
@@ -147,7 +147,30 @@ public class ClaimsExternalSystemsIT {
 
     @Test
     @Timeout(360)
-    @DisplayName("CR-5: independent judge scores the assessment quality consistently")
+    @DisplayName("SIR-4 (similarity): assessment report matches a reference fraud assessment")
+    void assessmentReportSemanticSimilarity() {
+        var instance = startMainProcess(
+            "SIR-IT-SIM", "CUST-IT-999", "collision",
+            "Total-loss collision, vehicle destroyed. Damage $52,000. Coverage added 8 days "
+                + "before incident. 4 claims this year. Prior open fraud investigation.",
+            "2026-06-01");
+
+        // assessmentReport is mapped from agent.responseText after the judge task runs.
+        assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
+
+        // Embedding-based semantic similarity against a reference assessment (CPT 8.10+).
+        assertThatProcessInstance(instance)
+            .hasVariableSimilarTo(
+                "assessmentReport",
+                "The claim shows multiple fraud indicators: collision coverage added shortly "
+                    + "before the incident, prior fraud history, and a damage estimate far above "
+                    + "the vehicle value. Recommend escalation to a human adjuster and referral "
+                    + "to the Special Investigations Unit.");
+    }
+
+    @Test
+    @Timeout(360)
+    @DisplayName("SIR-5: independent judge scores the assessment quality consistently")
     void judgeQualityScoreIsConsistent() {
         var instance = startMainProcess(
             "CLM-IT-Q2", "CUST-IT-001", "collision",
