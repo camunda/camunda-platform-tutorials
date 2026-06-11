@@ -224,12 +224,8 @@
     </bpmn:endEvent>
     <bpmn:intermediateThrowEvent id="Event_EscalateThrow" name="Escalate to adjuster">
       <bpmn:incoming>Flow_GWToEscalate</bpmn:incoming>
-      <bpmn:outgoing>Flow_EscalateToEnd</bpmn:outgoing>
       <bpmn:escalationEventDefinition escalationRef="Escalation_Claims" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:endEvent id="End_Escalated" name="Escalated">
-      <bpmn:incoming>Flow_EscalateToEnd</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:subProcess id="SubProcess_HumanControl" name="Human Control" triggeredByEvent="true">
       <bpmn:startEvent id="Start_HumanEscalation" name="Claim escalated to human">
         <bpmn:outgoing>Flow_HumanStart</bpmn:outgoing>
@@ -263,7 +259,6 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_ManualToNotify" sourceRef="Task_ManualReview" targetRef="End_ManualResolved" />
     <bpmn:sequenceFlow id="Flow_GWToEscalate" sourceRef="Gateway_JudgeDecision" targetRef="Event_EscalateThrow" />
-    <bpmn:sequenceFlow id="Flow_EscalateToEnd" sourceRef="Event_EscalateThrow" targetRef="End_Escalated" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CamundaInsurance_ClaimsProcessing">
@@ -339,12 +334,6 @@
         <dc:Bounds x="1068" y="480" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1044" y="523" width="84" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_Escalated_di" bpmnElement="End_Escalated">
-        <dc:Bounds x="1158" y="480" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1151" y="523" width="50" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SubProcess_HumanControl_di" bpmnElement="SubProcess_HumanControl" isExpanded="true">
@@ -427,10 +416,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1000" y="432" width="50" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_EscalateToEnd_di" bpmnElement="Flow_EscalateToEnd">
-        <di:waypoint x="1104" y="498" />
-        <di:waypoint x="1158" y="498" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
