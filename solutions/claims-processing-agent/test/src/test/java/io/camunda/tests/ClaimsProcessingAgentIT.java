@@ -62,8 +62,10 @@ public class ClaimsProcessingAgentIT {
 
     @BeforeAll
     static void configureTimeout() {
-        // Assessment agent (multi tool call) + judge, both real Bedrock. CPT default 10s is too short.
-        CamundaAssert.setAssertionTimeout(Duration.ofMinutes(5));
+        // Assessment agent (multi tool call) + judge, both real Bedrock. CPT default 10s is too
+        // short. The assessment agent alone can run several minutes across tool-call rounds, so
+        // give the full assessment -> judge -> gateway path headroom.
+        CamundaAssert.setAssertionTimeout(Duration.ofMinutes(9));
     }
 
     // =========================================================================
@@ -73,7 +75,7 @@ public class ClaimsProcessingAgentIT {
     // =========================================================================
 
     @Test
-    @Timeout(360)
+    @Timeout(660)
     @DisplayName("PIR-1: a fraudulent claim is escalated to a human adjuster")
     void fraudClaimEscalatesToAdjuster() {
         var instance = startProcess(
@@ -88,6 +90,9 @@ public class ClaimsProcessingAgentIT {
         // the requirement) so a transient variable race does not consume the test timeout.
         assertThatProcessInstance(instance)
             .hasCompletedElements(byId("Agent_ClaimsAssessment"), byId("Agent_Judge"));
+        // Diagnostic: surface the live routing variable so a non-ESCALATE / null decision is
+        // visible in the failure message instead of timing out silently at the human task.
+        assertThatProcessInstance(instance).hasVariable("claimDecision", "ESCALATE");
         Awaitility.await()
             .atMost(Duration.ofMinutes(2))
             .pollInterval(Duration.ofSeconds(2))
