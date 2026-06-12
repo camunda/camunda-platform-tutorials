@@ -97,8 +97,15 @@ public class ClaimsProcessingAgentIT {
             .atMost(Duration.ofMinutes(2))
             .pollInterval(Duration.ofSeconds(2))
             .until(() -> hasActiveTask(instance.getProcessInstanceKey(), "Task_HumanReview"));
+        // escalated-claim-form keys: adjusterResolution (required enum), adjusterSettlementAmount (number),
+        // adjusterNotes (required). DENY_FRAUD is the correct resolution for five concurrent fraud indicators.
         completeTask(instance.getProcessInstanceKey(), "Task_HumanReview",
-            Map.of("adjusterResolution", "DENY", "adjusterNotes", "IT: fraud confirmed, referred to SIU."));
+            Map.of(
+                "adjusterResolution", "DENY_FRAUD",
+                "adjusterSettlementAmount", 0,
+                "adjusterNotes", "IT: Five concurrent fraud indicators confirmed — coverage timing, prior open "
+                    + "fraud investigation, inflated total-loss estimate, unverifiable police report, multiple "
+                    + "active claims. Claim denied. Referred to Special Investigations Unit."));
 
         // Prove the requirement's full path end to end: assessment -> judge -> escalate ->
         // human control -> resolved.
@@ -183,8 +190,14 @@ public class ClaimsProcessingAgentIT {
             .atMost(Duration.ofMinutes(2))
             .pollInterval(Duration.ofSeconds(2))
             .until(() -> hasActiveTask(instance.getProcessInstanceKey(), "Task_ManualReview"));
+        // manual-review-form keys: reviewerDecision (required enum), reviewerSettlementAmount (required number),
+        // reviewNotes (required). Borderline theft — no hard fraud signal — approved at estimated market value.
         completeTask(instance.getProcessInstanceKey(), "Task_ManualReview",
-            Map.of("adjusterDecision", "APPROVE", "settlementAmount", 11000));
+            Map.of(
+                "reviewerDecision", "APPROVE",
+                "reviewerSettlementAmount", 11000,
+                "reviewNotes", "IT: Ambiguous overnight vehicle theft — no CCTV or witnesses but no hard fraud "
+                    + "indicators. Police report on file. Settlement at estimated market value."));
 
         assertThatProcessInstance(instance)
             .hasCompletedElements(
