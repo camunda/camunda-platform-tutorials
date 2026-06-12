@@ -359,6 +359,8 @@ Use this section as the brief before generating the suite. It is the context to 
 
 The requirements are high-level and illustrative. They describe a fictional claims-processing policy for Camunda Insurance so the test intent is readable without the BPMN open.
 
+**Assertion philosophy.** Every assertion exists to prove a business requirement, not to pad coverage. A test asserts the path its requirement names (the elements completed through to the terminal end event), the routing variable (`claimDecision`), and — for the judge — that its quality outputs are populated. "The process finished" is never sufficient on its own.
+
 ## How the process decides
 
 Two AI roles, separate concerns:
@@ -397,8 +399,8 @@ All three layers run locally and in CI. The process tests are the commit gate an
 | SIR-1 | PolicyLookup returns status, coverage, deductible, and fraud-risk score.   | [`ClaimsExternalSystemsIT.policyLookupInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | — |
 | SIR-2 | GetCustomerProfile returns tier, account standing, and fraud history.      | [`ClaimsExternalSystemsIT.getCustomerProfileInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | — |
 | SIR-3 | CalculateDamageEstimate returns an amount, category, and anomaly flags.    | [`ClaimsExternalSystemsIT.calculateDamageEstimateInIsolation`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) | — |
-| SIR-4 | The assessment report covers policy, documents, fraud, and a recommendation. | [`ClaimsExternalSystemsIT.assessmentReportQualityOnFraudClaim`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge); [`assessmentReportSemanticSimilarity`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (semantic similarity) | Judge passes; similarity skipped — needs Bedrock embedding access (403) |
-| SIR-5 | The assessment states a recommended decision and justifies it with claim evidence. | [`ClaimsExternalSystemsIT.assessmentDecisionIsJustified`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge) | — |
+| SIR-4 | The assessment report identifies fraud risk and recommends a decision. | [`ClaimsExternalSystemsIT.assessmentReportIdentifiesFraud`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (LLM-as-judge); [`assessmentReportSemanticSimilarity`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (semantic similarity, skipped) | Judge passes; similarity skipped — needs Bedrock embedding access (403) |
+| SIR-5 | The Quality Judge populates every quality output it is prompted to produce (overall score in [0,1], non-empty feedback, full score object). | [`ClaimsExternalSystemsIT.judgePopulatesQualityOutputs`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) (heavy variable validation) | Depends on the Agent_Judge JSON fix |
 | SIR-6 | Each tool builds its request from the supplied claim or customer identifier. | [`ClaimsExternalSystemsIT`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java) connector segments | — |
 
 SIR-4 is proven two ways. An LLM-as-judge assertion (`hasVariableSatisfiesJudge` on `assessmentReport`) verifies the report identifies fraud risk and recommends a decision — this passes. A native semantic-similarity assertion (`hasVariableSimilarTo("assessmentReport", <reference>)`, backed by a Bedrock Titan embedding model, default threshold 0.5) is wired and compiles but is currently skipped: the test IAM user lacks `bedrock:InvokeModel` on `amazon.titan-embed-text-v2:0` (403 AccessDenied). Grant that permission — or point `camunda.process-test.similarity.embedding-model` at another provider — and remove the `@Disabled` to turn it green. Semantic-similarity assertions require CPT 8.10 (shipped 8.10.0-alpha1); the harness is pinned to `8.10.0-SNAPSHOT`.
@@ -407,11 +409,29 @@ SIR-4 is proven two ways. An LLM-as-judge assertion (`hasVariableSatisfiesJudge`
 
 | ID | Requirement | Verified by | Comment |
 |-------|----------------------------------------------------------------------------|--------------------------------------------------|-----------|
-| PIR-1 | A realistic multi-signal fraud claim escalates; the adjuster task carries the full report. | [`ClaimsProcessingAgentIT.highFraudClaimEscalates`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | — |
-| PIR-2 | A realistic clean claim completes through both agents.                     | [`ClaimsProcessingAgentIT.cleanClaimCompletes`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | — |
-| PIR-3 | Collision, theft, flood, and liability claims each run both agents and reach a terminal state under the live model. | [`ClaimsProcessingAgentIT.variedClaimTypesTraverse`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | — |
+| PIR-1 | A fraudulent claim is escalated to a human adjuster (full path to `End_HumanResolved`). | [`ClaimsProcessingAgentIT.fraudClaimEscalatesToAdjuster`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | Asserts full path + `claimDecision=ESCALATE`. Uses the known fraud id `CLM-2025-0042`. |
+| PIR-2 | A clean claim is approved without human touch (full path to `End_ClaimApproved`). | [`ClaimsProcessingAgentIT.cleanClaimIsApproved`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | Disabled pending beeceptor fixture — see [`test/BEECEPTOR-FIXTURES.md`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/BEECEPTOR-FIXTURES.md) |
+| PIR-3 | An ambiguous claim goes to manual review (full path to `End_ManualResolved`). | [`ClaimsProcessingAgentIT.borderlineClaimGoesToManualReview`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java) | Disabled pending beeceptor fixture |
 
-The `Comment` column flags anything outstanding: an em-dash means the test passes in its layer; `TODO` marks a test that is written but not yet passing. Test reports: every layer writes JUnit XML to `target/surefire-reports/` (the file CI surfaces, for example `TEST-io.camunda.tests.ProcessTest.xml`), and the process layer also writes the CPT coverage report to `target/coverage-report/report.html`. In a pull request, check `target/surefire-reports/` in the CI run for pass or fail per test class.
+The `Comment` column flags anything outstanding: an em-dash means the test passes; `Disabled` marks a test written to spec but gated on an external dependency. Test reports: every layer writes JUnit XML to `target/surefire-reports/`; the process layer also writes the CPT coverage report to `target/coverage-report/report.json` (HTML is skipped on the pinned 8.10-SNAPSHOT, see below).
+
+### Coverage thresholds (declared, gated)
+
+| Layer | Declared target | Machine gate | Note |
+|-------|-----------------|--------------|------|
+| Process | 100% | ≥ 90% | 100% on the stable 8.9.x line; the 8.10.0-SNAPSHOT report tooling under-counts to ~93%, so the gate floor is 90%. |
+| Process integration | 40% | ≥ 40% | With PIR-2/PIR-3 disabled (beeceptor fixtures pending) and the error path unreachable live. Re-enabling PIR-2/3 raises it toward 60%. |
+
+The gate is enforced by the report generator (reads `report.json`, exits non-zero if below). The camunda-process-test skill should respect these per-layer thresholds.
+
+### Optional coverage extensions (not built)
+
+Not needed for the demo, but available to raise process-integration coverage once beeceptor fixtures exist: a documents-request scenario (`RequestAdditionalDocuments`), an agent self-escalation scenario (`EscalateToHuman`), and varied claim types (collision/theft/flood/liability).
+
+### Reports — two options
+
+- **Option A (ideal, requirement-aligned):** `bash test/report/run-all.sh` runs both layers, stashes each run's surefire + `report.json`, gates coverage, and generates `test/target/unified-report.html` — the three category sections, each requirement with its status, a skipped callout, coverage bands, and bpmn-js diagrams highlighting the covered path (offline, vendored bpmn-js).
+- **Option B (config-only, CPT-native):** the stock CPT coverage report grouped by the requirement-named tests. On 8.10-SNAPSHOT its HTML viewer is broken (missing bundled assets); the diagram renders once the `definitions[id] = processModels[].xml` data-shape fix is applied to the existing `static/` viewer. It shows coverage grouped by test, not the full requirement matrix — that is Option A.
 ### End-to-end scenario catalogue
 
 Each scenario feeds realistic claim data to the live agents and asserts the outcome a human would expect. The agent makes the routing call, so these scenarios verify that real model behavior matches policy, not just that the wiring traverses. Source: [`claims-processing-agent test scenarios.json`](https://github.com/HanselIdes/camunda-8-tutorials/blob/demo/solutions/claims-processing-agent/src/main/resources/claims-processing-agent%20test%20scenarios.json).

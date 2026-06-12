@@ -2,6 +2,7 @@ package io.camunda.tests;
 
 import static io.camunda.process.test.api.CamundaAssert.assertThatProcessInstance;
 import static io.camunda.process.test.api.assertions.ElementSelectors.byId;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.client.CamundaClient;
 import io.camunda.client.api.response.ProcessInstanceEvent;
@@ -19,28 +20,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * Integration A — external systems in isolation.
+ * Segment integration requirements (SIR) — external systems exercised in isolation.
  *
  * Two groups, both against real external systems:
- *
- *   1. Connector / service-task isolation. Each test activates ONE tool segment of
- *      bpmn/test-claims-tools.bpmn via startBeforeElement(), so the HTTP JSON connector
- *      runs for real against claim-demo.free.beeceptor.com — no agent, no routing.
- *      Verifies connector config, URL templating, and FEEL output mappings per tool.
- *      Scope: assert the connector COMPLETED, not the data values it returned.
- *
- *   2. Agent quality (LLM-as-judge). Runs the full assessment agent against real Bedrock
- *      and asserts the behavioral quality of its report with hasVariableSatisfiesJudge.
- *      This is the quality gate that catches a model regression (e.g. Opus to Haiku)
- *      that still routes correctly but reasons worse.
- *
- * Semantic similarity is expressed as a judge-based equivalence expectation until the
- * pinned CPT release ships native embedding-similarity assertions.
+ *   1. Connector / service-task isolation (SIR-1/2/3): each test activates ONE tool segment
+ *      of bpmn/test-claims-tools.bpmn via startBeforeElement(), so the HTTP JSON connector
+ *      runs for real against claim-demo.free.beeceptor.com and the segment runs to its end event.
+ *   2. Judge quality (SIR-4/5): runs the full assessment agent + Quality Judge against real
+ *      Bedrock. SIR-4 validates the report content (LLM-as-judge). SIR-5 validates that the
+ *      judge populates EVERY quality output its prompt is supposed to produce.
  *
  * Prerequisites:
  *   - Docker running (embedded Zeebe + Connectors runtime, runtime-mode=managed)
- *   - .env at repo root with AWS_BEDROCK_* filled in (agent quality group only)
- *   - A judge chat-model provider configured in application-integration.yml
+ *   - .env at repo root with AWS_BEDROCK_* filled in (judge groups)
+ *   - judge chat-model provider configured in application-integration.yml
  *   - Run from test/: env $(cat ../../../.env | grep -v '^#' | xargs) mvn test -P integration-test
  */
 @SpringBootTest(properties = {"camunda.client.worker.defaults.enabled=false"})
@@ -63,17 +56,17 @@ public class ClaimsExternalSystemsIT {
 
     @BeforeAll
     static void configureTimeout() {
-        // Connector startup + real HTTP/Bedrock latency. CPT default of 10s is too short.
         CamundaAssert.setAssertionTimeout(Duration.ofMinutes(5));
     }
 
     // =========================================================================
-    // Group 1 — connector / service-task isolation (SIR-1, SIR-2, SIR-3, SIR-6)
+    // Group 1 — connector / service-task isolation (SIR-1/2/3).
+    // Prove each tool call completes AND its segment runs to the end event.
     // =========================================================================
 
     @Test
     @Timeout(180)
-    @DisplayName("SIR-1: PolicyLookup connector returns a policy for a known claim")
+    @DisplayName("SIR-1: PolicyLookup connector runs and its segment completes")
     void policyLookupInIsolation() {
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(TOOLS_PROCESS)
@@ -83,13 +76,13 @@ public class ClaimsExternalSystemsIT {
             .send().join();
 
         assertThatProcessInstance(instance)
-            .hasCompletedElements(byId("PolicyLookup"))
+            .hasCompletedElements(byId("PolicyLookup"), byId("End_PolicyLookup"))
             .isCompleted();
     }
 
     @Test
     @Timeout(180)
-    @DisplayName("SIR-2: GetCustomerProfile connector returns a profile for a known customer")
+    @DisplayName("SIR-2: GetCustomerProfile connector runs and its segment completes")
     void getCustomerProfileInIsolation() {
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(TOOLS_PROCESS)
@@ -99,13 +92,13 @@ public class ClaimsExternalSystemsIT {
             .send().join();
 
         assertThatProcessInstance(instance)
-            .hasCompletedElements(byId("GetCustomerProfile"))
+            .hasCompletedElements(byId("GetCustomerProfile"), byId("End_GetCustomerProfile"))
             .isCompleted();
     }
 
     @Test
     @Timeout(180)
-    @DisplayName("SIR-3: CalculateDamageEstimate connector returns an estimate for a described loss")
+    @DisplayName("SIR-3: CalculateDamageEstimate connector runs and its segment completes")
     void calculateDamageEstimateInIsolation() {
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(TOOLS_PROCESS)
@@ -117,30 +110,28 @@ public class ClaimsExternalSystemsIT {
             .send().join();
 
         assertThatProcessInstance(instance)
-            .hasCompletedElements(byId("CalculateDamageEstimate"))
+            .hasCompletedElements(byId("CalculateDamageEstimate"), byId("End_CalculateDamageEstimate"))
             .isCompleted();
     }
 
     // =========================================================================
-    // Group 2 — agent quality, LLM-as-judge (SIR-4, SIR-5)
+    // Group 2 — judge quality (SIR-4/5). Use the known fraud-laden id CLM-2025-0042
+    // so the assessment is deterministic enough to validate.
     // =========================================================================
 
     @Test
     @Timeout(360)
-    @DisplayName("SIR-4 (judge): assessment report identifies fraud signals and recommends escalation")
-    void assessmentReportQualityOnFraudClaim() {
+    @DisplayName("SIR-4: the assessment report identifies fraud risk and recommends a decision")
+    void assessmentReportIdentifiesFraud() {
         var instance = startMainProcess(
-            "CLM-IT-Q1", "CUST-IT-999", "collision",
-            "Total-loss collision, vehicle destroyed. Damage $52,000. Coverage added 8 days "
-                + "before incident. 4 claims this year. Prior open fraud investigation.",
+            "CLM-2025-0042", "CUST-4521", "collision",
+            "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
+                + "Prior open fraud investigation and multiple recent claims.",
             "2026-06-01");
 
-        // Wait until the judge has run; assessmentReport is mapped from the report then.
         assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
 
-        // LLM-as-judge: behavioral quality of the report, not exact text.
-        // Asserts on the top-level `assessmentReport` variable (CPT resolves variable
-        // names, not dot-paths, so `agent.responseText` would never resolve here).
+        // LLM-as-judge on the report content (CPT resolves variable names, not dot-paths).
         assertThatProcessInstance(instance)
             .hasVariableSatisfiesJudge(
                 "assessmentReport",
@@ -149,22 +140,45 @@ public class ClaimsExternalSystemsIT {
 
     @Test
     @Timeout(360)
-    @Disabled("Requires Bedrock embedding access: bedrock:InvokeModel on "
-        + "amazon.titan-embed-text-v2:0 for the test IAM user. Returns 403 AccessDenied until "
-        + "granted. Re-enable once the embedding model is authorized (or point similarity at "
-        + "another embedding provider).")
+    @DisplayName("SIR-5: the Quality Judge populates every quality output it is prompted to produce")
+    void judgePopulatesQualityOutputs() {
+        var instance = startMainProcess(
+            "CLM-2025-0042", "CUST-4521", "collision",
+            "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
+                + "Prior open fraud investigation and multiple recent claims.",
+            "2026-06-01");
+
+        assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
+
+        // Heavy variable validation: the judge prompt must yield a parseable quality JSON with
+        // a numeric overall score, written feedback, and the full score object. This is the
+        // requirement-proving assertion for the in-process Quality Judge.
+        assertThatProcessInstance(instance)
+            .hasVariableNames("agentQualityScore", "qualityFeedback", "qualityScores")
+            .hasVariableSatisfies("agentQualityScore", Number.class,
+                s -> assertThat(s.doubleValue()).isBetween(0.0, 1.0))
+            .hasVariableSatisfies("qualityFeedback", String.class,
+                f -> assertThat(f).isNotBlank())
+            .hasVariableSatisfies("qualityScores", Map.class,
+                m -> assertThat(m).containsKeys("overallScore", "feedback"));
+    }
+
+    // SIR-4 (similarity) — embedding-based check; native to CPT 8.10 (hasVariableSimilarTo).
+    @Test
+    @Timeout(360)
+    @Disabled("Requires Bedrock embedding access: bedrock:InvokeModel on amazon.titan-embed-text-v2:0 "
+        + "for the test IAM user. Returns 403 AccessDenied until granted. Re-enable once the embedding "
+        + "model is authorized (or point similarity at another embedding provider).")
     @DisplayName("SIR-4 (similarity): assessment report matches a reference fraud assessment")
     void assessmentReportSemanticSimilarity() {
         var instance = startMainProcess(
-            "SIR-IT-SIM", "CUST-IT-999", "collision",
-            "Total-loss collision, vehicle destroyed. Damage $52,000. Coverage added 8 days "
-                + "before incident. 4 claims this year. Prior open fraud investigation.",
+            "CLM-2025-0042", "CUST-4521", "collision",
+            "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
+                + "Prior open fraud investigation and multiple recent claims.",
             "2026-06-01");
 
-        // assessmentReport is mapped from agent.responseText after the judge task runs.
         assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
 
-        // Embedding-based semantic similarity against a reference assessment (CPT 8.10+).
         assertThatProcessInstance(instance)
             .hasVariableSimilarTo(
                 "assessmentReport",
@@ -172,29 +186,6 @@ public class ClaimsExternalSystemsIT {
                     + "before the incident, prior fraud history, and a damage estimate far above "
                     + "the vehicle value. Recommend escalation to a human adjuster and referral "
                     + "to the Special Investigations Unit.");
-    }
-
-    @Test
-    @Timeout(360)
-    @DisplayName("SIR-5: the assessment states a recommended decision and justifies it")
-    void assessmentDecisionIsJustified() {
-        var instance = startMainProcess(
-            "CLM-IT-Q2", "CUST-IT-001", "collision",
-            "Minor rear-end impact at a traffic light. Other driver at fault. Single claimant. "
-                + "Police report filed. Repair estimate $950.",
-            "2026-05-20");
-
-        // assessmentReport is set once the judge task completes.
-        assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
-
-        // Second LLM-as-judge angle, on the reliably-populated assessmentReport. The
-        // in-process Quality Judge's own JSON output (responseJson) is non-deterministic and
-        // sometimes empty, so this does not assert on the judge's parsed score.
-        assertThatProcessInstance(instance)
-            .hasVariableSatisfiesJudge(
-                "assessmentReport",
-                "states a recommended decision for the claim and gives reasoning that "
-                    + "references the policy, customer profile, or damage estimate");
     }
 
     // =========================================================================

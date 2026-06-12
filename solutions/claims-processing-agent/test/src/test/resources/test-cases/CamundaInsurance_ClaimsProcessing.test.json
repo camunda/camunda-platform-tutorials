@@ -2,12 +2,14 @@
   "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.9/schema.json",
   "testCases": [
     {
-      "name": "clean claim — agent approves",
+      "name": "PR-2: a clean low-risk claim is approved without human touch",
       "description": "Low-risk collision claim. Agent activates three tools (round 1), receives results, returns final assessment with decision=APPROVE (round 2). Judge scores quality. Process ends at End_ClaimApproved.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "variables": {
             "claimId": "CLM-TEST-001",
             "customerId": "CUST-0001",
@@ -20,47 +22,120 @@
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "context": {
                 "state": "WAITING_FOR_TOOL_CALL_RESULTS",
-                "metrics": { "modelCalls": 1, "tokenUsage": { "inputTokenCount": 420, "outputTokenCount": 60 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 1,
+                  "tokenUsage": {
+                    "inputTokenCount": 420,
+                    "outputTokenCount": 60
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
           "completionConditionFulfilled": false,
           "activateElements": [
-            { "elementId": "PolicyLookup",            "variables": { "toolCall": { "_meta": { "id": "t1", "name": "PolicyLookup" },            "claimId": "CLM-TEST-001" } } },
-            { "elementId": "GetCustomerProfile",      "variables": { "toolCall": { "_meta": { "id": "t2", "name": "GetCustomerProfile" },      "customerId": "CUST-0001" } } },
-            { "elementId": "CalculateDamageEstimate", "variables": { "toolCall": { "_meta": { "id": "t3", "name": "CalculateDamageEstimate" }, "claimId": "CLM-TEST-001", "damageDescription": "Minor rear-end impact" } } }
+            {
+              "elementId": "PolicyLookup",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t1",
+                    "name": "PolicyLookup"
+                  },
+                  "claimId": "CLM-TEST-001"
+                }
+              }
+            },
+            {
+              "elementId": "GetCustomerProfile",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t2",
+                    "name": "GetCustomerProfile"
+                  },
+                  "customerId": "CUST-0001"
+                }
+              }
+            },
+            {
+              "elementId": "CalculateDamageEstimate",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t3",
+                    "name": "CalculateDamageEstimate"
+                  },
+                  "claimId": "CLM-TEST-001",
+                  "damageDescription": "Minor rear-end impact"
+                }
+              }
+            }
           ]
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "PolicyLookup" },
+          "jobSelector": {
+            "elementId": "PolicyLookup"
+          },
           "variables": {
-            "toolCallResult": { "policyNumber": "POL-001", "status": "active", "coverageLimit": 50000, "deductible": 500, "fraudRiskScore": "low", "fraudFlags": 0 }
+            "toolCallResult": {
+              "policyNumber": "POL-001",
+              "status": "active",
+              "coverageLimit": 50000,
+              "deductible": 500,
+              "fraudRiskScore": "low",
+              "fraudFlags": 0
+            }
           }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "GetCustomerProfile" },
+          "jobSelector": {
+            "elementId": "GetCustomerProfile"
+          },
           "variables": {
-            "toolCallResult": { "tier": "standard", "accountStatus": "active", "riskRating": "low", "fraudHistory": false, "priorFraudInvestigations": 0, "openInvestigations": 0, "claimsThisYear": 0 }
+            "toolCallResult": {
+              "tier": "standard",
+              "accountStatus": "active",
+              "riskRating": "low",
+              "fraudHistory": false,
+              "priorFraudInvestigations": 0,
+              "openInvestigations": 0,
+              "claimsThisYear": 0
+            }
           }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "CalculateDamageEstimate" },
+          "jobSelector": {
+            "elementId": "CalculateDamageEstimate"
+          },
           "variables": {
-            "toolCallResult": { "estimatedAmount": 1200, "repairCategory": "minor", "estimateConfidence": "high", "anomalyFlags": [] }
+            "toolCallResult": {
+              "estimatedAmount": 1200,
+              "repairCategory": "minor",
+              "estimateConfidence": "high",
+              "anomalyFlags": []
+            }
           }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "responseText": "{\"claimSummary\":\"Minor collision claim with clean policy history.\",\"policyValidated\":true,\"documentsVerified\":true,\"damageEstimate\":1200,\"fraudIndicators\":\"\",\"fraudSuspected\":false,\"decision\":\"APPROVE\",\"decisionRationale\":\"Clean policy, low fraud risk, estimate is reasonable.\",\"suggestedSettlementAmount\":700}",
@@ -77,8 +152,17 @@
               },
               "context": {
                 "state": "READY",
-                "metrics": { "modelCalls": 2, "tokenUsage": { "inputTokenCount": 900, "outputTokenCount": 120 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 2,
+                  "tokenUsage": {
+                    "inputTokenCount": 900,
+                    "outputTokenCount": 120
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
@@ -86,7 +170,9 @@
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Agent_Judge" },
+          "jobSelector": {
+            "elementId": "Agent_Judge"
+          },
           "variables": {
             "agentJudge": {
               "responseJson": {
@@ -102,24 +188,43 @@
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "End_ClaimApproved" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "End_ClaimApproved"
+            }
+          ],
           "state": "IS_COMPLETED"
         },
         {
+          "type": "ASSERT_VARIABLES",
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "variables": {
+            "claimDecision": "APPROVE"
+          }
+        },
+        {
           "type": "ASSERT_PROCESS_INSTANCE",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "high-fraud claim — agent escalates, adjuster resolves",
+      "name": "PR-4: a fraudulent claim is escalated to a human adjuster",
       "description": "Multiple fraud indicators. Agent assesses all three tools, includes decision=ESCALATE in assessment (default gateway branch). Judge scores quality. Event subprocess catches escalation, adjuster completes Task_HumanReview.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "variables": {
             "claimId": "CLM-TEST-002",
             "customerId": "CUST-9999",
@@ -132,47 +237,122 @@
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "context": {
                 "state": "WAITING_FOR_TOOL_CALL_RESULTS",
-                "metrics": { "modelCalls": 1, "tokenUsage": { "inputTokenCount": 460, "outputTokenCount": 55 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 1,
+                  "tokenUsage": {
+                    "inputTokenCount": 460,
+                    "outputTokenCount": 55
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
           "completionConditionFulfilled": false,
           "activateElements": [
-            { "elementId": "PolicyLookup",            "variables": { "toolCall": { "_meta": { "id": "t1", "name": "PolicyLookup" },            "claimId": "CLM-TEST-002" } } },
-            { "elementId": "GetCustomerProfile",      "variables": { "toolCall": { "_meta": { "id": "t2", "name": "GetCustomerProfile" },      "customerId": "CUST-9999" } } },
-            { "elementId": "CalculateDamageEstimate", "variables": { "toolCall": { "_meta": { "id": "t3", "name": "CalculateDamageEstimate" }, "claimId": "CLM-TEST-002", "damageDescription": "Total-loss collision" } } }
+            {
+              "elementId": "PolicyLookup",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t1",
+                    "name": "PolicyLookup"
+                  },
+                  "claimId": "CLM-TEST-002"
+                }
+              }
+            },
+            {
+              "elementId": "GetCustomerProfile",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t2",
+                    "name": "GetCustomerProfile"
+                  },
+                  "customerId": "CUST-9999"
+                }
+              }
+            },
+            {
+              "elementId": "CalculateDamageEstimate",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t3",
+                    "name": "CalculateDamageEstimate"
+                  },
+                  "claimId": "CLM-TEST-002",
+                  "damageDescription": "Total-loss collision"
+                }
+              }
+            }
           ]
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "PolicyLookup" },
+          "jobSelector": {
+            "elementId": "PolicyLookup"
+          },
           "variables": {
-            "toolCallResult": { "policyNumber": "POL-BAD", "status": "active", "coverageLimit": 50000, "deductible": 500, "fraudRiskScore": "high", "fraudFlags": 3 }
+            "toolCallResult": {
+              "policyNumber": "POL-BAD",
+              "status": "active",
+              "coverageLimit": 50000,
+              "deductible": 500,
+              "fraudRiskScore": "high",
+              "fraudFlags": 3
+            }
           }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "GetCustomerProfile" },
+          "jobSelector": {
+            "elementId": "GetCustomerProfile"
+          },
           "variables": {
-            "toolCallResult": { "tier": "standard", "accountStatus": "active", "riskRating": "high", "fraudHistory": true, "priorFraudInvestigations": 2, "openInvestigations": 1, "claimsThisYear": 4 }
+            "toolCallResult": {
+              "tier": "standard",
+              "accountStatus": "active",
+              "riskRating": "high",
+              "fraudHistory": true,
+              "priorFraudInvestigations": 2,
+              "openInvestigations": 1,
+              "claimsThisYear": 4
+            }
           }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "CalculateDamageEstimate" },
+          "jobSelector": {
+            "elementId": "CalculateDamageEstimate"
+          },
           "variables": {
-            "toolCallResult": { "estimatedAmount": 47800, "repairCategory": "total-loss", "estimateConfidence": "low", "anomalyFlags": ["amount_exceeds_vehicle_value"] }
+            "toolCallResult": {
+              "estimatedAmount": 47800,
+              "repairCategory": "total-loss",
+              "estimateConfidence": "low",
+              "anomalyFlags": [
+                "amount_exceeds_vehicle_value"
+              ]
+            }
           }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "responseText": "{\"claimSummary\":\"Highly suspicious claim.\",\"policyValidated\":true,\"documentsVerified\":true,\"damageEstimate\":47800,\"fraudIndicators\":\"Coverage added 12 days before incident. Estimate 5.2x vehicle value.\",\"fraudSuspected\":true,\"decision\":\"ESCALATE\",\"decisionRationale\":\"Multiple hard escalation triggers: fraudSuspected true, coverage timing, inflated estimate, prior fraud history.\",\"suggestedSettlementAmount\":0}",
@@ -189,8 +369,17 @@
               },
               "context": {
                 "state": "READY",
-                "metrics": { "modelCalls": 2, "tokenUsage": { "inputTokenCount": 1200, "outputTokenCount": 280 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 2,
+                  "tokenUsage": {
+                    "inputTokenCount": 1200,
+                    "outputTokenCount": 280
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
@@ -198,7 +387,9 @@
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Agent_Judge" },
+          "jobSelector": {
+            "elementId": "Agent_Judge"
+          },
           "variables": {
             "agentJudge": {
               "responseJson": {
@@ -214,32 +405,53 @@
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "Task_HumanReview" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Task_HumanReview"
+            }
+          ],
           "state": "IS_ACTIVE"
         },
         {
           "type": "COMPLETE_USER_TASK",
-          "userTaskSelector": { "elementId": "Task_HumanReview" },
+          "userTaskSelector": {
+            "elementId": "Task_HumanReview"
+          },
           "variables": {
             "adjusterResolution": "DENY",
             "adjusterNotes": "Fraud confirmed. Claim denied and referred to SIU."
           }
         },
         {
+          "type": "ASSERT_VARIABLES",
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "variables": {
+            "claimDecision": "ESCALATE"
+          }
+        },
+        {
           "type": "ASSERT_PROCESS_INSTANCE",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "borderline claim — agent routes to manual review",
+      "name": "PR-3: an ambiguous claim with no hard fraud signal goes to manual review",
       "description": "Ambiguous theft claim without clear fraud indicators. Agent includes decision=MANUAL_REVIEW in assessment. Judge scores quality. Adjuster completes Task_ManualReview.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "variables": {
             "claimId": "CLM-TEST-003",
             "customerId": "CUST-0500",
@@ -252,41 +464,113 @@
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "context": {
                 "state": "WAITING_FOR_TOOL_CALL_RESULTS",
-                "metrics": { "modelCalls": 1, "tokenUsage": { "inputTokenCount": 380, "outputTokenCount": 55 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 1,
+                  "tokenUsage": {
+                    "inputTokenCount": 380,
+                    "outputTokenCount": 55
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
           "completionConditionFulfilled": false,
           "activateElements": [
-            { "elementId": "PolicyLookup",            "variables": { "toolCall": { "_meta": { "id": "t1", "name": "PolicyLookup" },            "claimId": "CLM-TEST-003" } } },
-            { "elementId": "GetCustomerProfile",      "variables": { "toolCall": { "_meta": { "id": "t2", "name": "GetCustomerProfile" },      "customerId": "CUST-0500" } } },
-            { "elementId": "CalculateDamageEstimate", "variables": { "toolCall": { "_meta": { "id": "t3", "name": "CalculateDamageEstimate" }, "claimId": "CLM-TEST-003", "damageDescription": "Vehicle stolen" } } }
+            {
+              "elementId": "PolicyLookup",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t1",
+                    "name": "PolicyLookup"
+                  },
+                  "claimId": "CLM-TEST-003"
+                }
+              }
+            },
+            {
+              "elementId": "GetCustomerProfile",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t2",
+                    "name": "GetCustomerProfile"
+                  },
+                  "customerId": "CUST-0500"
+                }
+              }
+            },
+            {
+              "elementId": "CalculateDamageEstimate",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t3",
+                    "name": "CalculateDamageEstimate"
+                  },
+                  "claimId": "CLM-TEST-003",
+                  "damageDescription": "Vehicle stolen"
+                }
+              }
+            }
           ]
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "PolicyLookup" },
-          "variables": { "toolCallResult": { "status": "active", "fraudRiskScore": "medium", "fraudFlags": 1 } }
+          "jobSelector": {
+            "elementId": "PolicyLookup"
+          },
+          "variables": {
+            "toolCallResult": {
+              "status": "active",
+              "fraudRiskScore": "medium",
+              "fraudFlags": 1
+            }
+          }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "GetCustomerProfile" },
-          "variables": { "toolCallResult": { "riskRating": "medium", "fraudHistory": false, "priorFraudInvestigations": 0, "claimsThisYear": 1 } }
+          "jobSelector": {
+            "elementId": "GetCustomerProfile"
+          },
+          "variables": {
+            "toolCallResult": {
+              "riskRating": "medium",
+              "fraudHistory": false,
+              "priorFraudInvestigations": 0,
+              "claimsThisYear": 1
+            }
+          }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "CalculateDamageEstimate" },
-          "variables": { "toolCallResult": { "estimatedAmount": 18000, "estimateConfidence": "medium", "anomalyFlags": [] } }
+          "jobSelector": {
+            "elementId": "CalculateDamageEstimate"
+          },
+          "variables": {
+            "toolCallResult": {
+              "estimatedAmount": 18000,
+              "estimateConfidence": "medium",
+              "anomalyFlags": []
+            }
+          }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "responseText": "{\"claimSummary\":\"Vehicle theft claim. Moderate risk.\",\"policyValidated\":true,\"documentsVerified\":true,\"damageEstimate\":18000,\"fraudIndicators\":\"\",\"fraudSuspected\":false,\"decision\":\"MANUAL_REVIEW\",\"decisionRationale\":\"No hard fraud signals but ambiguous circumstances warrant human judgment.\",\"suggestedSettlementAmount\":17500}",
@@ -303,8 +587,17 @@
               },
               "context": {
                 "state": "READY",
-                "metrics": { "modelCalls": 2, "tokenUsage": { "inputTokenCount": 850, "outputTokenCount": 100 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 2,
+                  "tokenUsage": {
+                    "inputTokenCount": 850,
+                    "outputTokenCount": 100
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
@@ -312,7 +605,9 @@
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Agent_Judge" },
+          "jobSelector": {
+            "elementId": "Agent_Judge"
+          },
           "variables": {
             "agentJudge": {
               "responseJson": {
@@ -328,35 +623,65 @@
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "Task_ManualReview" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Task_ManualReview"
+            }
+          ],
           "state": "IS_ACTIVE"
         },
         {
           "type": "COMPLETE_USER_TASK",
-          "userTaskSelector": { "elementId": "Task_ManualReview" },
-          "variables": { "adjusterDecision": "APPROVE", "settlementAmount": 17500 }
+          "userTaskSelector": {
+            "elementId": "Task_ManualReview"
+          },
+          "variables": {
+            "adjusterDecision": "APPROVE",
+            "settlementAmount": 17500
+          }
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "End_ManualResolved" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "End_ManualResolved"
+            }
+          ],
           "state": "IS_COMPLETED"
         },
         {
+          "type": "ASSERT_VARIABLES",
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "variables": {
+            "claimDecision": "MANUAL_REVIEW"
+          }
+        },
+        {
           "type": "ASSERT_PROCESS_INSTANCE",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "AHSP throws error — assessment failure handled by supervisor",
+      "name": "PR-7: an assessment-agent failure routes to a supervisor and never drops the claim",
       "description": "The AHSP outer job throws a BPMN error (agent connector failure). Boundary_AssessmentError fires, Task_HandleError becomes active, process ends at End_AssessmentError.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "variables": {
             "claimId": "CLM-TEST-ERR",
             "customerId": "CUST-ERR",
@@ -369,41 +694,63 @@
         },
         {
           "type": "THROW_BPMN_ERROR_FROM_JOB",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "errorCode": "AGENT_ERROR",
           "errorMessage": "Agent connector unavailable. Bedrock endpoint timeout."
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "Task_HandleError" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Task_HandleError"
+            }
+          ],
           "state": "IS_ACTIVE"
         },
         {
           "type": "COMPLETE_USER_TASK",
-          "userTaskSelector": { "elementId": "Task_HandleError" },
-          "variables": { "supervisorNotes": "Agent connector was unavailable. Claim re-queued manually." }
+          "userTaskSelector": {
+            "elementId": "Task_HandleError"
+          },
+          "variables": {
+            "supervisorNotes": "Agent connector was unavailable. Claim re-queued manually."
+          }
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "End_AssessmentError" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "End_AssessmentError"
+            }
+          ],
           "state": "IS_COMPLETED"
         },
         {
           "type": "ASSERT_PROCESS_INSTANCE",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "agent requests documents — RequestAdditionalDocuments tool activated",
+      "name": "PR-5: missing documents trigger a request, then assessment resumes",
       "description": "Agent activates RequestAdditionalDocuments user task (round 1). Claims processor submits documents. Agent calls service tools (round 2) and completes assessment with decision=APPROVE (round 3). Judge scores quality.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "variables": {
             "claimId": "CLM-TEST-DOCS",
             "customerId": "CUST-DOCS",
@@ -416,13 +763,24 @@
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "context": {
                 "state": "WAITING_FOR_TOOL_CALL_RESULTS",
-                "metrics": { "modelCalls": 1, "tokenUsage": { "inputTokenCount": 360, "outputTokenCount": 45 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 1,
+                  "tokenUsage": {
+                    "inputTokenCount": 360,
+                    "outputTokenCount": 45
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
@@ -432,7 +790,10 @@
               "elementId": "RequestAdditionalDocuments",
               "variables": {
                 "toolCall": {
-                  "_meta": { "id": "t1", "name": "RequestAdditionalDocuments" },
+                  "_meta": {
+                    "id": "t1",
+                    "name": "RequestAdditionalDocuments"
+                  },
                   "claimId": "CLM-TEST-DOCS",
                   "missingDocuments": "Proof of flood damage (photos, plumber report)"
                 }
@@ -442,52 +803,133 @@
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "RequestAdditionalDocuments" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "RequestAdditionalDocuments"
+            }
+          ],
           "state": "IS_ACTIVE"
         },
         {
           "type": "COMPLETE_USER_TASK",
-          "userTaskSelector": { "elementId": "RequestAdditionalDocuments" },
-          "variables": { "documentsReceived": true }
+          "userTaskSelector": {
+            "elementId": "RequestAdditionalDocuments"
+          },
+          "variables": {
+            "documentsReceived": true
+          }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "context": {
                 "state": "WAITING_FOR_TOOL_CALL_RESULTS",
-                "metrics": { "modelCalls": 2, "tokenUsage": { "inputTokenCount": 700, "outputTokenCount": 55 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 2,
+                  "tokenUsage": {
+                    "inputTokenCount": 700,
+                    "outputTokenCount": 55
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
           "completionConditionFulfilled": false,
           "activateElements": [
-            { "elementId": "PolicyLookup",            "variables": { "toolCall": { "_meta": { "id": "t2", "name": "PolicyLookup" },            "claimId": "CLM-TEST-DOCS" } } },
-            { "elementId": "GetCustomerProfile",      "variables": { "toolCall": { "_meta": { "id": "t3", "name": "GetCustomerProfile" },      "customerId": "CUST-DOCS" } } },
-            { "elementId": "CalculateDamageEstimate", "variables": { "toolCall": { "_meta": { "id": "t4", "name": "CalculateDamageEstimate" }, "claimId": "CLM-TEST-DOCS", "damageDescription": "Basement flooded" } } }
+            {
+              "elementId": "PolicyLookup",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t2",
+                    "name": "PolicyLookup"
+                  },
+                  "claimId": "CLM-TEST-DOCS"
+                }
+              }
+            },
+            {
+              "elementId": "GetCustomerProfile",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t3",
+                    "name": "GetCustomerProfile"
+                  },
+                  "customerId": "CUST-DOCS"
+                }
+              }
+            },
+            {
+              "elementId": "CalculateDamageEstimate",
+              "variables": {
+                "toolCall": {
+                  "_meta": {
+                    "id": "t4",
+                    "name": "CalculateDamageEstimate"
+                  },
+                  "claimId": "CLM-TEST-DOCS",
+                  "damageDescription": "Basement flooded"
+                }
+              }
+            }
           ]
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "PolicyLookup" },
-          "variables": { "toolCallResult": { "status": "active", "fraudRiskScore": "low", "fraudFlags": 0 } }
+          "jobSelector": {
+            "elementId": "PolicyLookup"
+          },
+          "variables": {
+            "toolCallResult": {
+              "status": "active",
+              "fraudRiskScore": "low",
+              "fraudFlags": 0
+            }
+          }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "GetCustomerProfile" },
-          "variables": { "toolCallResult": { "riskRating": "low", "fraudHistory": false, "claimsThisYear": 0 } }
+          "jobSelector": {
+            "elementId": "GetCustomerProfile"
+          },
+          "variables": {
+            "toolCallResult": {
+              "riskRating": "low",
+              "fraudHistory": false,
+              "claimsThisYear": 0
+            }
+          }
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "CalculateDamageEstimate" },
-          "variables": { "toolCallResult": { "estimatedAmount": 8500, "estimateConfidence": "high", "anomalyFlags": [] } }
+          "jobSelector": {
+            "elementId": "CalculateDamageEstimate"
+          },
+          "variables": {
+            "toolCallResult": {
+              "estimatedAmount": 8500,
+              "estimateConfidence": "high",
+              "anomalyFlags": []
+            }
+          }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "responseText": "{\"claimSummary\":\"Flood claim with verified documents.\",\"policyValidated\":true,\"documentsVerified\":true,\"damageEstimate\":8500,\"fraudIndicators\":\"\",\"fraudSuspected\":false,\"decision\":\"APPROVE\",\"decisionRationale\":\"Documents received and verified. Clean risk profile, estimate is reasonable.\",\"suggestedSettlementAmount\":8000}",
@@ -504,8 +946,17 @@
               },
               "context": {
                 "state": "READY",
-                "metrics": { "modelCalls": 3, "tokenUsage": { "inputTokenCount": 1100, "outputTokenCount": 90 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 3,
+                  "tokenUsage": {
+                    "inputTokenCount": 1100,
+                    "outputTokenCount": 90
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             }
           },
@@ -513,7 +964,9 @@
         },
         {
           "type": "COMPLETE_JOB",
-          "jobSelector": { "elementId": "Agent_Judge" },
+          "jobSelector": {
+            "elementId": "Agent_Judge"
+          },
           "variables": {
             "agentJudge": {
               "responseJson": {
@@ -528,19 +981,32 @@
           }
         },
         {
+          "type": "ASSERT_VARIABLES",
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "variables": {
+            "claimDecision": "APPROVE"
+          }
+        },
+        {
           "type": "ASSERT_PROCESS_INSTANCE",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "state": "IS_COMPLETED"
         }
       ]
     },
     {
-      "name": "agent cannot complete — EscalateToHuman tool fires from AHSP",
+      "name": "PR-6: the agent escalates a claim it cannot resolve mid-assessment",
       "description": "Agent encounters an unresolvable conflict and activates the EscalateToHuman escalation tool. Escalation propagates out of the AHSP, SubProcess_HumanControl catches it, adjuster resolves.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
-          "processDefinitionSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processDefinitionSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "variables": {
             "claimId": "CLM-TEST-ESC",
             "customerId": "CUST-ESC",
@@ -553,13 +1019,24 @@
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": {
+            "jobType": "io.camunda.agenticai:aiagent-job-worker:1"
+          },
           "variables": {
             "agent": {
               "context": {
                 "state": "WAITING_FOR_TOOL_CALL_RESULTS",
-                "metrics": { "modelCalls": 1, "tokenUsage": { "inputTokenCount": 350, "outputTokenCount": 45 } },
-                "conversation": { "type": "in-process", "messages": [] }
+                "metrics": {
+                  "modelCalls": 1,
+                  "tokenUsage": {
+                    "inputTokenCount": 350,
+                    "outputTokenCount": 45
+                  }
+                },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": []
+                }
               }
             },
             "escalationReason": "Conflicting police reports cannot be resolved with available tools. Requires human adjuster."
@@ -570,7 +1047,10 @@
               "elementId": "EscalateToHuman",
               "variables": {
                 "toolCall": {
-                  "_meta": { "id": "t1", "name": "EscalateToHuman" },
+                  "_meta": {
+                    "id": "t1",
+                    "name": "EscalateToHuman"
+                  },
                   "reason": "Conflicting police reports cannot be resolved with available tools."
                 }
               }
@@ -579,13 +1059,21 @@
         },
         {
           "type": "ASSERT_ELEMENT_INSTANCES",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
-          "elementSelectors": [{ "elementId": "Task_HumanReview" }],
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Task_HumanReview"
+            }
+          ],
           "state": "IS_ACTIVE"
         },
         {
           "type": "COMPLETE_USER_TASK",
-          "userTaskSelector": { "elementId": "Task_HumanReview" },
+          "userTaskSelector": {
+            "elementId": "Task_HumanReview"
+          },
           "variables": {
             "adjusterResolution": "APPROVE",
             "adjusterNotes": "Reviewed conflicting reports. Adjuster confirms partial settlement."
@@ -593,7 +1081,9 @@
         },
         {
           "type": "ASSERT_PROCESS_INSTANCE",
-          "processInstanceSelector": { "processDefinitionId": "CamundaInsurance_ClaimsProcessing" },
+          "processInstanceSelector": {
+            "processDefinitionId": "CamundaInsurance_ClaimsProcessing"
+          },
           "state": "IS_COMPLETED"
         }
       ]
