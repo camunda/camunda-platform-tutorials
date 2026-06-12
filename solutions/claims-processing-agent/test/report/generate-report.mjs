@@ -12,6 +12,35 @@ const here = dirname(fileURLToPath(import.meta.url));
 const artifacts = join(here, 'artifacts');
 const out = join(here, '..', 'target', 'unified-report.html');
 const testCasesPath = join(here, '..', 'src', 'test', 'resources', 'test-cases', 'CamundaInsurance_ClaimsProcessing.test.json');
+const repoRoot = join(here, '..', '..', '..', '..');
+
+// ---------- GitHub source links ----------
+const GITHUB_BASE = 'https://github.com/HanselIdes/camunda-8-tutorials/blob/demo';
+const SRC_REL = {
+  process: 'solutions/claims-processing-agent/test/src/test/resources/test-cases/CamundaInsurance_ClaimsProcessing.test.json',
+  component: 'solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java',
+  processIntegration: 'solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java',
+};
+function githubUrl(relPath, line) {
+  return `${GITHUB_BASE}/${relPath}${line ? '#L' + line : ''}`;
+}
+function findMethodLine(absPath, methodName) {
+  if (!existsSync(absPath)) return null;
+  const lines = readFileSync(absPath, 'utf8').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes(`void ${methodName}`)) return i + 1;
+  }
+  return null;
+}
+function findJsonScenarioLine(absPath, scenarioName) {
+  if (!existsSync(absPath)) return null;
+  const lines = readFileSync(absPath, 'utf8').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes(`"name"`) && lines[i].includes(scenarioName.replace(/"/g, ''))) return i + 1;
+  }
+  return null;
+}
+const srcLink = (href, label = 'view source ↗') => `<a class="src-link" href="${href}" target="_blank" rel="noopener">${label}</a>`;
 
 const spec = JSON.parse(readFileSync(join(here, 'requirements.json'), 'utf8'));
 const vendor = readFileSync(join(here, 'vendor', 'bpmn-navigated-viewer.js'), 'utf8');
@@ -158,7 +187,7 @@ for (const cat of spec.categories) {
     if (r.status === 'skipped') skipped.push({ id: req.id, statement: req.statement, message: r.message });
 
     // test label + instruction breakdown (process scenarios only, from .test.json)
-    let label, detail = '';
+    let label, detail = '', rowLink = '';
     if (req.scenarioIndex && testCases[req.scenarioIndex - 1]) {
       const tc = testCases[req.scenarioIndex - 1];
       label = 'ProcessTest › ' + tc.name;
@@ -166,23 +195,33 @@ for (const cat of spec.categories) {
       const steps = (tc.instructions || []).map(translate)
         .map(s => `<li class="${s.kind}"><span class="tag ${s.kind}">${s.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(s.text)}</li>`).join('');
       detail = `<ol class="steps">${steps}</ol>`;
+      const line = findJsonScenarioLine(join(repoRoot, SRC_REL.process), tc.name);
+      rowLink = srcLink(githubUrl(SRC_REL.process, line));
     } else if (req.match === 'aggregate') {
       label = 'ProcessTest (all scenarios)';
       detail = `<p class="muted">Aggregate over all process scenarios — green only if every scenario passed.</p>`;
+      rowLink = srcLink(githubUrl(SRC_REL.process));
     } else {
       label = `${req.test}.${req.match}`;
       detail = `<p class="muted">Java integration test. See ${esc(label)} for assertions.</p>`;
+      const srcRel = SRC_REL[cat.layer];
+      if (srcRel) {
+        const line = findMethodLine(join(repoRoot, srcRel), req.match);
+        rowLink = srcLink(githubUrl(srcRel, line));
+      }
     }
 
     const hl = rowCov[req.id] ? ` data-dg="${dgKey}" data-id="${req.id}"` : '';
     rows += `<tr class="req${rowCov[req.id] ? ' clickable' : ''}"${hl} data-detail="det-${req.id}">
        <td class="id">${esc(req.id)}</td><td>${esc(req.statement)}</td><td>${badge(r.status)}</td></tr>
-       <tr class="detail" id="det-${req.id}"><td colspan="3"><div class="testname">Test: <code>${esc(label)}</code></div>${detail}</td></tr>`;
+       <tr class="detail" id="det-${req.id}"><td colspan="3"><div class="testname">Test: <code>${esc(label)}</code>${rowLink ? ' ' + rowLink : ''}</div>${detail}</td></tr>`;
   }
   const hint = cat.layer === 'process'
     ? 'Click a requirement to expand its steps and highlight the path that test instance took.'
     : 'Click a requirement to expand its steps.';
-  sections += `<section><h2>${esc(cat.name)}</h2><p class="blurb">${esc(cat.blurb)}</p>
+  const catSrcRel = SRC_REL[cat.layer];
+  const catHeaderLink = catSrcRel ? srcLink(githubUrl(catSrcRel), 'source ↗') : '';
+  sections += `<section><h2>${esc(cat.name)}${catHeaderLink ? ' ' + catHeaderLink : ''}</h2><p class="blurb">${esc(cat.blurb)}</p>
     <div class="split">
       <div class="diag-col"><div class="diagram" id="dg-${dgKey}"></div></div>
       <div class="req-col">
@@ -223,6 +262,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .bl{font-size:13px;color:#586174}.bv{font-size:28px;font-weight:700}.bt{font-size:12px;color:#586174}
  section{background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:18px 20px;margin-bottom:22px}
  h2{margin:0 0 4px;font-size:17px}.blurb{margin:0 0 12px;color:#586174;font-size:13px}.hint{font-size:12px;color:#8a93a2;margin:2px 0 12px}
+ .src-link{font-size:11px;font-weight:400;color:#2563eb;text-decoration:none;margin-left:6px}.src-link:hover{text-decoration:underline}
+ h2 .src-link{font-size:12px}
  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px}
  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #eef0f3;vertical-align:top}
  th{color:#586174;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
