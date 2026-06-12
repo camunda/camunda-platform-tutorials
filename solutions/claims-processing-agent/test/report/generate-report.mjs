@@ -173,11 +173,25 @@ function statusFor(req, run) {
 }
 
 // ---------- diagrams ----------
+// Always read BPMN XML from source — artifact report.json embeds XML as-of test time
+// and may be stale relative to the current process definition.
+const BPMN_SRC = {
+  [spec.processId]:      join(repoRoot, 'solutions/claims-processing-agent/src/main/resources/claims-processing-agent.bpmn'),
+  [spec.toolsProcessId]: join(repoRoot, 'solutions/claims-processing-agent/test/src/test/resources/bpmn/test-claims-tools.bpmn'),
+};
 const diagrams = [];
 function addDiagram(key, pid, run) {
-  const model = modelFor(run, pid) || modelFor('integration', pid) || modelFor('process', pid);
   const cov = coverageFor(run, pid);
-  if (model && model.xml) diagrams.push({ key, xml: model.xml, completed: cov ? cov.completedElements || [] : [], taken: cov ? cov.takenSequenceFlows || [] : [] });
+  // prefer live source XML; fall back to artifact-embedded XML
+  let xml = null;
+  const srcPath = BPMN_SRC[pid];
+  if (srcPath && existsSync(srcPath)) {
+    xml = readFileSync(srcPath, 'utf8');
+  } else {
+    const model = modelFor(run, pid) || modelFor('integration', pid) || modelFor('process', pid);
+    xml = model && model.xml ? model.xml : null;
+  }
+  if (xml) diagrams.push({ key, xml, completed: cov ? cov.completedElements || [] : [], taken: cov ? cov.takenSequenceFlows || [] : [] });
 }
 addDiagram('proc-main', spec.processId, 'process');
 addDiagram('comp-tools', spec.toolsProcessId, 'integration');
