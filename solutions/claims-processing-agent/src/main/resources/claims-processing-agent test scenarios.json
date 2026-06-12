@@ -91,8 +91,9 @@
             "elementId": "Task_HumanReview"
           },
           "variables": {
-            "adjusterResolution": "DENY",
-            "adjusterNotes": "Fraud confirmed across multiple indicators. Claim denied and referred to the Special Investigations Unit."
+            "adjusterResolution": "DENY_FRAUD",
+            "adjusterSettlementAmount": 0,
+            "adjusterNotes": "Five concurrent fraud indicators confirmed: coverage added 8 days before incident, prior open fraud investigation, inflated total-loss estimate, unverifiable police report, multiple active claims. Claim denied and referred to the Special Investigations Unit."
           }
         },
         {
@@ -129,8 +130,9 @@
             "elementId": "Task_ManualReview"
           },
           "variables": {
-            "adjusterDecision": "APPROVE",
-            "settlementAmount": 11000
+            "reviewerDecision": "APPROVE",
+            "reviewerSettlementAmount": 11000,
+            "reviewNotes": "Ambiguous overnight vehicle theft — no CCTV or witnesses but no hard fraud indicators. Police report on file. Settlement approved at estimated market value."
           }
         },
         {
@@ -168,7 +170,8 @@
           },
           "variables": {
             "adjusterResolution": "APPROVE",
-            "adjusterNotes": "Reviewed the conflicting reports and confirmed a partial settlement."
+            "adjusterSettlementAmount": 15000,
+            "adjusterNotes": "Reviewed the conflicting police reports. Fault partially established. Approved for partial settlement."
           }
         },
         {

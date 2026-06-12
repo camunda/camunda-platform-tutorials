@@ -421,8 +421,9 @@
             "elementId": "Task_HumanReview"
           },
           "variables": {
-            "adjusterResolution": "DENY",
-            "adjusterNotes": "Fraud confirmed. Claim denied and referred to SIU."
+            "adjusterResolution": "DENY_FRAUD",
+            "adjusterSettlementAmount": 0,
+            "adjusterNotes": "Five concurrent fraud indicators confirmed: coverage timing, prior open investigation, inflated estimate, unverifiable police report, multiple active claims. Claim denied and referred to SIU."
           }
         },
         {
@@ -639,8 +640,9 @@
             "elementId": "Task_ManualReview"
           },
           "variables": {
-            "adjusterDecision": "APPROVE",
-            "settlementAmount": 17500
+            "reviewerDecision": "APPROVE",
+            "reviewerSettlementAmount": 17500,
+            "reviewNotes": "No hard fraud signals. Ambiguous theft circumstances with medium risk. Approved at suggested settlement amount."
           }
         },
         {
@@ -1076,7 +1078,8 @@
           },
           "variables": {
             "adjusterResolution": "APPROVE",
-            "adjusterNotes": "Reviewed conflicting reports. Adjuster confirms partial settlement."
+            "adjusterSettlementAmount": 15000,
+            "adjusterNotes": "Reviewed the conflicting police reports. Fault partially established. Approved for partial settlement."
           }
         },
         {

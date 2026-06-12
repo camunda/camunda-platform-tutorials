@@ -278,6 +278,11 @@ for (const cat of spec.categories) {
       }
     }
 
+    // Skipped/missing tests never ran — render their steps neutral, not pass-green.
+    if (r.status === 'skipped' || r.status === 'missing') {
+      detail = detail.replace('class="steps"', 'class="steps dim"');
+    }
+
     const hasHighlight = !!rowCov[req.id];
     const hl = hasHighlight ? ` data-dg="${rdgKey}" data-id="${req.id}"` : '';
     rows += `<tr class="req${hasHighlight ? ' clickable' : ''}"${hl} data-detail="det-${req.id}">
@@ -342,6 +347,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  ol.steps li.assert{color:#0b6}ol.steps li.action{color:#334155}
  .tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:6px;color:#fff;vertical-align:middle}
  .tag.assert{background:#16a34a}.tag.action{background:#64748b}
+ ol.steps.dim li.assert,ol.steps.dim li.action{color:#9aa3b0}
+ ol.steps.dim .tag.assert,ol.steps.dim .tag.action{background:#b6bcc6}
  .muted{color:#8a93a2;font-size:12px;margin:6px 0}
  .b{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;white-space:nowrap}
  .b.pass{background:#16a34a}.b.fail{background:#dc2626}.b.skip{background:#9aa4b2}.b.miss{background:#cbd5e1;color:#334155}
