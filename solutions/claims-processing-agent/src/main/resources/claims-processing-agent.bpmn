@@ -180,6 +180,7 @@
           <zeebe:input source="=&#34;Evaluate the following claims assessment. Assessment report: &#34; + assessmentReport + (if is defined(toolCallResults) and toolCallResults != null then &#34;. Tools called during assessment: &#34; + string(toolCallResults) else &#34;&#34;)" target="data.userPrompt.prompt" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
+          <zeebe:input target="data.memory.agentContext" />
           <zeebe:input source="=5" target="data.limits.maxModelCalls" />
           <zeebe:input source="text" target="data.response.format.type" />
           <zeebe:input source="=true" target="data.response.format.parseJson" />
