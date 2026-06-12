@@ -98,6 +98,24 @@ function scenarioCoverage(run, suiteIdMatch, pid) {
 }
 const procScenarioCov = scenarioCoverage('process', 'ProcessTest', spec.processId);
 
+// per-test coverage for integration runs, keyed by test method name
+function integTestCoverage() {
+  const r = reports['integration']; if (!r) return {};
+  const out = {};
+  for (const suite of (r.suites || [])) {
+    for (const run of (suite.runs || [])) {
+      if (!run.name) continue;
+      out[run.name] = (run.processCoverages || []).map(c => ({
+        pid: c.processDefinitionId,
+        completed: c.completedElements || [],
+        taken: c.takenSequenceFlows || [],
+      }));
+    }
+  }
+  return out;
+}
+const integRunCov = integTestCoverage();
+
 // ---------- plain-language instruction translation (deterministic, schema-based) ----------
 const short = v => {
   if (v == null) return 'null';
@@ -163,6 +181,7 @@ function addDiagram(key, pid, run) {
 }
 addDiagram('proc-main', spec.processId, 'process');
 addDiagram('comp-tools', spec.toolsProcessId, 'integration');
+addDiagram('comp-proc', spec.processId, 'integration');  // main process diagram for SIR-4/5 in component section
 addDiagram('pint-main', spec.processId, 'integration');
 
 // ---------- id sort ----------
@@ -178,17 +197,37 @@ const rowCov = {};        // rowId -> {completed, taken} for diagram highlight
 const skipped = [];
 let sections = '';
 
+// resolve per-row diagram key for integration rows based on which process the run covers
+function rowDgKey(req, cat) {
+  if (cat.layer === 'process') return 'proc-main';
+  if (cat.layer === 'processIntegration') return 'pint-main';
+  // component: SIR tests covering test-claims-tools → comp-tools; main process → comp-proc
+  const runs = integRunCov[req.match] || [];
+  const coversProcId = runs.some(c => c.pid === spec.processId);
+  return coversProcId ? 'comp-proc' : 'comp-tools';
+}
+
 for (const cat of spec.categories) {
-  const dgKey = cat.layer === 'process' ? 'proc-main' : cat.layer === 'component' ? 'comp-tools' : 'pint-main';
+  const defaultDgKey = cat.layer === 'process' ? 'proc-main' : cat.layer === 'component' ? 'comp-tools' : 'pint-main';
   const reqs = [...cat.requirements].sort(byId);
+
+  // collect unique diagram keys needed in this section
+  const sectionDgKeys = [defaultDgKey];
+  for (const req of reqs) {
+    const k = rowDgKey(req, cat);
+    if (!sectionDgKeys.includes(k)) sectionDgKeys.push(k);
+  }
+
   let rows = '';
   for (const req of reqs) {
     const r = statusFor(req, cat.run);
     if (r.status === 'skipped') skipped.push({ id: req.id, statement: req.statement, message: r.message });
 
-    // test label + instruction breakdown (process scenarios only, from .test.json)
+    const rdgKey = rowDgKey(req, cat);
     let label, detail = '', rowLink = '';
+
     if (req.scenarioIndex && testCases[req.scenarioIndex - 1]) {
+      // ── process test: translate .test.json instructions ──
       const tc = testCases[req.scenarioIndex - 1];
       label = 'ProcessTest › ' + tc.name;
       rowCov[req.id] = procScenarioCov[req.scenarioIndex - 1] || { completed: [], taken: [] };
@@ -202,8 +241,22 @@ for (const cat of spec.categories) {
       detail = `<p class="muted">Aggregate over all process scenarios — green only if every scenario passed.</p>`;
       rowLink = srcLink(githubUrl(SRC_REL.process));
     } else {
-      label = `${req.test}.${req.match}`;
-      detail = `<p class="muted">Java integration test. See ${esc(label)} for assertions.</p>`;
+      // ── integration test: per-run coverage + assertions from requirements.json ──
+      label = `${req.test} › ${req.match}`;
+      const runs = integRunCov[req.match] || [];
+      // pick coverage for the diagram this row belongs to
+      const pid = rdgKey === 'comp-tools' ? spec.toolsProcessId : spec.processId;
+      const runCov = runs.find(c => c.pid === pid);
+      if (runCov) rowCov[req.id] = { completed: runCov.completed, taken: runCov.taken };
+
+      if (req.assertions && req.assertions.length) {
+        const steps = req.assertions
+          .map(a => `<li class="${a.kind}"><span class="tag ${a.kind}">${a.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(a.text)}</li>`)
+          .join('');
+        detail = `<ol class="steps">${steps}</ol>`;
+      } else {
+        detail = `<p class="muted">No inline assertions defined. See source for the full assertion chain.</p>`;
+      }
       const srcRel = SRC_REL[cat.layer];
       if (srcRel) {
         const line = findMethodLine(join(repoRoot, srcRel), req.match);
@@ -211,19 +264,20 @@ for (const cat of spec.categories) {
       }
     }
 
-    const hl = rowCov[req.id] ? ` data-dg="${dgKey}" data-id="${req.id}"` : '';
-    rows += `<tr class="req${rowCov[req.id] ? ' clickable' : ''}"${hl} data-detail="det-${req.id}">
+    const hasHighlight = !!rowCov[req.id];
+    const hl = hasHighlight ? ` data-dg="${rdgKey}" data-id="${req.id}"` : '';
+    rows += `<tr class="req${hasHighlight ? ' clickable' : ''}"${hl} data-detail="det-${req.id}">
        <td class="id">${esc(req.id)}</td><td>${esc(req.statement)}</td><td>${badge(r.status)}</td></tr>
        <tr class="detail" id="det-${req.id}"><td colspan="3"><div class="testname">Test: <code>${esc(label)}</code>${rowLink ? ' ' + rowLink : ''}</div>${detail}</td></tr>`;
   }
-  const hint = cat.layer === 'process'
-    ? 'Click a requirement to expand its steps and highlight the path that test instance took.'
-    : 'Click a requirement to expand its steps.';
+  const hint = 'Click a requirement to expand its steps and highlight the path that test instance took.';
   const catSrcRel = SRC_REL[cat.layer];
   const catHeaderLink = catSrcRel ? srcLink(githubUrl(catSrcRel), 'source ↗') : '';
+  const diagHtml = sectionDgKeys.map((k, i) =>
+    `<div class="diagram${i > 0 ? ' d-none' : ''}" id="dg-${k}"></div>`).join('');
   sections += `<section><h2>${esc(cat.name)}${catHeaderLink ? ' ' + catHeaderLink : ''}</h2><p class="blurb">${esc(cat.blurb)}</p>
     <div class="split">
-      <div class="diag-col"><div class="diagram" id="dg-${dgKey}"></div></div>
+      <div class="diag-col">${diagHtml}</div>
       <div class="req-col">
         <p class="hint">${hint}</p>
         <table><thead><tr><th>ID</th><th>Business requirement</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
@@ -277,7 +331,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .muted{color:#8a93a2;font-size:12px;margin:6px 0}
  .b{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;white-space:nowrap}
  .b.pass{background:#16a34a}.b.fail{background:#dc2626}.b.skip{background:#9aa4b2}.b.miss{background:#cbd5e1;color:#334155}
- .diagram{height:520px;border:1px solid #eef0f3;border-radius:8px;background:#fbfbfc}
+ .diagram{height:520px;border:1px solid #eef0f3;border-radius:8px;background:#fbfbfc}.d-none{display:none!important}
  .skipbox{background:#fff;border:1px solid #e3e6ea;border-left:5px solid #9aa4b2;border-radius:10px;padding:16px 20px;margin-bottom:22px}
  .skiprow{font-size:13px;margin:8px 0}.reason{color:#586174;font-size:12px}
  .cov .djs-visual>:is(rect,circle,polygon){stroke:#16a34a !important;stroke-width:2px !important;fill:#dcfce7 !important}
@@ -313,15 +367,28 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
      tr.addEventListener('click', () => {
        const det = document.getElementById(tr.getAttribute('data-detail'));
        const table = tr.closest('table');
+       const section = tr.closest('section');
        const wasOpen = det && det.classList.contains('open');
-       // accordion: collapse all open rows in this table, then open this one if it was closed
+       // accordion: collapse all open rows in this table
        table.querySelectorAll('tr.detail.open').forEach(d => d.classList.remove('open'));
-       if (det && !wasOpen) det.classList.add('open');
        const id = tr.getAttribute('data-id'), dg = tr.getAttribute('data-dg');
-       if (id && dg && ROWCOV[id]) {
+       if (!wasOpen) {
+         if (det) det.classList.add('open');
+         // show this row's diagram, hide others in section
+         if (dg) {
+           section.querySelectorAll('.diagram').forEach(d => d.classList.add('d-none'));
+           const diagEl = document.getElementById('dg-' + dg);
+           if (diagEl) diagEl.classList.remove('d-none');
+         }
+         if (id && dg && ROWCOV[id]) {
+           document.querySelectorAll('tr.req.active').forEach(x=>x.classList.remove('active'));
+           tr.classList.add('active');
+           highlight(dg, ROWCOV[id]);
+         }
+       } else {
+         // collapsed — restore default (first) diagram in section
+         section.querySelectorAll('.diagram').forEach((d, i) => d.classList.toggle('d-none', i > 0));
          document.querySelectorAll('tr.req.active').forEach(x=>x.classList.remove('active'));
-         tr.classList.add('active');
-         highlight(dg, ROWCOV[id]);
        }
      });
    });

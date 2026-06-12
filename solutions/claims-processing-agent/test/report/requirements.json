@@ -8,9 +8,9 @@
       "name": "Process tests",
       "layer": "process",
       "run": "process",
-      "blurb": "Mocked agent/judge/tool jobs. Proves every routing path and 100% element reachability.",
+      "blurb": "Mocked agent/judge/tool jobs. Every routing path exercised across 7 scenarios; coverage target 90%.",
       "requirements": [
-        { "id": "PR-1", "statement": "Every claim reaches exactly one terminal state (no stalls)", "test": "ProcessTest (all scenarios)", "match": "aggregate" },
+        { "id": "PR-1", "statement": "Every claim reaches exactly one terminal state (no stalls)", "test": "ProcessTest", "match": "aggregate" },
         { "id": "PR-2", "statement": "A clean low-risk claim is approved without human touch", "test": "ProcessTest", "scenarioIndex": 1 },
         { "id": "PR-4", "statement": "A fraudulent claim is escalated to a human adjuster", "test": "ProcessTest", "scenarioIndex": 2 },
         { "id": "PR-3", "statement": "An ambiguous claim with no hard fraud signal goes to manual review", "test": "ProcessTest", "scenarioIndex": 3 },
@@ -25,23 +25,110 @@
       "run": "integration",
       "blurb": "Each external system in isolation against real endpoints; judge quality validated with LLM-as-judge and variable checks.",
       "requirements": [
-        { "id": "SIR-1", "statement": "PolicyLookup connector runs and its segment completes", "test": "ClaimsExternalSystemsIT", "match": "policyLookupInIsolation" },
-        { "id": "SIR-2", "statement": "GetCustomerProfile connector runs and its segment completes", "test": "ClaimsExternalSystemsIT", "match": "getCustomerProfileInIsolation" },
-        { "id": "SIR-3", "statement": "CalculateDamageEstimate connector runs and its segment completes", "test": "ClaimsExternalSystemsIT", "match": "calculateDamageEstimateInIsolation" },
-        { "id": "SIR-4", "statement": "The assessment report identifies fraud risk and recommends a decision (LLM-as-judge)", "test": "ClaimsExternalSystemsIT", "match": "assessmentReportIdentifiesFraud" },
-        { "id": "SIR-4s", "statement": "The assessment report matches a reference fraud assessment (semantic similarity)", "test": "ClaimsExternalSystemsIT", "match": "assessmentReportSemanticSimilarity" },
-        { "id": "SIR-5", "statement": "The Quality Judge populates every quality output it is prompted to produce", "test": "ClaimsExternalSystemsIT", "match": "judgePopulatesQualityOutputs" }
+        {
+          "id": "SIR-1", "statement": "PolicyLookup connector runs and its segment completes",
+          "test": "ClaimsExternalSystemsIT", "match": "policyLookupInIsolation",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with claimId=CLM-2025-0042, activate only PolicyLookup tool" },
+            { "kind": "assert", "text": "PolicyLookup element completed (real REST call to beeceptor)" },
+            { "kind": "assert", "text": "End_PolicyLookup element completed (segment terminates cleanly)" },
+            { "kind": "assert", "text": "Tools process instance completed" }
+          ]
+        },
+        {
+          "id": "SIR-2", "statement": "GetCustomerProfile connector runs and its segment completes",
+          "test": "ClaimsExternalSystemsIT", "match": "getCustomerProfileInIsolation",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with customerId=CUST-4521, activate only GetCustomerProfile tool" },
+            { "kind": "assert", "text": "GetCustomerProfile element completed (real REST call to beeceptor)" },
+            { "kind": "assert", "text": "End_GetCustomerProfile element completed (segment terminates cleanly)" },
+            { "kind": "assert", "text": "Tools process instance completed" }
+          ]
+        },
+        {
+          "id": "SIR-3", "statement": "CalculateDamageEstimate connector runs and its segment completes",
+          "test": "ClaimsExternalSystemsIT", "match": "calculateDamageEstimateInIsolation",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with claimId=CLM-2025-0042, activate only CalculateDamageEstimate tool" },
+            { "kind": "assert", "text": "CalculateDamageEstimate element completed (real REST call to beeceptor)" },
+            { "kind": "assert", "text": "End_CalculateDamageEstimate element completed (segment terminates cleanly)" },
+            { "kind": "assert", "text": "Tools process instance completed" }
+          ]
+        },
+        {
+          "id": "SIR-4", "statement": "The assessment report identifies fraud risk and recommends a decision (LLM-as-judge)",
+          "test": "ClaimsExternalSystemsIT", "match": "assessmentReportIdentifiesFraud",
+          "assertions": [
+            { "kind": "action", "text": "Start full process with claimId=CLM-2025-0042 (fraud-laden data from beeceptor)" },
+            { "kind": "assert", "text": "assessmentReport variable populated by agent (real Bedrock call)" },
+            { "kind": "assert", "text": "assessmentReport judged to identify fraud risk and recommend escalation (LLM-as-judge)" },
+            { "kind": "assert", "text": "Judgment verdict = PASS — report meets the fraud-detection quality bar" }
+          ]
+        },
+        {
+          "id": "SIR-4s", "statement": "The assessment report matches a reference fraud assessment (semantic similarity)",
+          "test": "ClaimsExternalSystemsIT", "match": "assessmentReportSemanticSimilarity",
+          "assertions": [
+            { "kind": "action", "text": "Start full process with claimId=CLM-2025-0042" },
+            { "kind": "assert", "text": "assessmentReport cosine similarity to reference ≥ 0.70 (Titan embed model)" },
+            { "kind": "assert", "text": "Verdict = PASS — report is semantically close to the reference" }
+          ]
+        },
+        {
+          "id": "SIR-5", "statement": "The Quality Judge populates every quality output it is prompted to produce",
+          "test": "ClaimsExternalSystemsIT", "match": "judgePopulatesQualityOutputs",
+          "assertions": [
+            { "kind": "action", "text": "Start full process with claimId=CLM-2025-0042; Quality Judge evaluates the assessment" },
+            { "kind": "assert", "text": "agentQualityScore present and numeric in [0.0, 1.0]" },
+            { "kind": "assert", "text": "qualityFeedback present and non-empty string" },
+            { "kind": "assert", "text": "qualityScores map contains keys overallScore and feedback" },
+            { "kind": "assert", "text": "All quality keys populated — judge emitted parseable responseJson" }
+          ]
+        }
       ]
     },
     {
       "name": "Process integration tests",
       "layer": "processIntegration",
       "run": "integration",
-      "blurb": "Whole process end to end on real Bedrock. Each test proves its requirement's full path to the terminal.",
+      "blurb": "Whole process end to end on real Bedrock. Each test proves its requirement's full path to the terminal end event.",
       "requirements": [
-        { "id": "PIR-1", "statement": "A fraudulent claim is escalated to a human adjuster (full path to End_HumanResolved)", "test": "ClaimsProcessingAgentIT", "match": "fraudClaimEscalatesToAdjuster" },
-        { "id": "PIR-2", "statement": "A clean claim is approved without human touch (full path to End_ClaimApproved)", "test": "ClaimsProcessingAgentIT", "match": "cleanClaimIsApproved" },
-        { "id": "PIR-3", "statement": "An ambiguous claim goes to manual review (full path to End_ManualResolved)", "test": "ClaimsProcessingAgentIT", "match": "borderlineClaimGoesToManualReview" }
+        {
+          "id": "PIR-1", "statement": "A fraudulent claim is escalated to a human adjuster (full path to End_HumanResolved)",
+          "test": "ClaimsProcessingAgentIT", "match": "fraudClaimEscalatesToAdjuster",
+          "assertions": [
+            { "kind": "action", "text": "Start process with claimId=CLM-2025-0042, customerId=CUST-4521, claimType=collision (known fraud data)" },
+            { "kind": "assert", "text": "Agent_ClaimsAssessment completed — real Bedrock multi-tool assessment call" },
+            { "kind": "assert", "text": "Agent_Judge completed — Quality Judge scored the assessment" },
+            { "kind": "action", "text": "Await Task_HumanReview user task active (poll up to 2 min)" },
+            { "kind": "action", "text": "Complete Task_HumanReview with adjusterResolution=DENY, adjusterNotes=fraud confirmed" },
+            { "kind": "assert", "text": "Full path completed: Start_ClaimForm → Agent_ClaimsAssessment → Agent_Judge → Gateway_JudgeDecision → SubProcess_HumanControl → Start_HumanEscalation → Task_HumanReview → End_HumanResolved" },
+            { "kind": "assert", "text": "Process instance completed" }
+          ]
+        },
+        {
+          "id": "PIR-2", "statement": "A clean claim is approved without human touch (full path to End_ClaimApproved)",
+          "test": "ClaimsProcessingAgentIT", "match": "cleanClaimIsApproved",
+          "assertions": [
+            { "kind": "action", "text": "Start process with claimId=CLM-IT-CLEAN-001, customerId=CUST-IT-CLEAN (clean-risk beeceptor fixture)" },
+            { "kind": "assert", "text": "Agent_ClaimsAssessment and Agent_Judge completed" },
+            { "kind": "assert", "text": "claimDecision = APPROVE" },
+            { "kind": "assert", "text": "End_ClaimApproved completed — no human task activated" },
+            { "kind": "assert", "text": "Process instance completed" }
+          ]
+        },
+        {
+          "id": "PIR-3", "statement": "An ambiguous claim goes to manual review (full path to End_ManualResolved)",
+          "test": "ClaimsProcessingAgentIT", "match": "borderlineClaimGoesToManualReview",
+          "assertions": [
+            { "kind": "action", "text": "Start process with claimId=CLM-IT-BORDER-001, customerId=CUST-IT-BORDER (medium-risk beeceptor fixture)" },
+            { "kind": "assert", "text": "Agent_ClaimsAssessment and Agent_Judge completed" },
+            { "kind": "assert", "text": "claimDecision = MANUAL_REVIEW" },
+            { "kind": "action", "text": "Await and complete Task_ManualReview with adjusterDecision=APPROVE" },
+            { "kind": "assert", "text": "End_ManualResolved completed" },
+            { "kind": "assert", "text": "Process instance completed" }
+          ]
+        }
       ]
     }
   ]
