@@ -350,6 +350,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  const DIAGRAMS = ${JSON.stringify(diagrams)};
  const ROWCOV = ${JSON.stringify(rowCov)};
  const VIEWERS = {};
+ const NEEDS_ZOOM = new Set(); // diagrams imported while hidden — zoom deferred to first show
+ function zoomIfNeeded(key){ if(!NEEDS_ZOOM.has(key)) return; try{ VIEWERS[key] && VIEWERS[key].get('canvas').zoom('fit-viewport'); }catch(_){} NEEDS_ZOOM.delete(key); }
  function clearMarkers(key){ const v=VIEWERS[key]; if(!v) return; const c=v.get('canvas'); const reg=v.get('elementRegistry');
    reg.getAll().forEach(e=>{ try{c.removeMarker(e.id,'cov');c.removeMarker(e.id,'covf');}catch(_){} }); }
  function highlight(key, cov){ const v=VIEWERS[key]; if(!v||!cov) return; const c=v.get('canvas'); clearMarkers(key);
@@ -358,7 +360,14 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
    for (const d of DIAGRAMS) {
      const el = document.getElementById('dg-' + d.key); if (!el) continue;
      const viewer = new BpmnJS({ container: el });
-     try { await viewer.importXML(d.xml); viewer.get('canvas').zoom('fit-viewport'); VIEWERS[d.key]=viewer;
+     try {
+       await viewer.importXML(d.xml);
+       VIEWERS[d.key] = viewer;
+       if (el.classList.contains('d-none')) {
+         NEEDS_ZOOM.add(d.key); // zoom deferred — container has no dimensions yet
+       } else {
+         viewer.get('canvas').zoom('fit-viewport');
+       }
        (d.completed||[]).forEach(id=>{try{viewer.get('canvas').addMarker(id,'cov')}catch(_){}});
        (d.taken||[]).forEach(id=>{try{viewer.get('canvas').addMarker(id,'covf')}catch(_){}});
      } catch(e){ el.innerHTML='<p style="padding:12px;color:#dc2626">diagram error: '+e.message+'</p>'; }
@@ -378,7 +387,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
          if (dg) {
            section.querySelectorAll('.diagram').forEach(d => d.classList.add('d-none'));
            const diagEl = document.getElementById('dg-' + dg);
-           if (diagEl) diagEl.classList.remove('d-none');
+           if (diagEl) { diagEl.classList.remove('d-none'); zoomIfNeeded(dg); }
          }
          if (id && dg && ROWCOV[id]) {
            document.querySelectorAll('tr.req.active').forEach(x=>x.classList.remove('active'));
