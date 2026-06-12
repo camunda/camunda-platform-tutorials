@@ -1,0 +1,48 @@
+{
+  "processId": "CamundaInsurance_ClaimsProcessing",
+  "toolsProcessId": "test-claims-tools",
+  "thresholds": { "process": 0.9, "processIntegration": 0.40 },
+  "thresholdNote": "Process is 100% on the stable 8.9.x line; the 8.10.0-SNAPSHOT report tooling under-counts to ~93%, so the machine gate floor is 0.90. Process-integration target is 40% while PIR-2/PIR-3 are disabled pending beeceptor fixtures; re-enabling them (and the booster scenarios) raises it toward 60%.",
+  "categories": [
+    {
+      "name": "Process tests",
+      "layer": "process",
+      "run": "process",
+      "blurb": "Mocked agent/judge/tool jobs. Proves every routing path and 100% element reachability.",
+      "requirements": [
+        { "id": "PR-1", "statement": "Every claim reaches exactly one terminal state (no stalls)", "test": "ProcessTest (all scenarios)", "match": "aggregate" },
+        { "id": "PR-2", "statement": "A clean low-risk claim is approved without human touch", "test": "ProcessTest", "scenarioIndex": 1 },
+        { "id": "PR-4", "statement": "A fraudulent claim is escalated to a human adjuster", "test": "ProcessTest", "scenarioIndex": 2 },
+        { "id": "PR-3", "statement": "An ambiguous claim with no hard fraud signal goes to manual review", "test": "ProcessTest", "scenarioIndex": 3 },
+        { "id": "PR-7", "statement": "An assessment-agent failure routes to a supervisor and never drops the claim", "test": "ProcessTest", "scenarioIndex": 4 },
+        { "id": "PR-5", "statement": "Missing documents trigger a request, then assessment resumes", "test": "ProcessTest", "scenarioIndex": 5 },
+        { "id": "PR-6", "statement": "The agent escalates a claim it cannot resolve mid-assessment", "test": "ProcessTest", "scenarioIndex": 6 }
+      ]
+    },
+    {
+      "name": "Component integration tests",
+      "layer": "component",
+      "run": "integration",
+      "blurb": "Each external system in isolation against real endpoints; judge quality validated with LLM-as-judge and variable checks.",
+      "requirements": [
+        { "id": "SIR-1", "statement": "PolicyLookup connector runs and its segment completes", "test": "ClaimsExternalSystemsIT", "match": "policyLookupInIsolation" },
+        { "id": "SIR-2", "statement": "GetCustomerProfile connector runs and its segment completes", "test": "ClaimsExternalSystemsIT", "match": "getCustomerProfileInIsolation" },
+        { "id": "SIR-3", "statement": "CalculateDamageEstimate connector runs and its segment completes", "test": "ClaimsExternalSystemsIT", "match": "calculateDamageEstimateInIsolation" },
+        { "id": "SIR-4", "statement": "The assessment report identifies fraud risk and recommends a decision (LLM-as-judge)", "test": "ClaimsExternalSystemsIT", "match": "assessmentReportIdentifiesFraud" },
+        { "id": "SIR-4s", "statement": "The assessment report matches a reference fraud assessment (semantic similarity)", "test": "ClaimsExternalSystemsIT", "match": "assessmentReportSemanticSimilarity" },
+        { "id": "SIR-5", "statement": "The Quality Judge populates every quality output it is prompted to produce", "test": "ClaimsExternalSystemsIT", "match": "judgePopulatesQualityOutputs" }
+      ]
+    },
+    {
+      "name": "Process integration tests",
+      "layer": "processIntegration",
+      "run": "integration",
+      "blurb": "Whole process end to end on real Bedrock. Each test proves its requirement's full path to the terminal.",
+      "requirements": [
+        { "id": "PIR-1", "statement": "A fraudulent claim is escalated to a human adjuster (full path to End_HumanResolved)", "test": "ClaimsProcessingAgentIT", "match": "fraudClaimEscalatesToAdjuster" },
+        { "id": "PIR-2", "statement": "A clean claim is approved without human touch (full path to End_ClaimApproved)", "test": "ClaimsProcessingAgentIT", "match": "cleanClaimIsApproved" },
+        { "id": "PIR-3", "statement": "An ambiguous claim goes to manual review (full path to End_ManualResolved)", "test": "ClaimsProcessingAgentIT", "match": "borderlineClaimGoesToManualReview" }
+      ]
+    }
+  ]
+}

@@ -201,7 +201,7 @@
       <bpmn:incoming>Flow_AHSPToJudge</bpmn:incoming>
       <bpmn:outgoing>Flow_JudgeToGW</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:exclusiveGateway id="Gateway_JudgeDecision" name="Claim decision?" default="Flow_GWToEscalate">
+    <bpmn:exclusiveGateway id="Gateway_JudgeDecision" name="Claim decision?">
       <bpmn:incoming>Flow_JudgeToGW</bpmn:incoming>
       <bpmn:outgoing>Flow_GWToApprove</bpmn:outgoing>
       <bpmn:outgoing>Flow_GWToManual</bpmn:outgoing>
@@ -258,7 +258,9 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=claimDecision = "MANUAL_REVIEW"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_ManualToNotify" sourceRef="Task_ManualReview" targetRef="End_ManualResolved" />
-    <bpmn:sequenceFlow id="Flow_GWToEscalate" sourceRef="Gateway_JudgeDecision" targetRef="Event_EscalateThrow" />
+    <bpmn:sequenceFlow id="Flow_GWToEscalate" name="Escalate" sourceRef="Gateway_JudgeDecision" targetRef="Event_EscalateThrow">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=claimDecision = "ESCALATE"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CamundaInsurance_ClaimsProcessing">

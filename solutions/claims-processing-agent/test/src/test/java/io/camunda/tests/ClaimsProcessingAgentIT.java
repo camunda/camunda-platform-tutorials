@@ -96,11 +96,14 @@ public class ClaimsProcessingAgentIT {
             Map.of("adjusterResolution", "DENY", "adjusterNotes", "IT: fraud confirmed, referred to SIU."));
 
         // Prove the requirement's full path end to end: assessment -> judge -> escalate ->
-        // human control -> resolved. NOTE: claimDecision is NOT asserted here because the live
-        // AHSP job-worker agent does not surface responseJson.decision, so claimDecision is null
-        // and the gateway escalates via its default branch. That null-decision defect is tracked
-        // separately (it makes APPROVE/MANUAL_REVIEW unreachable live); the escalation path itself
-        // proves this requirement.
+        // human control -> resolved.
+        //
+        // NOTE: Gateway_JudgeDecision has NO default flow — all three branches require an explicit
+        // claimDecision value. If the live AHSP job-worker does not surface responseJson.decision,
+        // the process will throw a no-matching-condition exception at the gateway and this test
+        // will fail. That failure is intentional: it surfaces the connector defect rather than
+        // silently masking it via a default branch. The defect is tracked separately.
+        //
         // Event_EscalateThrow is intentionally omitted: the interrupting human-control event
         // subprocess catches the escalation, so the throw event TERMINATES rather than completes.
         assertThatProcessInstance(instance)
