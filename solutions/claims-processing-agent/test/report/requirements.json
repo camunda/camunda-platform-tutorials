@@ -56,13 +56,13 @@
           ]
         },
         {
-          "id": "SIR-4", "statement": "The assessment report identifies fraud risk and recommends a decision (LLM-as-judge)",
+          "id": "SIR-4", "statement": "Quality Judge routes a fraud assessment report to adjuster escalation",
           "test": "ClaimsExternalSystemsIT", "match": "assessmentReportIdentifiesFraud",
           "assertions": [
-            { "kind": "action", "text": "Start full process with claimId=CLM-2025-0042 (fraud-laden data from beeceptor)" },
-            { "kind": "assert", "text": "assessmentReport variable populated by agent (real Bedrock call)" },
-            { "kind": "assert", "text": "assessmentReport judged to identify fraud risk and recommend escalation (LLM-as-judge)" },
-            { "kind": "assert", "text": "Judgment verdict = PASS — report meets the fraud-detection quality bar" }
+            { "kind": "action", "text": "Start main process at Agent_Judge (startBeforeElement) — no real assessment agent call" },
+            { "kind": "action", "text": "Inject pre-crafted fraud assessmentReport with 5 explicit fraud indicators (mocked agent output)" },
+            { "kind": "assert", "text": "Agent_Judge completed — real Quality Judge evaluated the report via Bedrock" },
+            { "kind": "assert", "text": "Start_HumanEscalation completed — judge set claimDecision=ESCALATE, gateway routed to adjuster" }
           ]
         },
         {

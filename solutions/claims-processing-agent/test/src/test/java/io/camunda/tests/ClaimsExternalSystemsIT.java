@@ -114,28 +114,60 @@ public class ClaimsExternalSystemsIT {
             .isCompleted();
     }
 
+    // Pre-crafted fraud assessment report — injected as mocked agent output so SIR-4 starts
+    // directly at Agent_Judge without a real assessment-agent call. Deterministic fraud signal
+    // so the judge reliably decides ESCALATE.
+    private static final String FRAUD_ASSESSMENT_REPORT =
+        "CLAIM ASSESSMENT REPORT — CLM-2025-0042\n\n"
+        + "RISK RATING: HIGH\nRECOMMENDED DECISION: ESCALATE\n\n"
+        + "Fraud indicators identified:\n"
+        + "1. COVERAGE TIMING — collision coverage added 8 days before the incident date.\n"
+        + "2. CLAIM HISTORY — customer has multiple active claims in the past 12 months.\n"
+        + "3. OPEN FRAUD INVESTIGATION — a prior fraud case is already open on this account.\n"
+        + "4. UNVERIFIABLE DOCUMENTATION — the referenced police report cannot be located.\n"
+        + "5. INFLATED ESTIMATE — claimed total-loss value of $52,000 exceeds market value "
+        + "by ~$18,000 per the damage estimate tool.\n\n"
+        + "Policy status: ACTIVE. Coverage verified. Deductible: $500.\n\n"
+        + "Conclusion: five concurrent fraud indicators. Do NOT approve. ESCALATE immediately "
+        + "to a human adjuster and refer to the Special Investigations Unit.";
+
     // =========================================================================
-    // Group 2 — judge quality (SIR-4/5). Use the known fraud-laden id CLM-2025-0042
-    // so the assessment is deterministic enough to validate.
+    // Group 2 — judge quality (SIR-4/5).
     // =========================================================================
 
+    /**
+     * SIR-4 — Quality Judge routes a fraud assessment to adjuster escalation.
+     *
+     * Starts the main process directly at Agent_Judge (startBeforeElement) with a
+     * pre-crafted fraud assessment report, so no real assessment-agent call is made.
+     * The real Quality Judge runs against the mocked report via Bedrock and must
+     * set claimDecision=ESCALATE, which activates the human-control event subprocess.
+     * Test terminates as soon as the escalation start event fires — the user task is
+     * left active (no adjuster interaction required here).
+     */
     @Test
-    @Timeout(360)
-    @DisplayName("SIR-4: the assessment report identifies fraud risk and recommends a decision")
+    @Timeout(180)
+    @DisplayName("SIR-4: Quality Judge routes a fraud assessment report to adjuster escalation")
     void assessmentReportIdentifiesFraud() {
-        var instance = startMainProcess(
-            "CLM-2025-0042", "CUST-4521", "collision",
-            "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
-                + "Prior open fraud investigation and multiple recent claims.",
-            "2026-06-01");
+        var instance = client.newCreateInstanceCommand()
+            .bpmnProcessId(MAIN_PROCESS)
+            .latestVersion()
+            .startBeforeElement("Agent_Judge")
+            .variables(Map.of(
+                "claimId", "CLM-2025-0042",
+                "customerId", "CUST-4521",
+                "claimType", "collision",
+                "customerName", "IT Quality Customer",
+                "customerEmail", "it-quality@camunda.example.com",
+                "incidentDate", "2026-06-01",
+                "assessmentReport", FRAUD_ASSESSMENT_REPORT))
+            .send().join();
 
-        assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
-
-        // LLM-as-judge on the report content (CPT resolves variable names, not dot-paths).
+        // Prove the full requirement path: judge runs, gateway routes to escalate, and
+        // the human-control subprocess fires (Start_HumanEscalation completed = escalation
+        // event was caught and the human task activated).
         assertThatProcessInstance(instance)
-            .hasVariableSatisfiesJudge(
-                "assessmentReport",
-                "identifies fraud risk in the claim and recommends escalating or denying it");
+            .hasCompletedElements(byId("Agent_Judge"), byId("Start_HumanEscalation"));
     }
 
     @Test
