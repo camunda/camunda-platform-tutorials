@@ -149,6 +149,9 @@ public class ClaimsExternalSystemsIT {
     @Timeout(180)
     @DisplayName("SIR-4: Quality Judge routes a fraud assessment report to adjuster escalation")
     void assessmentReportIdentifiesFraud() {
+        // claimDecision is what the assessment agent would have set. Injected here because
+        // we start at Agent_Judge directly (no assessment agent call). The gateway requires
+        // an explicit value — no default flow.
         var instance = client.newCreateInstanceCommand()
             .bpmnProcessId(MAIN_PROCESS)
             .latestVersion()
@@ -160,7 +163,8 @@ public class ClaimsExternalSystemsIT {
                 "customerName", "IT Quality Customer",
                 "customerEmail", "it-quality@camunda.example.com",
                 "incidentDate", "2026-06-01",
-                "assessmentReport", FRAUD_ASSESSMENT_REPORT))
+                "assessmentReport", FRAUD_ASSESSMENT_REPORT,
+                "claimDecision", "ESCALATE"))
             .send().join();
 
         // Prove the full requirement path: judge runs, gateway routes to escalate, and
