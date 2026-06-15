@@ -26,6 +26,17 @@ import org.springframework.boot.test.context.SpringBootTest;
  *   1. Connector / service-task isolation (SIR-1/2/3): each test activates ONE tool segment
  *      of bpmn/test-claims-tools.bpmn via startBeforeElement(), so the HTTP JSON connector
  *      runs for real against claim-demo.free.beeceptor.com and the segment runs to its end event.
+ *
+ *      Why not use startBeforeElement() directly on the main process AHSP inner elements?
+ *      Camunda issue #44823 (fix merged Feb 2026 via PR #46187) removed the engine validation
+ *      that blocks creation, so the process instance IS created and the HTTP job IS activated.
+ *      However, the AHSP's outputCollection DirectBuffer field is not initialized on the
+ *      startBeforeElement path — only on the normal AHSP lifecycle path. When the inner service
+ *      task job completes, Zeebe NPEs trying to append to the null outputCollection, rejecting
+ *      JOB.COMPLETE with PROCESSING_ERROR. The connector cannot complete the job, so the element
+ *      stays active indefinitely. The standalone test-claims-tools.bpmn is required until
+ *      Zeebe properly initializes AHSP output state on the startBeforeElement path.
+ *
  *   2. Judge quality (SIR-4/5): runs the full assessment agent + Quality Judge against real
  *      Bedrock. SIR-4 validates the report content (LLM-as-judge). SIR-5 validates that the
  *      judge populates EVERY quality output its prompt is supposed to produce.
