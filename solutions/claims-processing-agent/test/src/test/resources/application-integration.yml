@@ -20,6 +20,7 @@ camunda:
       AWS_BEDROCK_REGION: ${aws.bedrock.region}
       AWS_BEDROCK_ACCESS_KEY: ${aws.bedrock.access.key}
       AWS_BEDROCK_SECRET_KEY: ${aws.bedrock.secret.key}
+      AWS_BEDROCK_SESSION_TOKEN: ${aws.bedrock.session.token:}
       AWS_BEDROCK_MODEL: ${aws.bedrock.model}
     # LLM-as-judge provider for the agentic quality assertions (CR-4, CR-5).
     # Reuses the same Bedrock credentials as the connector runtime.
@@ -32,6 +33,7 @@ camunda:
         credentials:
           access-key: ${aws.bedrock.access.key}
           secret-key: ${aws.bedrock.secret.key}
+          session-token: ${aws.bedrock.session.token:}
     # Embedding model for semantic-similarity assertions (SIR-4). Bedrock Titan
     # embeddings; the model need not match the agent or the judge.
     similarity:
@@ -44,6 +46,7 @@ camunda:
         credentials:
           access-key: ${aws.bedrock.access.key}
           secret-key: ${aws.bedrock.secret.key}
+          session-token: ${aws.bedrock.session.token:}
 
 logging:
   level:

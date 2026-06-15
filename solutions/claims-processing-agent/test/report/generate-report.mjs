@@ -57,11 +57,13 @@ function parseSurefireDir(dir) {
     while ((m = re.exec(xml))) {
       const attrs = m[1], body = m[3] || '';
       const name = (attrs.match(/name="([^"]*)"/) || [])[1] || '';
+      const timeSec = Number((attrs.match(/time="([^"]*)"/) || [])[1]);
       let status = 'pass', message = '';
       if (/<skipped/.test(body)) { status = 'skipped'; message = (body.match(/<skipped[^>]*message="([^"]*)"/) || [])[1] || ''; }
       else if (/<failure/.test(body)) { status = 'fail'; message = (body.match(/<failure[^>]*message="([^"]*)"/) || [])[1] || ''; }
       else if (/<error/.test(body)) { status = 'fail'; message = (body.match(/<error[^>]*message="([^"]*)"/) || [])[1] || ''; }
-      cases[name] = { status, message: decode(message) };
+        const systemOut = decode((body.match(/<system-out><!\[CDATA\[([\s\S]*?)\]\]><\/system-out>/) || [])[1] || '');
+        cases[name] = { status, message: decode(message), systemOut, durationSec: Number.isFinite(timeSec) ? timeSec : null };
     }
   }
   return cases;
@@ -71,6 +73,29 @@ const surefire = {
   process: parseSurefireDir(join(artifacts, 'process', 'surefire')),
   integration: parseSurefireDir(join(artifacts, 'integration', 'surefire')),
 };
+
+  function extractObservedValues() {
+    const valuesById = {};
+    const valuesByTest = {};
+    const payloadRe = /^REPORT_VALUE\s+(\{.*\})$/gm;
+    for (const [testName, tc] of Object.entries(surefire.integration || {})) {
+      if (!tc || !tc.systemOut) continue;
+      let m;
+      while ((m = payloadRe.exec(tc.systemOut))) {
+        try {
+          const parsed = JSON.parse(m[1]);
+          if (!parsed || typeof parsed !== 'object') continue;
+          if (parsed.id) valuesById[parsed.id] = parsed;
+          const key = parsed.testName || testName;
+          if (key) valuesByTest[key] = parsed;
+        } catch {
+          // Ignore malformed diagnostic payloads in test output.
+        }
+      }
+    }
+    return { valuesById, valuesByTest };
+  }
+  const observedValues = extractObservedValues();
 const readReport = run => {
   const p = join(artifacts, run, 'report.json');
   try { return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null; } catch { return null; }
@@ -117,11 +142,97 @@ function integTestCoverage() {
 const integRunCov = integTestCoverage();
 
 // ---------- plain-language instruction translation (deterministic, schema-based) ----------
+const SHORT_MAX = 220;
 const short = v => {
   if (v == null) return 'null';
-  if (typeof v === 'object') { const s = JSON.stringify(v); return s.length > 80 ? s.slice(0, 77) + '…' : s; }
-  const s = String(v); return s.length > 80 ? s.slice(0, 77) + '…' : s;
+  if (typeof v === 'object') {
+    // Keep objects on one line, but with spacing for readability in step text.
+    const compact = JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', ');
+    return compact.length > SHORT_MAX ? compact.slice(0, SHORT_MAX - 1) + '…' : compact;
+  }
+  const s = String(v);
+  return s.length > SHORT_MAX ? s.slice(0, SHORT_MAX - 1) + '…' : s;
 };
+function extractElementIds(text) {
+  const idRe = /\b(?:Start|End|Task|Agent|Gateway|SubProcess|Event|Activity)_[A-Za-z0-9_]+\b/g;
+  return Array.from(new Set((String(text || '').match(idRe) || [])));
+}
+
+function actualFromCoverage(assertText, cov) {
+  if (!cov) return null;
+  const text = String(assertText || '').toLowerCase();
+  if (!text.includes('completed')) return null;
+  const ids = extractElementIds(assertText);
+  if (!ids.length) return null;
+  const completed = new Set(cov.completed || []);
+  const states = ids.map(id => `${id}: ${completed.has(id) ? 'completed' : 'not completed'}`);
+  return states.join(', ');
+}
+
+function actualForAssertion(assertText, observed, cov) {
+  const text = String(assertText || '').toLowerCase();
+
+  if (observed && text.includes('qualityscores') && text.includes('overallscore') && text.includes('feedback')) {
+    const parts = [];
+    if (observed.agentQualityScore != null) parts.push(`overallScore=${observed.agentQualityScore}`);
+    if (observed.qualityFeedback) parts.push(`feedback="${String(observed.qualityFeedback)}"`);
+    return parts.length ? parts.join(', ') : null;
+  }
+
+  if (observed && text.includes('agentqualityscore') && observed.agentQualityScore != null) {
+    return String(observed.agentQualityScore);
+  }
+  if (observed && text.includes('qualityfeedback') && observed.qualityFeedback) {
+    return `"${String(observed.qualityFeedback)}"`;
+  }
+  if (observed && text.includes('modelcalls') && observed.modelCalls != null) {
+    return String(observed.modelCalls);
+  }
+  if (observed && text.includes('inputtokencount') && observed.inputTokenCount != null) {
+    return String(observed.inputTokenCount);
+  }
+  if (observed && text.includes('outputtokencount') && observed.outputTokenCount != null) {
+    return String(observed.outputTokenCount);
+  }
+  return actualFromCoverage(assertText, cov);
+}
+
+function shouldHideAssert(text, layer) {
+  const t = String(text || '').toLowerCase();
+  if (layer === 'processIntegration') {
+    if (t.includes('full path completed')) return true;
+    if (t.includes('process instance completed')) return true;
+  }
+  if (layer === 'process') {
+    if (t.includes('process instance is completed')) return true;
+  }
+  return false;
+}
+
+function renderAssertionSteps(assertions, observed, layer, cov) {
+  return (assertions || []).map(a => {
+    if (a.kind === 'assert' && shouldHideAssert(a.text, layer)) {
+      return '';
+    }
+    const actual = a.kind === 'assert' ? actualForAssertion(a.text, observed, cov) : null;
+    const actualHtml = actual ? `<div class="actual"><b>Actual:</b> ${esc(actual)}</div>` : '';
+    return `<li class="${a.kind}"><span class="tag ${a.kind}">${a.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(a.text)}${actualHtml}</li>`;
+  }).filter(Boolean).join('');
+}
+
+function renderObservedMetrics(observed, cov, layer) {
+  const parts = [];
+  if (observed) {
+    if (observed.modelCalls != null) parts.push(`modelCalls=${observed.modelCalls}`);
+    if (observed.inputTokenCount != null) parts.push(`inputTokenCount=${observed.inputTokenCount}`);
+    if (observed.outputTokenCount != null) parts.push(`outputTokenCount=${observed.outputTokenCount}`);
+  }
+  if ((layer === 'process' || layer === 'processIntegration') && cov) {
+    parts.push(`completedElements=${(cov.completed || []).length}`);
+    parts.push(`takenFlows=${(cov.taken || []).length}`);
+  }
+  return parts.length ? `<p class="observed"><b>Metrics:</b> ${esc(parts.join(', '))}</p>` : '';
+}
 const kv = obj => Object.entries(obj || {}).map(([k, v]) => `${k}=${short(v)}`).join(', ');
 const prettyState = s => String(s || '').toLowerCase().replace(/_/g, ' ').replace('is ', '');
 function translate(i) {
@@ -164,12 +275,33 @@ function translate(i) {
 function statusFor(req, run) {
   const cases = surefire[run] || {};
   const names = Object.keys(cases);
-  if (req.match === 'aggregate')
-    return names.length ? { status: names.some(n => cases[n].status === 'fail') ? 'fail' : 'pass', message: '' } : { status: 'missing', message: 'no test run' };
+  if (req.match === 'aggregate') {
+    if (!names.length) return { status: 'missing', message: 'no test run', durationSec: null };
+    const status = names.some(n => cases[n].status === 'fail') ? 'fail' : 'pass';
+    const durationSec = names.reduce((sum, n) => sum + (cases[n].durationSec || 0), 0);
+    return { status, message: '', durationSec };
+  }
   let key;
   if (req.scenarioIndex) key = names.find(n => n.includes('shouldPass') && n.includes('[' + req.scenarioIndex + ']'));
   else key = names.find(n => n.includes(req.match)) || names.find(n => n.includes(req.id));
-  return key ? cases[key] : { status: 'missing', message: 'test not found in run' };
+  return key ? cases[key] : { status: 'missing', message: 'test not found in run', durationSec: null };
+}
+
+function matchedCaseKeysFor(req, run) {
+  const cases = surefire[run] || {};
+  const names = Object.keys(cases);
+  if (req.match === 'aggregate') return names;
+  let key;
+  if (req.scenarioIndex) key = names.find(n => n.includes('shouldPass') && n.includes('[' + req.scenarioIndex + ']'));
+  else key = names.find(n => n.includes(req.match)) || names.find(n => n.includes(req.id));
+  return key ? [key] : [];
+}
+
+function fmtDuration(sec) {
+  if (sec == null || !Number.isFinite(sec)) return 'n/a';
+  if (sec < 1) return `${Math.round(sec * 1000)} ms`;
+  if (sec < 10) return `${sec.toFixed(2)} s`;
+  return `${sec.toFixed(1)} s`;
 }
 
 // ---------- diagrams ----------
@@ -225,6 +357,39 @@ for (const cat of spec.categories) {
   const defaultDgKey = cat.layer === 'process' ? 'proc-main' : cat.layer === 'component' ? 'comp-tools' : 'pint-main';
   const reqs = [...cat.requirements].sort(byId);
 
+  // Build section stats: aggregate requirement gives suite total; setup/teardown = total - sum of individual scenarios
+  let aggregateReq = reqs.find(r => r.match === 'aggregate');
+  const aggregateStatus = aggregateReq ? statusFor(aggregateReq, cat.run) : null;
+  const aggregateDurationSec = aggregateStatus?.durationSec;
+
+  // Collect all non-aggregate test case keys for counting pass/fail
+  const sectionCaseKeys = new Set();
+  for (const req of reqs) {
+    if (req.match !== 'aggregate') {
+      for (const k of matchedCaseKeysFor(req, cat.run)) sectionCaseKeys.add(k);
+    }
+  }
+  const sectionCases = Array.from(sectionCaseKeys).map(k => (surefire[cat.run] || {})[k]).filter(Boolean);
+  const sectionPassed = sectionCases.filter(tc => tc.status === 'pass').length;
+  const sectionTotal = sectionCases.length + (aggregateReq ? 1 : 0);
+
+  // Calculate duration and setup/teardown overhead
+  let sectionDurationSec, setupTeardownSec;
+  if (aggregateDurationSec != null && sectionCases.length > 0) {
+    sectionDurationSec = aggregateDurationSec;
+    // Setup/teardown is aggregate minus sum of individual scenario durations
+    const individualDurationSec = sectionCases.reduce((sum, tc) => sum + (tc.durationSec || 0), 0);
+    setupTeardownSec = sectionDurationSec - individualDurationSec;
+  } else if (aggregateDurationSec != null) {
+    sectionDurationSec = aggregateDurationSec;
+    setupTeardownSec = null;
+  } else {
+    sectionDurationSec = sectionCases.reduce((sum, tc) => sum + (tc.durationSec || 0), 0);
+    setupTeardownSec = null;
+  }
+  const setupNote = setupTeardownSec != null && setupTeardownSec > 0 ? ` <span class="dot">•</span> <span class="setup-note">Setup/teardown: ${fmtDuration(setupTeardownSec)}</span>` : '';
+  const sectionStatsHtml = `<p class="stats"><b>Tests:</b> ${sectionPassed}/${sectionTotal} passed <span class="dot">•</span> <b>Total duration:</b> ${fmtDuration(sectionDurationSec)}${setupNote}</p>`;
+
   // collect unique diagram keys needed in this section
   const sectionDgKeys = [defaultDgKey];
   for (const req of reqs) {
@@ -245,9 +410,11 @@ for (const cat of spec.categories) {
       const tc = testCases[req.scenarioIndex - 1];
       label = 'ProcessTest › ' + tc.name;
       rowCov[req.id] = procScenarioCov[req.scenarioIndex - 1] || { completed: [], taken: [] };
-      const steps = (tc.instructions || []).map(translate)
-        .map(s => `<li class="${s.kind}"><span class="tag ${s.kind}">${s.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(s.text)}</li>`).join('');
+      const cov = rowCov[req.id];
+      const observed = observedValues.valuesById[req.id] || observedValues.valuesByTest[tc.name] || null;
+      const steps = renderAssertionSteps((tc.instructions || []).map(translate), observed, cat.layer, cov);
       detail = `<ol class="steps">${steps}</ol>`;
+      detail += renderObservedMetrics(observed, cov, cat.layer);
       const line = findJsonScenarioLine(join(repoRoot, SRC_REL.process), tc.name);
       rowLink = srcLink(githubUrl(SRC_REL.process, line));
     } else if (req.match === 'aggregate') {
@@ -258,15 +425,15 @@ for (const cat of spec.categories) {
       // ── integration test: per-run coverage + assertions from requirements.json ──
       label = `${req.test} › ${req.match}`;
       const runs = integRunCov[req.match] || [];
+      const observed = observedValues.valuesById[req.id] || observedValues.valuesByTest[req.match] || null;
       // pick coverage for the diagram this row belongs to
       const pid = rdgKey === 'comp-tools' ? spec.toolsProcessId : spec.processId;
       const runCov = runs.find(c => c.pid === pid);
       if (runCov) rowCov[req.id] = { completed: runCov.completed, taken: runCov.taken };
+      const cov = rowCov[req.id] || null;
 
       if (req.assertions && req.assertions.length) {
-        const steps = req.assertions
-          .map(a => `<li class="${a.kind}"><span class="tag ${a.kind}">${a.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(a.text)}</li>`)
-          .join('');
+        const steps = renderAssertionSteps(req.assertions, observed, cat.layer, cov);
         detail = `<ol class="steps">${steps}</ol>`;
       } else {
         detail = `<p class="muted">No inline assertions defined. See source for the full assertion chain.</p>`;
@@ -276,6 +443,7 @@ for (const cat of spec.categories) {
         const line = findMethodLine(join(repoRoot, srcRel), req.match);
         rowLink = srcLink(githubUrl(srcRel, line));
       }
+      detail += renderObservedMetrics(observed, cov, cat.layer);
     }
 
     // Skipped/missing tests never ran — render their steps neutral, not pass-green.
@@ -285,16 +453,17 @@ for (const cat of spec.categories) {
 
     const hasHighlight = !!rowCov[req.id];
     const hl = hasHighlight ? ` data-dg="${rdgKey}" data-id="${req.id}"` : '';
-    rows += `<tr class="req${hasHighlight ? ' clickable' : ''}"${hl} data-detail="det-${req.id}">
+     const dur = `<span class="dur">duration ${fmtDuration(r.durationSec)}</span>`;
+     rows += `<tr class="req${hasHighlight ? ' clickable' : ''}"${hl} data-detail="det-${req.id}">
        <td class="id">${esc(req.id)}</td><td>${esc(req.statement)}</td><td>${badge(r.status)}</td></tr>
-       <tr class="detail" id="det-${req.id}"><td colspan="3"><div class="testname">Test: <code>${esc(label)}</code>${rowLink ? ' ' + rowLink : ''}</div>${detail}</td></tr>`;
+       <tr class="detail" id="det-${req.id}"><td colspan="3"><div class="testname">Test: <code>${esc(label)}</code> ${dur}${rowLink ? ' ' + rowLink : ''}</div>${detail}</td></tr>`;
   }
   const hint = 'Click a requirement to expand its steps and highlight the path that test instance took.';
   const catSrcRel = SRC_REL[cat.layer];
   const catHeaderLink = catSrcRel ? srcLink(githubUrl(catSrcRel), 'source ↗') : '';
   const diagHtml = sectionDgKeys.map((k, i) =>
     `<div class="diagram${i > 0 ? ' d-none' : ''}" id="dg-${k}"></div>`).join('');
-  sections += `<section><h2>${esc(cat.name)}${catHeaderLink ? ' ' + catHeaderLink : ''}</h2><p class="blurb">${esc(cat.blurb)}</p>
+  sections += `<section><h2>${esc(cat.name)}${catHeaderLink ? ' ' + catHeaderLink : ''}</h2><p class="blurb">${esc(cat.blurb)}</p>${sectionStatsHtml}
     <div class="split">
       <div class="diag-col">${diagHtml}</div>
       <div class="req-col">
@@ -329,6 +498,10 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  @media(max-width:980px){.split{flex-direction:column}.diag-col{position:static;width:100%}}
  .testname{font-size:11px;color:#586174;font-family:ui-monospace,monospace;margin:2px 0 8px;word-break:break-all}
  .testname code{background:#eef2f7;padding:1px 5px;border-radius:4px}
+ .dur{display:inline-block;margin-left:8px;padding:1px 6px;border-radius:10px;background:#edf1f7;color:#445066;font-size:10px;font-weight:600}
+ .stats{margin:0 0 12px;color:#475569;font-size:12px}
+ .stats .dot{margin:0 8px;color:#94a3b8}
+ .setup-note{color:#64748b;font-size:11px}
  .bands{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
  .band{flex:1;min-width:220px;border-radius:10px;padding:14px 16px;background:#fff;border:1px solid #e3e6ea}
  .band.ok{border-left:5px solid #16a34a}.band.under{border-left:5px solid #dc2626}
@@ -352,9 +525,19 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .muted{color:#8a93a2;font-size:12px;margin:6px 0}
  .b{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;white-space:nowrap}
  .b.pass{background:#16a34a}.b.fail{background:#dc2626}.b.skip{background:#9aa4b2}.b.miss{background:#cbd5e1;color:#334155}
- .diagram{height:520px;border:1px solid #eef0f3;border-radius:8px;background:#fbfbfc}.d-none{display:none!important}
+ .diagram{height:520px;border:1px solid #eef0f3;border-radius:8px;background:#fbfbfc;position:relative}.d-none{display:none!important}
+ .bpmn-controls{position:absolute;right:15px;bottom:56px;z-index:120;display:flex;flex-direction:column;align-items:center;background:#f6f6f7;border:1px solid #d4d7dc;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.08);padding:4px 0}
+ .bpmn-controls button{width:23px;height:22px;border:0;background:transparent;color:#4b4f56;font-size:21px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+ .bpmn-controls button:hover{background:#eceef1}
+ .bpmn-controls button:active{background:#e3e6ea}
+ .bpmn-controls .sep{width:14px;height:1px;background:#d7d9dd;margin:3px 0}
+ .bpmn-controls .fit-icon{width:12px;height:12px}
+ .bpmn-controls .fit-icon circle,.bpmn-controls .fit-icon line{stroke:#4b4f56;stroke-width:2.5;fill:none;stroke-linecap:round}
+ .bpmn-controls .zoom-char{font-size:22px;transform:translateY(-1px)}
  .skipbox{background:#fff;border:1px solid #e3e6ea;border-left:5px solid #9aa4b2;border-radius:10px;padding:16px 20px;margin-bottom:22px}
  .skiprow{font-size:13px;margin:8px 0}.reason{color:#586174;font-size:12px}
+.observed{margin:8px 0 2px;font-size:12px;color:#334155;background:#eef5ff;border:1px solid #d7e7ff;border-radius:6px;padding:6px 8px}
+.actual{margin:4px 0 0;font-size:12px;color:#334155;background:#eef5ff;border:1px solid #d7e7ff;border-radius:6px;padding:4px 7px;display:inline-block}
  .cov .djs-visual>:is(rect,circle,polygon){stroke:#16a34a !important;stroke-width:2px !important;fill:#dcfce7 !important}
  .cov .djs-visual>path{stroke:#16a34a !important;stroke-width:2px !important}
  .covf .djs-visual>path{stroke:#16a34a !important;stroke-width:3px !important}
@@ -372,6 +555,19 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  const ROWCOV = ${JSON.stringify(rowCov)};
  const VIEWERS = {};
  const NEEDS_ZOOM = new Set(); // diagrams imported while hidden — zoom deferred to first show
+ function attachControls(el, viewer){
+   const controls = document.createElement('div');
+   controls.className = 'bpmn-controls';
+   controls.innerHTML = '<button type="button" aria-label="Fit viewport" title="Fit viewport"><svg viewBox="0 0 24 24" class="fit-icon" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="4" x2="12" y2="9"></line><line x1="12" y1="15" x2="12" y2="20"></line><line x1="4" y1="12" x2="9" y2="12"></line><line x1="15" y1="12" x2="20" y2="12"></line></svg></button><div class="sep" aria-hidden="true"></div><button type="button" aria-label="Zoom in" title="Zoom in"><span class="zoom-char">+</span></button><div class="sep" aria-hidden="true"></div><button type="button" aria-label="Zoom out" title="Zoom out"><span class="zoom-char">−</span></button>';
+   const [fit, zoomIn, zoomOut] = controls.querySelectorAll('button');
+   const canvas = viewer.get('canvas');
+   const step = 0.2;
+   const clamp = z => Math.max(0.2, Math.min(4, z));
+   zoomOut.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); canvas.zoom(clamp(canvas.zoom() - step)); });
+   zoomIn.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); canvas.zoom(clamp(canvas.zoom() + step)); });
+   fit.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); canvas.zoom('fit-viewport'); });
+   el.appendChild(controls);
+ }
  function zoomIfNeeded(key){ if(!NEEDS_ZOOM.has(key)) return; try{ VIEWERS[key] && VIEWERS[key].get('canvas').zoom('fit-viewport'); }catch(_){} NEEDS_ZOOM.delete(key); }
  function clearMarkers(key){ const v=VIEWERS[key]; if(!v) return; const c=v.get('canvas'); const reg=v.get('elementRegistry');
    reg.getAll().forEach(e=>{ try{c.removeMarker(e.id,'cov');c.removeMarker(e.id,'covf');}catch(_){} }); }
@@ -384,6 +580,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
      try {
        await viewer.importXML(d.xml);
        VIEWERS[d.key] = viewer;
+       attachControls(el, viewer);
        if (el.classList.contains('d-none')) {
          NEEDS_ZOOM.add(d.key); // zoom deferred — container has no dimensions yet
        } else {

@@ -10,7 +10,9 @@ import io.camunda.process.test.api.CamundaAssert;
 import io.camunda.process.test.api.CamundaSpringProcessTest;
 import io.camunda.process.test.api.TestDeployment;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +61,10 @@ import org.springframework.boot.test.context.SpringBootTest;
     "request-additional-docs-form.form"
 })
 public class ClaimsExternalSystemsIT {
+
+    static {
+        BedrockIntegrationSupport.prepareSystemPropertiesFromEnvironment();
+    }
 
     private static final String TOOLS_PROCESS = "test-claims-tools";
     private static final String MAIN_PROCESS = "CamundaInsurance_ClaimsProcessing";
@@ -160,6 +166,7 @@ public class ClaimsExternalSystemsIT {
     @Timeout(180)
     @DisplayName("SIR-4: Quality Judge routes a fraud assessment report to adjuster escalation")
     void assessmentReportIdentifiesFraud() {
+        BedrockIntegrationSupport.assumeReady();
         // claimDecision is what the assessment agent would have set. Injected here because
         // we start at Agent_Judge directly (no assessment agent call). The gateway requires
         // an explicit value — no default flow.
@@ -189,11 +196,18 @@ public class ClaimsExternalSystemsIT {
     @Timeout(360)
     @DisplayName("SIR-5: the Quality Judge populates every quality output it is prompted to produce")
     void judgePopulatesQualityOutputs() {
+        BedrockIntegrationSupport.assumeReady();
         var instance = startMainProcess(
             "CLM-2025-0042", "CUST-4521", "collision",
             "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
                 + "Prior open fraud investigation and multiple recent claims.",
             "2026-06-01");
+
+        AtomicReference<Double> observedScore = new AtomicReference<>();
+        AtomicReference<String> observedFeedback = new AtomicReference<>();
+        AtomicReference<Integer> observedModelCalls = new AtomicReference<>();
+        AtomicReference<Integer> observedInputTokens = new AtomicReference<>();
+        AtomicReference<Integer> observedOutputTokens = new AtomicReference<>();
 
         assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
 
@@ -203,11 +217,44 @@ public class ClaimsExternalSystemsIT {
         assertThatProcessInstance(instance)
             .hasVariableNames("agentQualityScore", "qualityFeedback", "qualityScores")
             .hasVariableSatisfies("agentQualityScore", Number.class,
-                s -> assertThat(s.doubleValue()).isBetween(0.0, 1.0))
+                s -> {
+                    var score = s.doubleValue();
+                    observedScore.set(score);
+                    assertThat(score).isBetween(0.0, 1.0);
+                })
             .hasVariableSatisfies("qualityFeedback", String.class,
-                f -> assertThat(f).isNotBlank())
-            .hasVariableSatisfies("qualityScores", Map.class,
-                m -> assertThat(m).containsKeys("overallScore", "feedback"));
+                f -> {
+                    observedFeedback.set(f);
+                    assertThat(f).isNotBlank();
+                })
+            .hasVariableSatisfies("qualityScores", Map.class, m -> {
+                var keys = ((Map<?, ?>) m).keySet();
+                assertThat(keys.contains("overallScore")).isTrue();
+                assertThat(keys.contains("feedback")).isTrue();
+            });
+
+        // Optional: capture agent token metrics when includeAgentContext is enabled.
+        assertThatProcessInstance(instance)
+            .hasVariableSatisfies("agent", Map.class, a -> {
+                var metrics = nestedMap(a, "context", "metrics");
+                if (metrics == null) {
+                    return;
+                }
+                observedModelCalls.set(nestedInt(metrics, "modelCalls"));
+                var tokenUsage = nestedMap(metrics, "tokenUsage");
+                if (tokenUsage != null) {
+                    observedInputTokens.set(nestedInt(tokenUsage, "inputTokenCount"));
+                    observedOutputTokens.set(nestedInt(tokenUsage, "outputTokenCount"));
+                }
+            });
+
+        emitReportValue(
+            "SIR-5",
+            observedScore.get(),
+            observedFeedback.get(),
+            observedModelCalls.get(),
+            observedInputTokens.get(),
+            observedOutputTokens.get());
     }
 
     // SIR-4 (similarity) — embedding-based check; native to CPT 8.10 (hasVariableSimilarTo).
@@ -218,6 +265,7 @@ public class ClaimsExternalSystemsIT {
         + "model is authorized (or point similarity at another embedding provider).")
     @DisplayName("SIR-4 (similarity): assessment report matches a reference fraud assessment")
     void assessmentReportSemanticSimilarity() {
+        BedrockIntegrationSupport.assumeReady();
         var instance = startMainProcess(
             "CLM-2025-0042", "CUST-4521", "collision",
             "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
@@ -254,5 +302,66 @@ public class ClaimsExternalSystemsIT {
                 "customerEmail", "it-quality@camunda.example.com",
                 "incidentDate", incidentDate))
             .send().join();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> nestedMap(Object root, String... keys) {
+        Object current = root;
+        for (var key : keys) {
+            if (!(current instanceof Map<?, ?> map)) {
+                return null;
+            }
+            current = map.get(key);
+        }
+        if (current instanceof Map<?, ?> map) {
+            return (Map<String, Object>) map;
+        }
+        return null;
+    }
+
+    private static Integer nestedInt(Map<String, Object> root, String key) {
+        if (root == null) {
+            return null;
+        }
+        var value = root.get(key);
+        if (value instanceof Number n) {
+            return n.intValue();
+        }
+        return null;
+    }
+
+    private static String jsonString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return "\"" + value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t") + "\"";
+    }
+
+    private static String jsonNumber(Number value) {
+        return value == null ? "null" : String.format(Locale.ROOT, "%s", value);
+    }
+
+    private static void emitReportValue(
+            String id,
+            Double agentQualityScore,
+            String qualityFeedback,
+            Integer modelCalls,
+            Integer inputTokenCount,
+            Integer outputTokenCount) {
+        var json = "{" +
+            "\"id\":" + jsonString(id) + "," +
+            "\"agentQualityScore\":" + jsonNumber(agentQualityScore) + "," +
+            "\"qualityFeedback\":" + jsonString(qualityFeedback) + "," +
+            "\"modelCalls\":" + jsonNumber(modelCalls) + "," +
+            "\"inputTokenCount\":" + jsonNumber(inputTokenCount) + "," +
+            "\"outputTokenCount\":" + jsonNumber(outputTokenCount) +
+            "}";
+        // Parsed by report/generate-report.mjs from surefire system-out.
+        System.out.println("REPORT_VALUE " + json);
     }
 }
