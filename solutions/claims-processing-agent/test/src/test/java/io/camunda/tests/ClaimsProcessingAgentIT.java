@@ -65,8 +65,9 @@ public class ClaimsProcessingAgentIT {
         BedrockIntegrationSupport.assumeReady();
         // Assessment agent (multi tool call) + judge, both real Bedrock. CPT default 10s is too
         // short. The assessment agent alone can run several minutes across tool-call rounds, so
-        // give the full assessment -> judge -> gateway path headroom.
-        CamundaAssert.setAssertionTimeout(Duration.ofMinutes(9));
+        // give the full assessment -> judge -> gateway path headroom. 12 minutes covers the
+        // observed range (9–11 min) plus margin for Bedrock latency spikes.
+        CamundaAssert.setAssertionTimeout(Duration.ofMinutes(12));
     }
 
     // =========================================================================
@@ -76,7 +77,7 @@ public class ClaimsProcessingAgentIT {
     // =========================================================================
 
     @Test
-    @Timeout(660)
+    @Timeout(800)
     @DisplayName("PIR-1: a fraudulent claim is escalated to a human adjuster")
     void fraudClaimEscalatesToAdjuster() {
         AtomicReference<Integer> observedModelCalls = new AtomicReference<>();
@@ -158,7 +159,7 @@ public class ClaimsProcessingAgentIT {
     // =========================================================================
 
     @Test
-    @Timeout(660)
+    @Timeout(800)
     @DisplayName("PIR-2: a clean, well-documented claim is approved without human touch")
     void cleanClaimIsApproved() {
         var instance = startProcess(
@@ -187,7 +188,7 @@ public class ClaimsProcessingAgentIT {
     // =========================================================================
 
     @Test
-    @Timeout(660)
+    @Timeout(800)
     @DisplayName("PIR-3: an ambiguous claim with no hard fraud signal goes to manual review")
     void borderlineClaimGoesToManualReview() {
         var instance = startProcess(
