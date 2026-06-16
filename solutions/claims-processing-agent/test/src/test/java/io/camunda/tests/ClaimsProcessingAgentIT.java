@@ -10,7 +10,9 @@ import io.camunda.process.test.api.CamundaAssert;
 import io.camunda.process.test.api.CamundaSpringProcessTest;
 import io.camunda.process.test.api.TestDeployment;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -31,11 +33,9 @@ import org.springframework.boot.test.context.SpringBootTest;
  * names (the elements completed through to the terminal end event) plus the routing
  * variable claimDecision — not merely that the process finished.
  *
- * Determinism: the live agent's routing follows the tool data. We do not control the
- * beeceptor mock, so only the FRAUD outcome is provable today (the existing CLM-2025-0042
- * id returns fraud-laden data). The APPROVE and MANUAL_REVIEW requirements are written to
- * spec but @Disabled until the beeceptor owner adds the fixtures described in
- * test/BEECEPTOR-FIXTURES.md; re-enable them once those ids return the documented data.
+ * Determinism: the live agent's routing follows the tool data. All three beeceptor fixture
+ * sets (fraud/clean/border) return concrete JSON values — verified by CIR-1 through CIR-11.
+ * PIR-1 (ESCALATE), PIR-2 (APPROVE), and PIR-3 (MANUAL_REVIEW) are all enabled.
  *
  * Prerequisites:
  *   - Docker running
@@ -79,6 +79,10 @@ public class ClaimsProcessingAgentIT {
     @Timeout(660)
     @DisplayName("PIR-1: a fraudulent claim is escalated to a human adjuster")
     void fraudClaimEscalatesToAdjuster() {
+        AtomicReference<Integer> observedModelCalls = new AtomicReference<>();
+        AtomicReference<Integer> observedInputTokens = new AtomicReference<>();
+        AtomicReference<Integer> observedOutputTokens = new AtomicReference<>();
+
         var instance = startProcess(
             "CLM-2025-0042", "CUST-4521", "collision",
             "Total-loss collision claimed at $52,000. Collision coverage added 8 days before the "
@@ -91,6 +95,14 @@ public class ClaimsProcessingAgentIT {
         // the requirement) so a transient variable race does not consume the test timeout.
         assertThatProcessInstance(instance)
             .hasCompletedElements(byId("Agent_ClaimsAssessment"), byId("Agent_Judge"));
+        // Optional: capture live token telemetry for report cost estimation.
+        assertThatProcessInstance(instance)
+            .hasVariableSatisfies("agent", Map.class, a -> {
+                accumulateMetrics(a, observedModelCalls, observedInputTokens, observedOutputTokens);
+            })
+            .hasVariableSatisfies("agentJudge", Map.class, a -> {
+                accumulateMetrics(a, observedModelCalls, observedInputTokens, observedOutputTokens);
+            });
         // Diagnostic: surface the live routing variable so a non-ESCALATE / null decision is
         // visible in the failure message instead of timing out silently at the human task.
         assertThatProcessInstance(instance).hasVariable("claimDecision", "ESCALATE");
@@ -130,6 +142,12 @@ public class ClaimsProcessingAgentIT {
                 byId("Task_HumanReview"),
                 byId("End_HumanResolved"))
             .isCompleted();
+
+        emitReportValue(
+            "PIR-1",
+            observedModelCalls.get(),
+            observedInputTokens.get(),
+            observedOutputTokens.get());
     }
 
     // =========================================================================
@@ -140,10 +158,7 @@ public class ClaimsProcessingAgentIT {
     // =========================================================================
 
     @Test
-    @Timeout(360)
-    @Disabled("Pending beeceptor fixture for CLM-IT-CLEAN-001/CUST-IT-CLEAN returning clean, "
-        + "low-risk data so the agent decides APPROVE. See test/BEECEPTOR-FIXTURES.md. No beeceptor "
-        + "access to add it here; re-enable once the owner provisions the fixture.")
+    @Timeout(660)
     @DisplayName("PIR-2: a clean, well-documented claim is approved without human touch")
     void cleanClaimIsApproved() {
         var instance = startProcess(
@@ -172,9 +187,7 @@ public class ClaimsProcessingAgentIT {
     // =========================================================================
 
     @Test
-    @Timeout(360)
-    @Disabled("Pending beeceptor fixture for CLM-IT-BORDER-001/CUST-IT-BORDER returning medium-risk, "
-        + "no-hard-fraud data so the agent decides MANUAL_REVIEW. See test/BEECEPTOR-FIXTURES.md.")
+    @Timeout(660)
     @DisplayName("PIR-3: an ambiguous claim with no hard fraud signal goes to manual review")
     void borderlineClaimGoesToManualReview() {
         var instance = startProcess(
@@ -233,6 +246,88 @@ public class ClaimsProcessingAgentIT {
                 "incidentDate", incidentDate))
             .send()
             .join();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> nestedMap(Object root, String... keys) {
+        Object current = root;
+        for (var key : keys) {
+            if (!(current instanceof Map<?, ?> map)) {
+                return null;
+            }
+            current = map.get(key);
+        }
+        if (current instanceof Map<?, ?> map) {
+            return (Map<String, Object>) map;
+        }
+        return null;
+    }
+
+    private static Integer nestedInt(Map<String, Object> root, String key) {
+        if (root == null) {
+            return null;
+        }
+        var value = root.get(key);
+        if (value instanceof Number n) {
+            return n.intValue();
+        }
+        return null;
+    }
+
+    private static void accumulateMetrics(
+            Object variable,
+            AtomicReference<Integer> modelCalls,
+            AtomicReference<Integer> inputTokens,
+            AtomicReference<Integer> outputTokens) {
+        var metrics = nestedMap(variable, "context", "metrics");
+        if (metrics == null) {
+            return;
+        }
+        addMetric(modelCalls, nestedInt(metrics, "modelCalls"));
+        var tokenUsage = nestedMap(metrics, "tokenUsage");
+        if (tokenUsage != null) {
+            addMetric(inputTokens, nestedInt(tokenUsage, "inputTokenCount"));
+            addMetric(outputTokens, nestedInt(tokenUsage, "outputTokenCount"));
+        }
+    }
+
+    private static void addMetric(AtomicReference<Integer> target, Integer value) {
+        if (value == null) {
+            return;
+        }
+        var current = target.get();
+        target.set((current == null ? 0 : current) + value);
+    }
+
+    private static String jsonString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return "\"" + value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t") + "\"";
+    }
+
+    private static String jsonNumber(Number value) {
+        return value == null ? "null" : String.format(Locale.ROOT, "%s", value);
+    }
+
+    private static void emitReportValue(
+            String id,
+            Integer modelCalls,
+            Integer inputTokenCount,
+            Integer outputTokenCount) {
+        var json = "{" +
+            "\"id\":" + jsonString(id) + "," +
+            "\"modelCalls\":" + jsonNumber(modelCalls) + "," +
+            "\"inputTokenCount\":" + jsonNumber(inputTokenCount) + "," +
+            "\"outputTokenCount\":" + jsonNumber(outputTokenCount) +
+            "}";
+        // Parsed by report/generate-report.mjs from surefire system-out.
+        System.out.println("REPORT_VALUE " + json);
     }
 
     private void completeTask(long processInstanceKey, String elementId, Map<String, Object> vars) {

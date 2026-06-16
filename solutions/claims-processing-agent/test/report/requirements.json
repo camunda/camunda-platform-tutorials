@@ -2,7 +2,7 @@
   "processId": "CamundaInsurance_ClaimsProcessing",
   "toolsProcessId": "test-claims-tools",
   "thresholds": { "process": 0.9, "processIntegration": 0.40 },
-  "thresholdNote": "Process is 100% on the stable 8.9.x line; the 8.10.0-SNAPSHOT report tooling under-counts to ~93%, so the machine gate floor is 0.90. Process-integration target is 40% while PIR-2/PIR-3 are disabled pending beeceptor fixtures; re-enabling them (and the booster scenarios) raises it toward 60%.",
+  "thresholdNote": "Process is 100% on the stable 8.9.x line; the 8.10.0-SNAPSHOT report tooling under-counts to ~93%, so the machine gate floor is 0.90. Process-integration target is 40% while PIR-2/PIR-3 are disabled pending beeceptor fixture correctness; re-enabling them raises it toward 60%.",
   "categories": [
     {
       "name": "Process tests",
@@ -23,40 +23,100 @@
       "name": "Component integration tests",
       "layer": "component",
       "run": "integration",
-      "blurb": "Each external system in isolation against real endpoints; judge quality validated with LLM-as-judge and variable checks.",
+      "blurb": "Each external system in isolation against real endpoints, across all three fixture sets (fraud / clean / border). Variable assertions prove each beeceptor mock returns actual JSON values, not schema templates.",
       "requirements": [
         {
-          "id": "SIR-1", "statement": "PolicyLookup connector runs and its segment completes",
+          "id": "CIR-1", "statement": "PolicyLookup returns fraud-risk data for CLM-2025-0042",
           "test": "ClaimsExternalSystemsIT", "match": "policyLookupInIsolation",
           "assertions": [
             { "kind": "action", "text": "Start tools process with claimId=CLM-2025-0042, activate only PolicyLookup tool" },
-            { "kind": "assert", "text": "PolicyLookup element completed (real REST call to beeceptor)" },
-            { "kind": "assert", "text": "End_PolicyLookup element completed (segment terminates cleanly)" },
-            { "kind": "assert", "text": "Tools process instance completed" }
+            { "kind": "assert", "text": "PolicyLookup and End_PolicyLookup completed" },
+            { "kind": "assert", "text": "policyStatus = active" },
+            { "kind": "assert", "text": "fraudRiskScore = high" }
           ]
         },
         {
-          "id": "SIR-2", "statement": "GetCustomerProfile connector runs and its segment completes",
+          "id": "CIR-2", "statement": "GetCustomerProfile returns fraud-risk data for CUST-4521",
           "test": "ClaimsExternalSystemsIT", "match": "getCustomerProfileInIsolation",
           "assertions": [
             { "kind": "action", "text": "Start tools process with customerId=CUST-4521, activate only GetCustomerProfile tool" },
-            { "kind": "assert", "text": "GetCustomerProfile element completed (real REST call to beeceptor)" },
-            { "kind": "assert", "text": "End_GetCustomerProfile element completed (segment terminates cleanly)" },
-            { "kind": "assert", "text": "Tools process instance completed" }
+            { "kind": "assert", "text": "GetCustomerProfile and End_GetCustomerProfile completed" },
+            { "kind": "assert", "text": "riskRating = high" },
+            { "kind": "assert", "text": "fraudHistory = true" }
           ]
         },
         {
-          "id": "SIR-3", "statement": "CalculateDamageEstimate connector runs and its segment completes",
+          "id": "CIR-3", "statement": "CalculateDamageEstimate returns above-market estimate for CLM-2025-0042",
           "test": "ClaimsExternalSystemsIT", "match": "calculateDamageEstimateInIsolation",
           "assertions": [
             { "kind": "action", "text": "Start tools process with claimId=CLM-2025-0042, activate only CalculateDamageEstimate tool" },
-            { "kind": "assert", "text": "CalculateDamageEstimate element completed (real REST call to beeceptor)" },
-            { "kind": "assert", "text": "End_CalculateDamageEstimate element completed (segment terminates cleanly)" },
-            { "kind": "assert", "text": "Tools process instance completed" }
+            { "kind": "assert", "text": "CalculateDamageEstimate and End_CalculateDamageEstimate completed" },
+            { "kind": "assert", "text": "damageEstimate > 30000 (above market value — fraud signal)" },
+            { "kind": "assert", "text": "damageCategory is a non-blank string" }
           ]
         },
         {
-          "id": "SIR-4", "statement": "Quality Judge routes a fraud assessment report to adjuster escalation",
+          "id": "CIR-6", "statement": "PolicyLookup returns clean-risk data for CLM-IT-CLEAN-001",
+          "test": "ClaimsExternalSystemsIT", "match": "policyLookupCleanFixture",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with claimId=CLM-IT-CLEAN-001, activate only PolicyLookup tool" },
+            { "kind": "assert", "text": "PolicyLookup and End_PolicyLookup completed" },
+            { "kind": "assert", "text": "policyStatus = active" },
+            { "kind": "assert", "text": "fraudRiskScore = low" }
+          ]
+        },
+        {
+          "id": "CIR-7", "statement": "GetCustomerProfile returns clean-risk data for CUST-IT-CLEAN",
+          "test": "ClaimsExternalSystemsIT", "match": "getCustomerProfileCleanFixture",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with customerId=CUST-IT-CLEAN, activate only GetCustomerProfile tool" },
+            { "kind": "assert", "text": "GetCustomerProfile and End_GetCustomerProfile completed" },
+            { "kind": "assert", "text": "riskRating = low" },
+            { "kind": "assert", "text": "fraudHistory = false" }
+          ]
+        },
+        {
+          "id": "CIR-8", "statement": "CalculateDamageEstimate returns minor-repair estimate for CLM-IT-CLEAN-001",
+          "test": "ClaimsExternalSystemsIT", "match": "calculateDamageEstimateCleanFixture",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with claimId=CLM-IT-CLEAN-001, activate only CalculateDamageEstimate tool" },
+            { "kind": "assert", "text": "CalculateDamageEstimate and End_CalculateDamageEstimate completed" },
+            { "kind": "assert", "text": "damageEstimate = 950" },
+            { "kind": "assert", "text": "damageCategory = minor" }
+          ]
+        },
+        {
+          "id": "CIR-9", "statement": "PolicyLookup returns medium-risk data for CLM-IT-BORDER-001",
+          "test": "ClaimsExternalSystemsIT", "match": "policyLookupBorderFixture",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with claimId=CLM-IT-BORDER-001, activate only PolicyLookup tool" },
+            { "kind": "assert", "text": "PolicyLookup and End_PolicyLookup completed" },
+            { "kind": "assert", "text": "policyStatus = active" },
+            { "kind": "assert", "text": "fraudRiskScore = medium" }
+          ]
+        },
+        {
+          "id": "CIR-10", "statement": "GetCustomerProfile returns medium-risk data for CUST-IT-BORDER",
+          "test": "ClaimsExternalSystemsIT", "match": "getCustomerProfileBorderFixture",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with customerId=CUST-IT-BORDER, activate only GetCustomerProfile tool" },
+            { "kind": "assert", "text": "GetCustomerProfile and End_GetCustomerProfile completed" },
+            { "kind": "assert", "text": "riskRating = medium" },
+            { "kind": "assert", "text": "fraudHistory = false" }
+          ]
+        },
+        {
+          "id": "CIR-11", "statement": "CalculateDamageEstimate returns moderate-repair estimate for CLM-IT-BORDER-001",
+          "test": "ClaimsExternalSystemsIT", "match": "calculateDamageEstimateBorderFixture",
+          "assertions": [
+            { "kind": "action", "text": "Start tools process with claimId=CLM-IT-BORDER-001, activate only CalculateDamageEstimate tool" },
+            { "kind": "assert", "text": "CalculateDamageEstimate and End_CalculateDamageEstimate completed" },
+            { "kind": "assert", "text": "damageEstimate = 18000" },
+            { "kind": "assert", "text": "damageCategory = moderate" }
+          ]
+        },
+        {
+          "id": "CIR-4", "statement": "Quality Judge routes a fraud assessment report to adjuster escalation",
           "test": "ClaimsExternalSystemsIT", "match": "assessmentReportIdentifiesFraud",
           "assertions": [
             { "kind": "action", "text": "Start main process at Agent_Judge (startBeforeElement) — no real assessment agent call" },
@@ -66,7 +126,7 @@
           ]
         },
         {
-          "id": "SIR-4s", "statement": "The assessment report matches a reference fraud assessment (semantic similarity)",
+          "id": "CIR-4s", "statement": "The assessment report matches a reference fraud assessment (semantic similarity)",
           "test": "ClaimsExternalSystemsIT", "match": "assessmentReportSemanticSimilarity",
           "assertions": [
             { "kind": "action", "text": "Start full process with claimId=CLM-2025-0042" },
@@ -75,7 +135,7 @@
           ]
         },
         {
-          "id": "SIR-5", "statement": "The Quality Judge populates every quality output it is prompted to produce",
+          "id": "CIR-5", "statement": "The Quality Judge populates every quality output it is prompted to produce",
           "test": "ClaimsExternalSystemsIT", "match": "judgePopulatesQualityOutputs",
           "assertions": [
             { "kind": "action", "text": "Start full process with claimId=CLM-2025-0042; Quality Judge evaluates the assessment" },

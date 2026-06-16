@@ -102,6 +102,37 @@ const readReport = run => {
 };
 const reports = { process: readReport('process'), integration: readReport('integration') };
 
+// ---------- cost model (assumed) ----------
+const SONNET46_PRICING = {
+  model: 'Claude Sonnet 4.6 (assumed)',
+  inputUsdPerMillion: 3.00,
+  outputUsdPerMillion: 15.00,
+  eurPerUsd: 0.92,
+};
+
+function toFiniteNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function estimateCostEur(inputTokenCount, outputTokenCount) {
+  const input = Math.max(0, toFiniteNumber(inputTokenCount) || 0);
+  const output = Math.max(0, toFiniteNumber(outputTokenCount) || 0);
+  const usd = (input / 1_000_000) * SONNET46_PRICING.inputUsdPerMillion
+    + (output / 1_000_000) * SONNET46_PRICING.outputUsdPerMillion;
+  return usd * SONNET46_PRICING.eurPerUsd;
+}
+
+function estimateCostFromObserved(observed) {
+  if (!observed) return 0;
+  return estimateCostEur(observed.inputTokenCount, observed.outputTokenCount);
+}
+
+function formatEur(value, digits = 4) {
+  const safe = Number.isFinite(value) ? value : 0;
+  return `EUR ${safe.toFixed(digits)}`;
+}
+
 // ---------- coverage helpers ----------
 const coverageFor = (run, pid) => {
   const r = reports[run]; if (!r) return null;
@@ -220,13 +251,14 @@ function renderAssertionSteps(assertions, observed, layer, cov) {
   }).filter(Boolean).join('');
 }
 
-function renderObservedMetrics(observed, cov, layer) {
+function renderObservedMetrics(observed, cov, layer, costEur) {
   const parts = [];
   if (observed) {
     if (observed.modelCalls != null) parts.push(`modelCalls=${observed.modelCalls}`);
     if (observed.inputTokenCount != null) parts.push(`inputTokenCount=${observed.inputTokenCount}`);
     if (observed.outputTokenCount != null) parts.push(`outputTokenCount=${observed.outputTokenCount}`);
   }
+  parts.push(`estimatedCost=${formatEur(costEur, 4)}`);
   if ((layer === 'process' || layer === 'processIntegration') && cov) {
     parts.push(`completedElements=${(cov.completed || []).length}`);
     parts.push(`takenFlows=${(cov.taken || []).length}`);
@@ -327,7 +359,7 @@ function addDiagram(key, pid, run) {
 }
 addDiagram('proc-main', spec.processId, 'process');
 addDiagram('comp-tools', spec.toolsProcessId, 'integration');
-addDiagram('comp-proc', spec.processId, 'integration');  // main process diagram for SIR-4/5 in component section
+addDiagram('comp-proc', spec.processId, 'integration');  // main process diagram for CIR-4/5 in component section
 addDiagram('pint-main', spec.processId, 'integration');
 
 // ---------- id sort ----------
@@ -347,11 +379,24 @@ let sections = '';
 function rowDgKey(req, cat) {
   if (cat.layer === 'process') return 'proc-main';
   if (cat.layer === 'processIntegration') return 'pint-main';
-  // component: SIR tests covering test-claims-tools → comp-tools; main process → comp-proc
+  // component: CIR tests covering test-claims-tools → comp-tools; main process → comp-proc
   const runs = integRunCov[req.match] || [];
   const coversProcId = runs.some(c => c.pid === spec.processId);
   return coversProcId ? 'comp-proc' : 'comp-tools';
 }
+
+function observedForRequirement(req) {
+  if (req.scenarioIndex && testCases[req.scenarioIndex - 1]) {
+    const tc = testCases[req.scenarioIndex - 1];
+    return observedValues.valuesById[req.id] || observedValues.valuesByTest[tc.name] || null;
+  }
+  if (req.match === 'aggregate') {
+    return null;
+  }
+  return observedValues.valuesById[req.id] || observedValues.valuesByTest[req.match] || null;
+}
+
+let totalSuiteCostEur = 0;
 
 for (const cat of spec.categories) {
   const defaultDgKey = cat.layer === 'process' ? 'proc-main' : cat.layer === 'component' ? 'comp-tools' : 'pint-main';
@@ -387,8 +432,12 @@ for (const cat of spec.categories) {
     sectionDurationSec = sectionCases.reduce((sum, tc) => sum + (tc.durationSec || 0), 0);
     setupTeardownSec = null;
   }
+  const sectionCostEur = reqs
+    .filter(req => req.match !== 'aggregate')
+    .reduce((sum, req) => sum + estimateCostFromObserved(observedForRequirement(req)), 0);
+  totalSuiteCostEur += sectionCostEur;
   const setupNote = setupTeardownSec != null && setupTeardownSec > 0 ? ` <span class="dot">•</span> <span class="setup-note">Setup/teardown: ${fmtDuration(setupTeardownSec)}</span>` : '';
-  const sectionStatsHtml = `<p class="stats"><b>Tests:</b> ${sectionPassed}/${sectionTotal} passed <span class="dot">•</span> <b>Total duration:</b> ${fmtDuration(sectionDurationSec)}${setupNote}</p>`;
+  const sectionStatsHtml = `<p class="stats"><b>Tests:</b> ${sectionPassed}/${sectionTotal} passed <span class="dot">•</span> <b>Total duration:</b> ${fmtDuration(sectionDurationSec)} <span class="dot">•</span> <b>Estimated cost:</b> ${formatEur(sectionCostEur, 4)}${setupNote}</p>`;
 
   // collect unique diagram keys needed in this section
   const sectionDgKeys = [defaultDgKey];
@@ -411,10 +460,11 @@ for (const cat of spec.categories) {
       label = 'ProcessTest › ' + tc.name;
       rowCov[req.id] = procScenarioCov[req.scenarioIndex - 1] || { completed: [], taken: [] };
       const cov = rowCov[req.id];
-      const observed = observedValues.valuesById[req.id] || observedValues.valuesByTest[tc.name] || null;
+      const observed = observedForRequirement(req);
+      const costEur = estimateCostFromObserved(observed);
       const steps = renderAssertionSteps((tc.instructions || []).map(translate), observed, cat.layer, cov);
       detail = `<ol class="steps">${steps}</ol>`;
-      detail += renderObservedMetrics(observed, cov, cat.layer);
+      detail += renderObservedMetrics(observed, cov, cat.layer, costEur);
       const line = findJsonScenarioLine(join(repoRoot, SRC_REL.process), tc.name);
       rowLink = srcLink(githubUrl(SRC_REL.process, line));
     } else if (req.match === 'aggregate') {
@@ -425,7 +475,8 @@ for (const cat of spec.categories) {
       // ── integration test: per-run coverage + assertions from requirements.json ──
       label = `${req.test} › ${req.match}`;
       const runs = integRunCov[req.match] || [];
-      const observed = observedValues.valuesById[req.id] || observedValues.valuesByTest[req.match] || null;
+      const observed = observedForRequirement(req);
+      const costEur = estimateCostFromObserved(observed);
       // pick coverage for the diagram this row belongs to
       const pid = rdgKey === 'comp-tools' ? spec.toolsProcessId : spec.processId;
       const runCov = runs.find(c => c.pid === pid);
@@ -443,7 +494,7 @@ for (const cat of spec.categories) {
         const line = findMethodLine(join(repoRoot, srcRel), req.match);
         rowLink = srcLink(githubUrl(srcRel, line));
       }
-      detail += renderObservedMetrics(observed, cov, cat.layer);
+      detail += renderObservedMetrics(observed, cov, cat.layer, costEur);
     }
 
     // Skipped/missing tests never ran — render their steps neutral, not pass-green.
@@ -483,6 +534,7 @@ const bandHtml = bands.map(b => {
   const ok = b.actual != null && b.actual + 1e-9 >= b.threshold;
   return `<div class="band ${ok ? 'ok' : 'under'}"><div class="bl">${esc(b.label)}</div><div class="bv">${pct(b.actual)}</div><div class="bt">threshold ${pct(b.threshold)} ${ok ? '✓' : '✗'}</div></div>`;
 }).join('');
+const costSummaryHtml = `<div class="cost-summary"><div class="cost-label">Estimated suite cost (${esc(SONNET46_PRICING.model)}):</div><div class="cost-value">${formatEur(totalSuiteCostEur, 4)}</div><div class="cost-note">Assumption: input USD ${SONNET46_PRICING.inputUsdPerMillion.toFixed(2)} / 1M tokens, output USD ${SONNET46_PRICING.outputUsdPerMillion.toFixed(2)} / 1M tokens, FX ${SONNET46_PRICING.eurPerUsd.toFixed(2)} EUR/USD.</div></div>`;
 const skipHtml = skipped.length ? `<div class="skipbox"><h3>Skipped tests (${skipped.length})</h3>` +
   skipped.map(s => `<div class="skiprow"><b>${esc(s.id)}</b> ${esc(s.statement)}<br><span class="reason">${esc(s.message || 'skipped')}</span></div>`).join('') + `</div>` : '';
 
@@ -503,6 +555,10 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .stats .dot{margin:0 8px;color:#94a3b8}
  .setup-note{color:#64748b;font-size:11px}
  .bands{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+ .cost-summary{margin:-8px 0 24px;background:#fff;border:1px solid #e3e6ea;border-left:5px solid #0f766e;border-radius:10px;padding:12px 14px}
+ .cost-label{font-size:12px;color:#475569}
+ .cost-value{font-size:24px;font-weight:700;color:#0f172a;line-height:1.2}
+ .cost-note{font-size:11px;color:#64748b;margin-top:4px}
  .band{flex:1;min-width:220px;border-radius:10px;padding:14px 16px;background:#fff;border:1px solid #e3e6ea}
  .band.ok{border-left:5px solid #16a34a}.band.under{border-left:5px solid #dc2626}
  .bl{font-size:13px;color:#586174}.bv{font-size:28px;font-weight:700}.bt{font-size:12px;color:#586174}
@@ -546,6 +602,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
 <div class="sub">Three layers, each requirement proven by a named test. Expand a row for its steps; green = the path that instance took.</div></header>
 <main>
  <div class="bands">${bandHtml}</div>
+ ${costSummaryHtml}
  ${skipHtml}
  ${sections}
 </main>
@@ -626,6 +683,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
 writeFileSync(out, html);
 console.log('wrote', out);
 console.log('process coverage:', procCov ? pct(procCov.coverage) : 'n/a', '| process-integration:', pintCov ? pct(pintCov.coverage) : 'n/a');
+console.log('estimated suite cost (EUR):', formatEur(totalSuiteCostEur, 4), '| model:', SONNET46_PRICING.model);
 console.log('skipped:', skipped.map(s => s.id).join(', ') || 'none');
 const under = bands.filter(b => !(b.actual != null && b.actual + 1e-9 >= b.threshold));
 if (under.length) { console.error('COVERAGE GATE FAILED: ' + under.map(b => `${b.label} ${pct(b.actual)} < ${pct(b.threshold)}`).join('; ')); process.exitCode = 1; }
