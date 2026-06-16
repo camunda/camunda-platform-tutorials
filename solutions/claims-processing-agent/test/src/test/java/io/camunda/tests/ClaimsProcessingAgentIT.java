@@ -165,8 +165,8 @@ public class ClaimsProcessingAgentIT {
         var instance = startProcess(
             "CLM-IT-CLEAN-001", "CUST-IT-CLEAN", "collision",
             "Minor rear-end impact at a traffic light. Other driver confirmed at fault. Single "
-                + "claimant, active comprehensive policy, clean claims history. Body-shop estimate "
-                + "of $950 and dashcam footage attached.",
+                + "claimant, active comprehensive policy, clean claims history, no prior claims. "
+                + "Body-shop estimate of $950 submitted.",
             "2026-05-20");
 
         assertThatProcessInstance(instance)
