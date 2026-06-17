@@ -10,10 +10,26 @@ REPORT=report
 ART="$REPORT/artifacts"
 ENVFILE="../../../.env"
 
+scrub_xml() {                     # $1 = xml file — strip <property> elements that carry secrets
+  # Maven Surefire captures all JVM system properties in XML reports, including AWS credentials
+  # passed as -D flags. Remove the <properties> block entirely; it adds no value to the report.
+  sed -i "" 's/<properties>.*<\/properties>//g' "$1" 2>/dev/null || true
+  # Fallback: redact any remaining value attributes that look like AWS key patterns.
+  sed -i "" 's/value="AKIA[A-Z0-9]*"/value="***REDACTED***"/g' "$1" 2>/dev/null || true
+}
+
 stash() {                         # $1 = process | integration
   mkdir -p "$ART/$1/surefire"
   rm -f "$ART/$1/surefire/"*.xml 2>/dev/null || true
-  cp -f target/surefire-reports/TEST-*.xml "$ART/$1/surefire/" 2>/dev/null || true
+  # Copy only the test-class XMLs from this layer; exclude XMLs from the other layer
+  # (target/surefire-reports/ is shared across both mvn runs).
+  if [ "$1" = "process" ]; then
+    cp -f target/surefire-reports/TEST-io.camunda.tests.ProcessTest.xml "$ART/$1/surefire/" 2>/dev/null || true
+  else
+    cp -f target/surefire-reports/TEST-io.camunda.tests.ClaimsExternalSystemsIT.xml "$ART/$1/surefire/" 2>/dev/null || true
+    cp -f target/surefire-reports/TEST-io.camunda.tests.ClaimsProcessingAgentIT.xml "$ART/$1/surefire/" 2>/dev/null || true
+  fi
+  for xml in "$ART/$1/surefire/"*.xml; do [ -f "$xml" ] && scrub_xml "$xml"; done
   cp -f target/coverage-report/report.json "$ART/$1/report.json" 2>/dev/null || true
 }
 

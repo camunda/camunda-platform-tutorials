@@ -14,6 +14,8 @@ final class BedrockIntegrationSupport {
         normalizeProperty("aws.bedrock.secret.key", "AWS_BEDROCK_SECRET_KEY", false);
         normalizeProperty("aws.bedrock.session.token", "AWS_BEDROCK_SESSION_TOKEN", false);
         normalizeProperty("aws.bedrock.model", "AWS_BEDROCK_MODEL", true);
+        normalizeProperty("aws.bedrock.model.id", "AWS_BEDROCK_MODEL_ID", true);
+        normalizeBedrockModelIdentifier();
     }
 
     static void assumeReady() {
@@ -90,6 +92,34 @@ final class BedrockIntegrationSupport {
         }
         var lower = value.toLowerCase();
         return lower.contains("arn%3a") || lower.contains("%253a") || lower.contains("%2f");
+    }
+
+    private static void normalizeBedrockModelIdentifier() {
+        var explicitId = trimToNull(System.getProperty("aws.bedrock.model.id"));
+        if (explicitId != null) {
+            // Keep both properties aligned when explicit model ID is provided.
+            System.setProperty("aws.bedrock.model", explicitId);
+            return;
+        }
+
+        var model = trimToNull(System.getProperty("aws.bedrock.model"));
+        if (model == null) {
+            return;
+        }
+
+        // Gotcha: inference-profile ARNs can be double-encoded in downstream Bedrock path
+        // construction, which yields SignatureDoesNotMatch. Use the profile ID instead.
+        var marker = "application-inference-profile/";
+        var index = model.indexOf(marker);
+        if (index < 0) {
+            return;
+        }
+
+        var profileId = trimToNull(model.substring(index + marker.length()));
+        if (profileId != null) {
+            System.setProperty("aws.bedrock.model.id", profileId);
+            System.setProperty("aws.bedrock.model", profileId);
+        }
     }
 
     private static String trimToNull(String value) {

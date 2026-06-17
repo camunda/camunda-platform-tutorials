@@ -16,19 +16,21 @@ camunda:
     connectors-docker-image-version: 8.10.0-alpha2
     # Relaxed-binding form avoids Spring Boot 4 circular placeholder detection.
     # AWS_BEDROCK_ACCESS_KEY env var → aws.bedrock.access.key Spring property.
+    # Gotcha: inference-profile ARNs can be double-encoded in some local paths.
+    # Prefer aws.bedrock.model.id (or AWS_BEDROCK_MODEL_ID) when available.
     connectors-secrets:
       AWS_BEDROCK_REGION: ${aws.bedrock.region}
       AWS_BEDROCK_ACCESS_KEY: ${aws.bedrock.access.key}
       AWS_BEDROCK_SECRET_KEY: ${aws.bedrock.secret.key}
       AWS_BEDROCK_SESSION_TOKEN: ${aws.bedrock.session.token:}
-      AWS_BEDROCK_MODEL: ${aws.bedrock.model}
+      AWS_BEDROCK_MODEL: ${aws.bedrock.model.id:${aws.bedrock.model}}
     # LLM-as-judge provider for the agentic quality assertions (CR-4, CR-5).
     # Reuses the same Bedrock credentials as the connector runtime.
     judge:
       threshold: 0.7
       chat-model:
         provider: amazon-bedrock
-        model: ${aws.bedrock.model}
+        model: ${aws.bedrock.model.id:${aws.bedrock.model}}
         region: ${aws.bedrock.region}
         credentials:
           access-key: ${aws.bedrock.access.key}
