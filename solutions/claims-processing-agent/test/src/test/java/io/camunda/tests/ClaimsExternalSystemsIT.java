@@ -14,7 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -338,19 +337,34 @@ public class ClaimsExternalSystemsIT {
     }
 
     // CIR-4s (similarity) — embedding-based check; native to CPT 8.10 (hasVariableSimilarTo).
+    //
+    // Fail-fast design: starts directly at Agent_Judge with the pre-crafted FRAUD_ASSESSMENT_REPORT
+    // (same pattern as CIR-4). This skips the real assessment-agent call so the test is gated only
+    // by Agent_Judge (~60s). When hasVariableSimilarTo calls amazon.titan-embed-text-v2:0 and the
+    // IAM user lacks bedrock:InvokeModel for that model, the embedding call returns 403 immediately
+    // and the test fails in < 2 min rather than timing out after the full agent pipeline.
+    //
+    // To pass: grant bedrock:InvokeModel on amazon.titan-embed-text-v2:0 to the test IAM user and
+    // enable Titan Text Embeddings V2 model access in the AWS Bedrock console.
     @Test
-    @Timeout(360)
-    @Disabled("Requires Bedrock embedding access: bedrock:InvokeModel on amazon.titan-embed-text-v2:0 "
-        + "for the test IAM user. Returns 403 AccessDenied until granted. Re-enable once the embedding "
-        + "model is authorized (or point similarity at another embedding provider).")
+    @Timeout(120)
     @DisplayName("CIR-4s: assessment report matches a reference fraud assessment (embedding similarity)")
     void assessmentReportSemanticSimilarity() {
         BedrockIntegrationSupport.assumeReady();
-        var instance = startMainProcess(
-            "CLM-2025-0042", "CUST-4521", "collision",
-            "Total-loss collision claimed at $52,000. Coverage added 8 days before the incident. "
-                + "Prior open fraud investigation and multiple recent claims.",
-            "2026-06-01");
+        var instance = client.newCreateInstanceCommand()
+            .bpmnProcessId(MAIN_PROCESS)
+            .latestVersion()
+            .startBeforeElement("Agent_Judge")
+            .variables(Map.of(
+                "claimId", "CLM-2025-0042",
+                "customerId", "CUST-4521",
+                "claimType", "collision",
+                "customerName", "IT Quality Customer",
+                "customerEmail", "it-quality@camunda.example.com",
+                "incidentDate", "2026-06-01",
+                "assessmentReport", FRAUD_ASSESSMENT_REPORT,
+                "claimDecision", "ESCALATE"))
+            .send().join();
 
         assertThatProcessInstance(instance).hasCompletedElements(byId("Agent_Judge"));
 
