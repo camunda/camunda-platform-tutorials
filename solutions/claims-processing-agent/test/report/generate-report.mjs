@@ -87,7 +87,15 @@ function parseSurefireDir(dir) {
         const varFM = failureDetail.match(/should have a variable '([^']+)'/);
         if (varFM) failingVariable = varFM[1];
       }
-      else if (/<error/.test(body)) { status = 'fail'; message = (body.match(/<error[^>]*message="([^"]*)"/) || [])[1] || ''; }
+      else if (/<error/.test(body)) {
+        status = 'fail';
+        message = (body.match(/<error[^>]*message="([^"]*)"/) || [])[1] || '';
+        const errCdata = (body.match(/<error[^>]*>(?:\s*<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?\s*<\/error>/) || [])[1] || '';
+        const errLines = decode(errCdata.replace(/^<!\[CDATA\[/, '').replace(/\]\]>$/, '')).split('\n');
+        const errStack = errLines.findIndex(l => /^\s+at /.test(l));
+        failureDetail = (errStack > 0 ? errLines.slice(0, errStack) : errLines.slice(0, 5)).join('\n').trim();
+        if (!failureDetail && message) failureDetail = message;
+      }
         const systemOut = decode((body.match(/<system-out><!\[CDATA\[([\s\S]*?)\]\]><\/system-out>/) || [])[1] || '');
         cases[name] = { status, message: decode(message), failureDetail, derivedCompleted, derivedNotCompleted, activeElements, failingVariable, systemOut, durationSec: Number.isFinite(timeSec) ? timeSec : null };
     }
@@ -679,8 +687,9 @@ for (const cat of spec.categories) {
         const line = findMethodLine(join(repoRoot, srcRel), req.match);
         rowLink = srcLink(githubUrl(srcRel, line));
       }
-      if (r.failureDetail) {
-        detail += `<pre class="failure-detail">${esc(r.failureDetail)}</pre>`;
+      const failText = r.failureDetail || r.message;
+      if (failText) {
+        detail += `<pre class="failure-detail">${esc(failText)}</pre>`;
       }
       detail += renderObservedMetrics(observed, cov, cat.layer, costEur);
     }
