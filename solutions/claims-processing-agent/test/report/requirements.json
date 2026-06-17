@@ -172,6 +172,7 @@
           "assertions": [
             { "kind": "action", "text": "Start process with claimId=CLM-IT-CLEAN-001, customerId=CUST-IT-CLEAN (clean-risk beeceptor fixture)" },
             { "kind": "assert", "text": "Agent_ClaimsAssessment and Agent_Judge completed" },
+            { "kind": "assert", "text": "fraudRiskScore = low (PolicyLookup returned clean data; confirms correct beeceptor fixture)" },
             { "kind": "assert", "text": "claimDecision = APPROVE" },
             { "kind": "assert", "text": "End_ClaimApproved completed — no human task activated" },
             { "kind": "assert", "text": "Process instance completed" }
@@ -183,6 +184,7 @@
           "assertions": [
             { "kind": "action", "text": "Start process with claimId=CLM-IT-BORDER-001, customerId=CUST-IT-BORDER (medium-risk beeceptor fixture)" },
             { "kind": "assert", "text": "Agent_ClaimsAssessment and Agent_Judge completed" },
+            { "kind": "assert", "text": "fraudRiskScore = medium (PolicyLookup returned border data; confirms correct beeceptor fixture)" },
             { "kind": "assert", "text": "claimDecision = MANUAL_REVIEW" },
             { "kind": "action", "text": "Await and complete Task_ManualReview with adjusterDecision=APPROVE" },
             { "kind": "assert", "text": "End_ManualResolved completed" },

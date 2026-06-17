@@ -10,6 +10,7 @@ import io.camunda.process.test.api.CamundaAssert;
 import io.camunda.process.test.api.CamundaSpringProcessTest;
 import io.camunda.process.test.api.TestDeployment;
 import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -169,15 +170,28 @@ public class ClaimsProcessingAgentIT {
                 + "Body-shop estimate of $950 submitted.",
             "2026-05-20");
 
-        assertThatProcessInstance(instance)
-            .hasCompletedElements(
-                byId("Start_ClaimForm"),
-                byId("Agent_ClaimsAssessment"),
-                byId("Agent_Judge"),
-                byId("Gateway_JudgeDecision"),
-                byId("End_ClaimApproved"))
-            .hasVariable("claimDecision", "APPROVE")
-            .isCompleted();
+        // Phase 1: wait for assessment path to complete (up to 12 min).
+        assertCompletedOrDiagnose(instance,
+            byId("Agent_ClaimsAssessment"),
+            byId("Agent_Judge"),
+            byId("Gateway_JudgeDecision"));
+
+        // Trace: PolicyLookup must return fraudRiskScore=low for the clean fixture.
+        // If this fails, the agent called GetCustomerProfile with the wrong ID and beeceptor
+        // returned a fraud fixture, or the beeceptor clean rule is misconfigured.
+        traceVariable(instance, "fraudRiskScore", "low");
+
+        // Phase 2: fail fast — decision is final once the gateway fires.
+        assertDecisionFastFail(instance, "APPROVE");
+
+        // Phase 3: confirm terminal element.
+        assertCompletedOrDiagnose(instance,
+            byId("Start_ClaimForm"),
+            byId("Agent_ClaimsAssessment"),
+            byId("Agent_Judge"),
+            byId("Gateway_JudgeDecision"),
+            byId("End_ClaimApproved"));
+        assertThatProcessInstance(instance).isCompleted();
     }
 
     // =========================================================================
@@ -197,11 +211,19 @@ public class ClaimsProcessingAgentIT {
                 + "rating, no hard fraud indicators, circumstances are ambiguous.",
             "2026-04-15");
 
-        assertThatProcessInstance(instance)
-            .hasCompletedElements(
-                byId("Agent_ClaimsAssessment"),
-                byId("Agent_Judge"))
-            .hasVariable("claimDecision", "MANUAL_REVIEW");
+        // Phase 1: wait for assessment path to complete (up to 12 min).
+        assertCompletedOrDiagnose(instance,
+            byId("Agent_ClaimsAssessment"),
+            byId("Agent_Judge"),
+            byId("Gateway_JudgeDecision"));
+
+        // Trace: PolicyLookup must return fraudRiskScore=medium for the border fixture.
+        // If this fails, the agent used the wrong customerId for GetCustomerProfile and
+        // beeceptor returned a different fixture, or the beeceptor border rule is misconfigured.
+        traceVariable(instance, "fraudRiskScore", "medium");
+
+        // Phase 2: fail fast — decision is final once the gateway fires.
+        assertDecisionFastFail(instance, "MANUAL_REVIEW");
 
         Awaitility.await()
             .atMost(Duration.ofMinutes(2))
@@ -351,5 +373,94 @@ public class ClaimsProcessingAgentIT {
                 .elementId(elementId)
                 .state(UserTaskState.CREATED))
             .send().join().items().isEmpty();
+    }
+
+    // =========================================================================
+    // Diagnostic helpers — active-element probing + fail-fast routing check
+    // =========================================================================
+
+    // Elements that can park the process token: checked on assertion failure to
+    // surface where the process is stuck without requiring full element-instance API access.
+    private static final List<String> ACTIVE_ELEMENT_PROBES = List.of(
+        "Agent_ClaimsAssessment", "Agent_Judge",
+        "Task_HumanReview", "Task_ManualReview", "SubProcess_HumanControl"
+    );
+
+    /**
+     * Asserts completed elements; on failure appends currently-active elements to the
+     * error message so the reader immediately knows where the process token is parked.
+     */
+    private void assertCompletedOrDiagnose(
+            ProcessInstanceEvent instance,
+            io.camunda.process.test.api.assertions.ElementSelector... selectors) {
+        try {
+            assertThatProcessInstance(instance).hasCompletedElements(selectors);
+        } catch (AssertionError e) {
+            var sb = new StringBuilder(e.getMessage());
+            appendActiveElements(instance, sb);
+            throw new AssertionError(sb.toString(), e);
+        }
+    }
+
+    /**
+     * Checks the routing decision with a 5-second timeout (the decision is already written
+     * once Gateway_JudgeDecision has fired, so polling past a few seconds is wasted).
+     * On failure appends currently-active elements and rethrows immediately.
+     */
+    private void assertDecisionFastFail(ProcessInstanceEvent instance, String expected) {
+        try {
+            CamundaAssert.setAssertionTimeout(Duration.ofSeconds(5));
+            assertThatProcessInstance(instance).hasVariable("claimDecision", expected);
+        } catch (AssertionError e) {
+            var sb = new StringBuilder(e.getMessage());
+            appendActiveElements(instance, sb);
+            throw new AssertionError(sb.toString(), e);
+        } finally {
+            CamundaAssert.setAssertionTimeout(Duration.ofMinutes(12));
+        }
+    }
+
+    /**
+     * Asserts a named process variable with a 5-second timeout and a diagnostic message
+     * that identifies whether the failure is a beeceptor fixture issue or an agent reasoning
+     * issue. Use between Phase 1 (element completion) and Phase 2 (decision check) to trace
+     * upstream data changes before the agent makes its routing decision.
+     */
+    private void traceVariable(ProcessInstanceEvent instance, String name, Object expected) {
+        try {
+            CamundaAssert.setAssertionTimeout(Duration.ofSeconds(5));
+            assertThatProcessInstance(instance).hasVariable(name, expected);
+        } catch (AssertionError e) {
+            throw new AssertionError(
+                "Data trace FAILED for variable '" + name + "' (expected: " + expected + "). "
+                    + "Check: (1) beeceptor fixture returns the expected value for this claim/customer ID; "
+                    + "(2) the agent called each tool with the correct claimId / customerId. "
+                    + "Original: " + e.getMessage(), e);
+        } finally {
+            CamundaAssert.setAssertionTimeout(Duration.ofMinutes(12));
+        }
+    }
+
+    private void appendActiveElements(ProcessInstanceEvent instance, StringBuilder sb) {
+        sb.append("\n\nActive elements at time of failure:");
+        // Use a 2-second window per probe — these elements are either active or not;
+        // there is no meaningful "wait" here.
+        CamundaAssert.setAssertionTimeout(Duration.ofSeconds(2));
+        boolean anyActive = false;
+        for (var id : ACTIVE_ELEMENT_PROBES) {
+            try {
+                assertThatProcessInstance(instance).hasActiveElements(byId(id));
+                sb.append("\n  ").append(id).append(" [ACTIVE]");
+                anyActive = true;
+            } catch (AssertionError ignored) {
+                // not active — omit from output to keep the message concise
+            }
+        }
+        if (!anyActive) {
+            sb.append("\n  (none of the probed elements are active — process may have ended or errored)");
+        }
+        // Caller's finally block restores the timeout; set it here so the remainder of the
+        // probe loop (if any) also uses 2 s rather than the previous timeout.
+        CamundaAssert.setAssertionTimeout(Duration.ofMinutes(12));
     }
 }
