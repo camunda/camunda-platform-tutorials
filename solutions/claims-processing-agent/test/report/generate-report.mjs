@@ -100,6 +100,28 @@ const surefire = {
   integration: parseSurefireDir(join(artifacts, 'integration', 'surefire')),
 };
 
+function suiteDurationSec(dirs) {
+  let total = 0;
+  for (const dir of dirs) {
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir).filter(n => n.endsWith('.xml'))) {
+      const xml = readFileSync(join(dir, f), 'utf8');
+      const m = xml.match(/<testsuite\b[^>]*\btime="([^"]+)"/);
+      if (m) total += Number(m[1]);
+    }
+  }
+  return total;
+}
+
+function formatDuration(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.round(sec % 60);
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
   function extractObservedValues() {
     const valuesById = {};
     const valuesByTest = {};
@@ -700,6 +722,11 @@ const bandHtml = bands.map(b => {
   const ok = b.actual != null && b.actual + 1e-9 >= b.threshold;
   return `<div class="band ${ok ? 'ok' : 'under'}"><div class="bl">${esc(b.label)}</div><div class="bv">${pct(b.actual)}</div><div class="bt">threshold ${pct(b.threshold)} ${ok ? '✓' : '✗'}</div></div>`;
 }).join('');
+const totalDurSec = suiteDurationSec([
+  join(artifacts, 'process', 'surefire'),
+  join(artifacts, 'integration', 'surefire'),
+]);
+const durationChipHtml = `<div class="dur-chip"><div class="dur-label">Suite duration</div><div class="dur-value">${esc(formatDuration(totalDurSec))}</div><div class="dur-note">process tests + integration tests, sequential</div></div>`;
 const costSummaryHtml = `<div class="cost-summary"><div class="cost-label">Estimated suite cost (${esc(SONNET46_PRICING.model)}):</div><div class="cost-value">${formatEur(totalSuiteCostEur, 4)}</div><div class="cost-note">Assumption: input USD ${SONNET46_PRICING.inputUsdPerMillion.toFixed(2)} / 1M tokens, output USD ${SONNET46_PRICING.outputUsdPerMillion.toFixed(2)} / 1M tokens, FX ${SONNET46_PRICING.eurPerUsd.toFixed(2)} EUR/USD.</div></div>`;
 const skipHtml = skipped.length ? `<div class="skipbox"><h3>Skipped tests (${skipped.length})</h3>` +
   skipped.map(s => `<div class="skiprow"><b>${esc(s.id)}</b> ${esc(s.statement)}<br><span class="reason">${esc(s.message || 'skipped')}</span></div>`).join('') + `</div>` : '';
@@ -721,6 +748,10 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .stats .dot{margin:0 8px;color:#94a3b8}
  .setup-note{color:#64748b;font-size:11px}
  .bands{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+ .dur-chip{margin:-8px 0 16px;background:#fff;border:1px solid #e3e6ea;border-left:5px solid #3b82f6;border-radius:10px;padding:12px 14px}
+ .dur-label{font-size:12px;color:#475569}
+ .dur-value{font-size:24px;font-weight:700;color:#0f172a;line-height:1.2}
+ .dur-note{font-size:11px;color:#64748b;margin-top:4px}
  .cost-summary{margin:-8px 0 24px;background:#fff;border:1px solid #e3e6ea;border-left:5px solid #0f766e;border-radius:10px;padding:12px 14px}
  .cost-label{font-size:12px;color:#475569}
  .cost-value{font-size:24px;font-weight:700;color:#0f172a;line-height:1.2}
@@ -779,6 +810,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
 <div class="sub">Three layers, each requirement proven by a named test. Expand a row for its steps; green = the path that instance took.</div></header>
 <main>
  <div class="bands">${bandHtml}</div>
+ ${durationChipHtml}
  ${costSummaryHtml}
  ${skipHtml}
  ${sections}
