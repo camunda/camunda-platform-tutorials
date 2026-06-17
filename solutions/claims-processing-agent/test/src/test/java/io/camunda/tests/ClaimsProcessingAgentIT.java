@@ -163,6 +163,10 @@ public class ClaimsProcessingAgentIT {
     @Timeout(800)
     @DisplayName("PIR-2: a clean, well-documented claim is approved without human touch")
     void cleanClaimIsApproved() {
+        AtomicReference<Integer> observedModelCalls = new AtomicReference<>();
+        AtomicReference<Integer> observedInputTokens = new AtomicReference<>();
+        AtomicReference<Integer> observedOutputTokens = new AtomicReference<>();
+
         var instance = startProcess(
             "CLM-IT-CLEAN-001", "CUST-IT-CLEAN", "collision",
             "Minor rear-end impact at a traffic light. Other driver confirmed at fault. Single "
@@ -175,6 +179,14 @@ public class ClaimsProcessingAgentIT {
             byId("Agent_ClaimsAssessment"),
             byId("Agent_Judge"),
             byId("Gateway_JudgeDecision"));
+
+        assertThatProcessInstance(instance)
+            .hasVariableSatisfies("agent", Map.class, a -> {
+                accumulateMetrics(a, observedModelCalls, observedInputTokens, observedOutputTokens);
+            })
+            .hasVariableSatisfies("agentJudge", Map.class, a -> {
+                accumulateMetrics(a, observedModelCalls, observedInputTokens, observedOutputTokens);
+            });
 
         // Trace: PolicyLookup must return fraudRiskScore=low for the clean fixture.
         // If this fails, the agent called GetCustomerProfile with the wrong ID and beeceptor
@@ -192,6 +204,12 @@ public class ClaimsProcessingAgentIT {
             byId("Gateway_JudgeDecision"),
             byId("End_ClaimApproved"));
         assertThatProcessInstance(instance).isCompleted();
+
+        emitReportValue(
+            "PIR-2",
+            observedModelCalls.get(),
+            observedInputTokens.get(),
+            observedOutputTokens.get());
     }
 
     // =========================================================================
@@ -205,6 +223,10 @@ public class ClaimsProcessingAgentIT {
     @Timeout(800)
     @DisplayName("PIR-3: an ambiguous claim with no hard fraud signal goes to manual review")
     void borderlineClaimGoesToManualReview() {
+        AtomicReference<Integer> observedModelCalls = new AtomicReference<>();
+        AtomicReference<Integer> observedInputTokens = new AtomicReference<>();
+        AtomicReference<Integer> observedOutputTokens = new AtomicReference<>();
+
         var instance = startProcess(
             "CLM-IT-BORDER-001", "CUST-IT-BORDER", "theft",
             "Vehicle stolen from a driveway overnight. No witnesses and no CCTV. Medium risk "
@@ -216,6 +238,14 @@ public class ClaimsProcessingAgentIT {
             byId("Agent_ClaimsAssessment"),
             byId("Agent_Judge"),
             byId("Gateway_JudgeDecision"));
+
+        assertThatProcessInstance(instance)
+            .hasVariableSatisfies("agent", Map.class, a -> {
+                accumulateMetrics(a, observedModelCalls, observedInputTokens, observedOutputTokens);
+            })
+            .hasVariableSatisfies("agentJudge", Map.class, a -> {
+                accumulateMetrics(a, observedModelCalls, observedInputTokens, observedOutputTokens);
+            });
 
         // Trace: PolicyLookup must return fraudRiskScore=medium for the border fixture.
         // If this fails, the agent used the wrong customerId for GetCustomerProfile and
@@ -247,6 +277,12 @@ public class ClaimsProcessingAgentIT {
                 byId("Task_ManualReview"),
                 byId("End_ManualResolved"))
             .isCompleted();
+
+        emitReportValue(
+            "PIR-3",
+            observedModelCalls.get(),
+            observedInputTokens.get(),
+            observedOutputTokens.get());
     }
 
     // =========================================================================
