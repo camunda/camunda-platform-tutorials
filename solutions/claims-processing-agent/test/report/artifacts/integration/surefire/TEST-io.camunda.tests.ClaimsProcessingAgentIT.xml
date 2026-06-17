@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.camunda.tests.ClaimsProcessingAgentIT" time="124.07" tests="3" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.camunda.tests.ClaimsProcessingAgentIT" time="101.475" tests="3" errors="0" skipped="0" failures="0">
   <properties/>
-  <testcase name="cleanClaimIsApproved" classname="io.camunda.tests.ClaimsProcessingAgentIT" time="25.471">
-    <system-out><![CDATA[2026-06-17T13:53:26.767+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Starting Camunda container runtime [camunda/camunda:SNAPSHOT, camunda/connectors-bundle:8.10.0-alpha2]
-2026-06-17T13:53:33.852+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : 11:53:33,850 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - The 'condition' attribute in <if> element is deprecated and slated for removal. Use <condition> element instead.
-2026-06-17T13:53:33.852+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : 11:53:33,851 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - See also https://logback.qos.ch/codes.html#conditionAttributeDeprecation
-2026-06-17T13:53:35.561+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: A restricted method in java.lang.System has been called
-2026-06-17T13:53:35.561+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/netty-common-4.2.14.Final.jar!/)
-2026-06-17T13:53:35.561+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-2026-06-17T13:53:35.562+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-2026-06-17T13:53:35.562+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : 
-2026-06-17T13:53:36.833+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-2026-06-17T13:53:36.833+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/protobuf-java-4.35.0.jar!/)
-2026-06-17T13:53:36.833+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil
-2026-06-17T13:53:36.833+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream-1322112657] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release
-2026-06-17T13:53:36.969+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Camunda container runtime started in PT10.200778S
-2026-06-17T13:53:37.347+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <CamundaInsurance_ClaimsProcessing:1>
-REPORT_VALUE {"id":"PIR-2","modelCalls":4,"inputTokenCount":7319,"outputTokenCount":812}
+  <testcase name="cleanClaimIsApproved" classname="io.camunda.tests.ClaimsProcessingAgentIT" time="21.187">
+    <system-out><![CDATA[20:21:25.401 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.camunda.tests.ClaimsProcessingAgentIT]: ClaimsProcessingAgentIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:21:25.443 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.camunda.tests.TestApplication for test class io.camunda.tests.ClaimsProcessingAgentIT
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-06-17T20:21:25.650+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsProcessingAgentIT  : Starting ClaimsProcessingAgentIT using Java 21.0.9 with PID 20285 (started by eric.lundberg in /Users/eric.lundberg/GitHub/camunda-8-tutorials-fork/solutions/claims-processing-agent/test)
+2026-06-17T20:21:25.651+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsProcessingAgentIT  : The following 1 profile is active: "integration"
+2026-06-17T20:21:25.657+02:00  WARN 20285 --- [claims-processing-agent-tests] [           main] s.p.CamundaClientPropertiesPostProcessor : No 'camunda.client.auth.method' detected, will be set to 'none'
+2026-06-17T20:21:26.006+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsProcessingAgentIT  : Started ClaimsProcessingAgentIT in 0.47 seconds (process running for 0.935)
+2026-06-17T20:21:27.646+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Starting Camunda container runtime [camunda/camunda:SNAPSHOT, camunda/connectors-bundle:8.10.0-alpha2]
+2026-06-17T20:21:35.049+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : 18:21:35,048 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - The 'condition' attribute in <if> element is deprecated and slated for removal. Use <condition> element instead.
+2026-06-17T20:21:35.050+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : 18:21:35,048 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - See also https://logback.qos.ch/codes.html#conditionAttributeDeprecation
+2026-06-17T20:21:36.843+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: A restricted method in java.lang.System has been called
+2026-06-17T20:21:36.844+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/netty-common-4.2.14.Final.jar!/)
+2026-06-17T20:21:36.845+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+2026-06-17T20:21:36.845+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+2026-06-17T20:21:36.845+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : 
+2026-06-17T20:21:38.114+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+2026-06-17T20:21:38.115+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/protobuf-java-4.35.0.jar!/)
+2026-06-17T20:21:38.115+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil
+2026-06-17T20:21:38.115+02:00 ERROR 20285 --- [claims-processing-agent-tests] [ream-1149965527] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release
+2026-06-17T20:21:38.222+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Camunda container runtime started in PT10.575755S
+2026-06-17T20:21:38.868+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <CamundaInsurance_ClaimsProcessing:1>
+REPORT_VALUE {"id":"PIR-2","modelCalls":4,"inputTokenCount":7291,"outputTokenCount":733}
 ]]></system-out>
   </testcase>
-  <testcase name="fraudClaimEscalatesToAdjuster" classname="io.camunda.tests.ClaimsProcessingAgentIT" time="57.83">
-    <system-out><![CDATA[2026-06-17T13:54:02.538+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <CamundaInsurance_ClaimsProcessing:1>
-REPORT_VALUE {"id":"PIR-1","modelCalls":4,"inputTokenCount":8291,"outputTokenCount":1127}
+  <testcase name="fraudClaimEscalatesToAdjuster" classname="io.camunda.tests.ClaimsProcessingAgentIT" time="39.954">
+    <system-out><![CDATA[2026-06-17T20:21:59.697+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <CamundaInsurance_ClaimsProcessing:1>
+REPORT_VALUE {"id":"PIR-1","modelCalls":3,"inputTokenCount":6272,"outputTokenCount":1137}
 ]]></system-out>
   </testcase>
-  <testcase name="borderlineClaimGoesToManualReview" classname="io.camunda.tests.ClaimsProcessingAgentIT" time="28.755">
-    <system-out><![CDATA[2026-06-17T13:55:00.377+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <CamundaInsurance_ClaimsProcessing:1>
-REPORT_VALUE {"id":"PIR-3","modelCalls":4,"inputTokenCount":7726,"outputTokenCount":1159}
+  <testcase name="borderlineClaimGoesToManualReview" classname="io.camunda.tests.ClaimsProcessingAgentIT" time="26.258">
+    <system-out><![CDATA[2026-06-17T20:22:39.649+02:00  INFO 20285 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <CamundaInsurance_ClaimsProcessing:1>
+REPORT_VALUE {"id":"PIR-3","modelCalls":4,"inputTokenCount":7619,"outputTokenCount":1073}
 ]]></system-out>
   </testcase>
 </testsuite>

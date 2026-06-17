@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.camunda.tests.ClaimsExternalSystemsIT" time="146.817" tests="12" errors="1" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.camunda.tests.ClaimsExternalSystemsIT" time="149.257" tests="12" errors="1" skipped="0" failures="0">
   <properties/>
-  <testcase name="policyLookupCleanFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="3.29">
-    <system-out><![CDATA[13:50:59.195 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.camunda.tests.ClaimsExternalSystemsIT]: ClaimsExternalSystemsIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-13:50:59.233 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.camunda.tests.TestApplication for test class io.camunda.tests.ClaimsExternalSystemsIT
+  <testcase name="policyLookupCleanFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="3.37">
+    <system-out><![CDATA[20:18:53.856 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.camunda.tests.ClaimsExternalSystemsIT]: ClaimsExternalSystemsIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:18:53.897 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.camunda.tests.TestApplication for test class io.camunda.tests.ClaimsExternalSystemsIT
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,28 +14,28 @@
 
  :: Spring Boot ::                (v4.0.2)
 
-2026-06-17T13:50:59.450+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsExternalSystemsIT  : Starting ClaimsExternalSystemsIT using Java 21.0.9 with PID 67241 (started by eric.lundberg in /Users/eric.lundberg/GitHub/camunda-8-tutorials-fork/solutions/claims-processing-agent/test)
-2026-06-17T13:50:59.451+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsExternalSystemsIT  : The following 1 profile is active: "integration"
-2026-06-17T13:50:59.457+02:00  WARN 67241 --- [claims-processing-agent-tests] [           main] s.p.CamundaClientPropertiesPostProcessor : No 'camunda.client.auth.method' detected, will be set to 'none'
-2026-06-17T13:50:59.824+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsExternalSystemsIT  : Started ClaimsExternalSystemsIT in 0.494 seconds (process running for 0.975)
-2026-06-17T13:51:01.172+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Starting Camunda container runtime [camunda/camunda:SNAPSHOT, camunda/connectors-bundle:8.10.0-alpha2]
-2026-06-17T13:51:08.971+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : 11:51:08,963 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - The 'condition' attribute in <if> element is deprecated and slated for removal. Use <condition> element instead.
-2026-06-17T13:51:08.972+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : 11:51:08,963 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - See also https://logback.qos.ch/codes.html#conditionAttributeDeprecation
-2026-06-17T13:51:10.673+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: A restricted method in java.lang.System has been called
-2026-06-17T13:51:10.674+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/netty-common-4.2.14.Final.jar!/)
-2026-06-17T13:51:10.674+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-2026-06-17T13:51:10.674+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-2026-06-17T13:51:10.674+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : 
-2026-06-17T13:51:11.919+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-2026-06-17T13:51:11.920+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/protobuf-java-4.35.0.jar!/)
-2026-06-17T13:51:11.921+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil
-2026-06-17T13:51:11.921+02:00 ERROR 67241 --- [claims-processing-agent-tests] [ream--105531192] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release
-2026-06-17T13:51:12.040+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Camunda container runtime started in PT10.868182S
-2026-06-17T13:51:12.905+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+2026-06-17T20:18:54.114+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsExternalSystemsIT  : Starting ClaimsExternalSystemsIT using Java 21.0.9 with PID 19389 (started by eric.lundberg in /Users/eric.lundberg/GitHub/camunda-8-tutorials-fork/solutions/claims-processing-agent/test)
+2026-06-17T20:18:54.114+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsExternalSystemsIT  : The following 1 profile is active: "integration"
+2026-06-17T20:18:54.121+02:00  WARN 19389 --- [claims-processing-agent-tests] [           main] s.p.CamundaClientPropertiesPostProcessor : No 'camunda.client.auth.method' detected, will be set to 'none'
+2026-06-17T20:18:54.472+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.camunda.tests.ClaimsExternalSystemsIT  : Started ClaimsExternalSystemsIT in 0.479 seconds (process running for 0.955)
+2026-06-17T20:18:55.863+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Starting Camunda container runtime [camunda/camunda:SNAPSHOT, camunda/connectors-bundle:8.10.0-alpha2]
+2026-06-17T20:19:03.771+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : 18:19:03,769 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - The 'condition' attribute in <if> element is deprecated and slated for removal. Use <condition> element instead.
+2026-06-17T20:19:03.771+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : 18:19:03,769 |-WARN in ch.qos.logback.core.model.processor.conditional.IfModelHandler - See also https://logback.qos.ch/codes.html#conditionAttributeDeprecation
+2026-06-17T20:19:05.743+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: A restricted method in java.lang.System has been called
+2026-06-17T20:19:05.743+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/netty-common-4.2.14.Final.jar!/)
+2026-06-17T20:19:05.743+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+2026-06-17T20:19:05.743+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+2026-06-17T20:19:05.743+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : 
+2026-06-17T20:19:07.033+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+2026-06-17T20:19:07.033+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil (jar:nested:/opt/app/connector-runtime-bundle-8.10.0-alpha2-with-dependencies.jar/!BOOT-INF/lib/protobuf-java-4.35.0.jar!/)
+2026-06-17T20:19:07.033+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil
+2026-06-17T20:19:07.034+02:00 ERROR 19389 --- [claims-processing-agent-tests] [eam--1041103153] tc.connectors                            : WARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release
+2026-06-17T20:19:07.150+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] t.i.r.CamundaProcessTestContainerRuntime : Camunda container runtime started in PT11.28661S
+2026-06-17T20:19:07.879+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="assessmentReportSemanticSimilarity" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="7.655">
-    <error message="User: arn:aws:iam::720237151721:user/bedrock-agentdemos is not authorized to perform: bedrock:InvokeModel on resource: arn:aws:bedrock:eu-north-1::foundation-model/amazon.titan-embed-text-v2:0 because no identity-based policy allows the bedrock:InvokeModel action (Service: BedrockRuntime, Status Code: 403, Request ID: cdde3637-4428-4529-9a34-f548a513a01c) (SDK Attempt Count: 1)" type="dev.langchain4j.exception.AuthenticationException"><![CDATA[dev.langchain4j.exception.AuthenticationException: User: arn:aws:iam::720237151721:user/bedrock-agentdemos is not authorized to perform: bedrock:InvokeModel on resource: arn:aws:bedrock:eu-north-1::foundation-model/amazon.titan-embed-text-v2:0 because no identity-based policy allows the bedrock:InvokeModel action (Service: BedrockRuntime, Status Code: 403, Request ID: cdde3637-4428-4529-9a34-f548a513a01c) (SDK Attempt Count: 1)
+  <testcase name="assessmentReportSemanticSimilarity" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="7.61">
+    <error message="User: arn:aws:iam::720237151721:user/bedrock-agentdemos is not authorized to perform: bedrock:InvokeModel on resource: arn:aws:bedrock:eu-north-1::foundation-model/amazon.titan-embed-text-v2:0 because no identity-based policy allows the bedrock:InvokeModel action (Service: BedrockRuntime, Status Code: 403, Request ID: b2275356-3ce6-47e0-8282-16c8a2da6c4e) (SDK Attempt Count: 1)" type="dev.langchain4j.exception.AuthenticationException"><![CDATA[dev.langchain4j.exception.AuthenticationException: User: arn:aws:iam::720237151721:user/bedrock-agentdemos is not authorized to perform: bedrock:InvokeModel on resource: arn:aws:bedrock:eu-north-1::foundation-model/amazon.titan-embed-text-v2:0 because no identity-based policy allows the bedrock:InvokeModel action (Service: BedrockRuntime, Status Code: 403, Request ID: b2275356-3ce6-47e0-8282-16c8a2da6c4e) (SDK Attempt Count: 1)
 	at dev.langchain4j.internal.ExceptionMapper$DefaultExceptionMapper.mapHttpStatusCode(ExceptionMapper.java:59)
 	at dev.langchain4j.model.bedrock.BedrockExceptionMapper.mapException(BedrockExceptionMapper.java:18)
 	at dev.langchain4j.internal.ExceptionMapper.withExceptionMapper(ExceptionMapper.java:31)
@@ -63,7 +63,7 @@
 	at io.camunda.process.test.impl.assertions.VariableAssertj.hasVariableSimilarTo(VariableAssertj.java:474)
 	at io.camunda.process.test.impl.assertions.ProcessInstanceAssertj.hasVariableSimilarTo(ProcessInstanceAssertj.java:545)
 	at io.camunda.tests.ClaimsExternalSystemsIT.assessmentReportSemanticSimilarity(ClaimsExternalSystemsIT.java:372)
-Caused by: software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedException: User: arn:aws:iam::720237151721:user/bedrock-agentdemos is not authorized to perform: bedrock:InvokeModel on resource: arn:aws:bedrock:eu-north-1::foundation-model/amazon.titan-embed-text-v2:0 because no identity-based policy allows the bedrock:InvokeModel action (Service: BedrockRuntime, Status Code: 403, Request ID: cdde3637-4428-4529-9a34-f548a513a01c) (SDK Attempt Count: 1)
+Caused by: software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedException: User: arn:aws:iam::720237151721:user/bedrock-agentdemos is not authorized to perform: bedrock:InvokeModel on resource: arn:aws:bedrock:eu-north-1::foundation-model/amazon.titan-embed-text-v2:0 because no identity-based policy allows the bedrock:InvokeModel action (Service: BedrockRuntime, Status Code: 403, Request ID: b2275356-3ce6-47e0-8282-16c8a2da6c4e) (SDK Attempt Count: 1)
 	at software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedException$BuilderImpl.build(AccessDeniedException.java:153)
 	at software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedException$BuilderImpl.build(AccessDeniedException.java:101)
 	at software.amazon.awssdk.core.internal.http.pipeline.stages.utils.RetryableStageHelper.retryPolicyDisallowedRetryException(RetryableStageHelper.java:168)
@@ -95,8 +95,8 @@ Caused by: software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedExce
 	at dev.langchain4j.internal.ExceptionMapper.withExceptionMapper(ExceptionMapper.java:29)
 	... 24 more
 ]]></error>
-    <system-out><![CDATA[2026-06-17T13:51:15.710+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
-2026-06-17T13:51:22.926+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] .t.a.CamundaProcessTestExecutionListener : Process test results:
+    <system-out><![CDATA[2026-06-17T20:19:11.877+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+2026-06-17T20:19:18.063+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] .t.a.CamundaProcessTestExecutionListener : Process test results:
 =====================
 
 Process instance: 2251799813685323 [process-id: 'CamundaInsurance_ClaimsProcessing', state: active]
@@ -107,18 +107,18 @@ Active elements:
 
 Variables:
 - 'claimDecision': "ESCALATE"
-- 'judgeRawResponse': "{\n  \"toolCompleteness\": 1.0,\n  \"fraudAnalysisDepth\": 0.95,\n  \"decisionJustification\": 0.95,\n  \"responseCompleteness\": 0.45,\n  \"overallScore\": 0.8375,\n  \"feedback\": \"The fraud analysis is thorough and well-evidenced with five distinct signals clearly articulated, and the escalation decision is strongly justified by the tool results. However, the output report is missing several required fields entirely — claimSummary, documentsVerified, damageEstimate (as a structured value...
+- 'judgeRawResponse': "{\n  \"toolCompleteness\": 1.0,\n  \"fraudAnalysisDepth\": 1.0,\n  \"decisionJustification\": 1.0,\n  \"responseCompleteness\": 0.2,\n  \"overallScore\": 0.8,\n  \"feedback\": \"The fraud analysis is thorough and the escalation decision is well-justified by five documented signals, but the output report is missing several required fields entirely — claimSummary, documentsVerified, damageEstimate (as a structured value), fraudSuspected (as a boolean), suggestedSettlementAmount, and policyVali...
 - 'assessmentReport': "CLAIM ASSESSMENT REPORT — CLM-2025-0042\n\nRISK RATING: HIGH\nRECOMMENDED DECISION: ESCALATE\n\nFraud indicators identified:\n1. COVERAGE TIMING — collision coverage added 8 days before the incident date.\n2. CLAIM HISTORY — customer has multiple active claims in the past 12 months.\n3. OPEN FRAUD INVESTIGATION — a prior fraud case is already open on this account.\n4. UNVERIFIABLE DOCUMENTATION — the referenced police report cannot be located.\n5. INFLATED ESTIMATE — claimed total-loss value...
 - 'claimId': "CLM-2025-0042"
 - 'customerName': "IT Quality Customer"
-- 'agentJudge': {"context":{"state":"READY","metadata":{"processDefinitionKey":2251799813685320,"processInstanceKey":2251799813685323},"metrics":{"modelCalls":1,"tokenUsage":{"inputTokenCount":683,"outputTokenCount":194}},"toolDefinitions":[],"conversation":{"type":"in-process","conversationId":"c1fbd81e-76a7-48c9-b5e1-734858bf361c","messages":[{"role":"system","content":[{"type":"text","text":"You are a quality evaluator for an AI claims assessment agent at Camunda Insurance. Your job is NOT to make the cla...
-- 'qualityFeedback': "The fraud analysis is thorough and well-evidenced with five distinct signals clearly articulated, and the escalation decision is strongly justified by the tool results. However, the output report is missing several required fields entirely — claimSummary, documentsVerified, damageEstimate (as a structured value), fraudSuspected (as an explicit boolean), suggestedSettlementAmount, and policyValidated are not formally populated in a structured way; ensure every required output field is explici...
+- 'agentJudge': {"context":{"state":"READY","metadata":{"processDefinitionKey":2251799813685320,"processInstanceKey":2251799813685323},"metrics":{"modelCalls":1,"tokenUsage":{"inputTokenCount":683,"outputTokenCount":184}},"toolDefinitions":[],"conversation":{"type":"in-process","conversationId":"69d3787f-cc5d-44a0-b695-fa6b39c31281","messages":[{"role":"system","content":[{"type":"text","text":"You are a quality evaluator for an AI claims assessment agent at Camunda Insurance. Your job is NOT to make the cla...
+- 'qualityFeedback': "The fraud analysis is thorough and the escalation decision is well-justified by five documented signals, but the output report is missing several required fields entirely — claimSummary, documentsVerified, damageEstimate (as a structured value), fraudSuspected (as a boolean), suggestedSettlementAmount, and policyValidated are not explicitly populated in the structured output format; the agent should ensure all required fields are present with explicit values rather than embedding them only i...
 - 'claimType': "collision"
 - 'customerEmail': "it-quality@camunda.example.com"
 - 'customerId': "CUST-4521"
-- 'agentQualityScore': 0.8375
+- 'agentQualityScore': 0.8
 - 'incidentDate': "2026-06-01"
-- 'qualityScores': {"toolCompleteness":1.0,"fraudAnalysisDepth":0.95,"decisionJustification":0.95,"responseCompleteness":0.45,"overallScore":0.8375,"feedback":"The fraud analysis is thorough and well-evidenced with five distinct signals clearly articulated, and the escalation decision is strongly justified by the tool results. However, the output report is missing several required fields entirely — claimSummary, documentsVerified, damageEstimate (as a structured value), fraudSuspected (as an explicit boolean), ...
+- 'qualityScores': {"toolCompleteness":1.0,"fraudAnalysisDepth":1.0,"decisionJustification":1.0,"responseCompleteness":0.2,"overallScore":0.8,"feedback":"The fraud analysis is thorough and the escalation decision is well-justified by five documented signals, but the output report is missing several required fields entirely — claimSummary, documentsVerified, damageEstimate (as a structured value), fraudSuspected (as a boolean), suggestedSettlementAmount, and policyValidated are not explicitly populated in the st...
 
 Active incidents:
 <None>
@@ -129,45 +129,45 @@ Active message subscriptions:
 
 ]]></system-out>
   </testcase>
-  <testcase name="calculateDamageEstimateCleanFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="2.001">
-    <system-out><![CDATA[2026-06-17T13:51:23.290+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="calculateDamageEstimateCleanFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="2.246">
+    <system-out><![CDATA[2026-06-17T20:19:18.442+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="getCustomerProfileCleanFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="1.852">
-    <system-out><![CDATA[2026-06-17T13:51:25.299+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="getCustomerProfileCleanFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="3.168">
+    <system-out><![CDATA[2026-06-17T20:19:21.720+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="policyLookupBorderFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="1.645">
-    <system-out><![CDATA[2026-06-17T13:51:27.144+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="policyLookupBorderFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="2.397">
+    <system-out><![CDATA[2026-06-17T20:19:23.862+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="assessmentReportIdentifiesFraud" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="6.443">
-    <system-out><![CDATA[2026-06-17T13:51:28.790+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="assessmentReportIdentifiesFraud" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="6.045">
+    <system-out><![CDATA[2026-06-17T20:19:26.264+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="calculateDamageEstimateInIsolation" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="17.08">
-    <system-out><![CDATA[2026-06-17T13:51:35.240+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="calculateDamageEstimateInIsolation" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="17.006">
+    <system-out><![CDATA[2026-06-17T20:19:32.294+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="policyLookupInIsolation" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="16.941">
-    <system-out><![CDATA[2026-06-17T13:51:52.327+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="policyLookupInIsolation" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="16.693">
+    <system-out><![CDATA[2026-06-17T20:19:49.298+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="judgePopulatesQualityOutputs" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="54.857">
-    <system-out><![CDATA[2026-06-17T13:52:09.272+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
-REPORT_VALUE {"id":"CIR-5","agentQualityScore":0.8325,"qualityFeedback":"The assessment itself is exemplary — fraud signals are exhaustively documented, the decision rationale is airtight, and all output fields are fully populated. However, only one tool call (CalculateDamageEstimate) is evidenced in the submitted tool log; PolicyLookup and GetCustomerProfile must also be explicitly recorded in the tool-call trace, even if their results were used narratively, to demonstrate complete and auditable data provenance.","modelCalls":4,"inputTokenCount":8250,"outputTokenCount":1122}
+  <testcase name="judgePopulatesQualityOutputs" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="54.477">
+    <system-out><![CDATA[2026-06-17T20:20:05.967+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+REPORT_VALUE {"id":"CIR-5","agentQualityScore":0.795,"qualityFeedback":"Only one of the three required tools (CalculateDamageEstimate) is evidenced in the tool call log — PolicyLookup and GetCustomerProfile calls are missing, yet the report references detailed results from both; the agent must ensure all three tool calls are explicitly recorded and surfaced in the assessment trace. Additionally, documentsVerified is set to true without any documented basis for that determination, which could be a placeholder value — the agent should explicitly justify document verification status from tool results or flag it as unverified.","modelCalls":4,"inputTokenCount":8211,"outputTokenCount":1095}
 ]]></system-out>
   </testcase>
-  <testcase name="getCustomerProfileBorderFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="2.15">
-    <system-out><![CDATA[2026-06-17T13:53:04.107+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="getCustomerProfileBorderFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="2.966">
+    <system-out><![CDATA[2026-06-17T20:21:01.495+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="getCustomerProfileInIsolation" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="16.584">
-    <system-out><![CDATA[2026-06-17T13:53:06.266+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="getCustomerProfileInIsolation" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="16.725">
+    <system-out><![CDATA[2026-06-17T20:21:03.431+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
-  <testcase name="calculateDamageEstimateBorderFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="2.155">
-    <system-out><![CDATA[2026-06-17T13:53:22.843+02:00  INFO 67241 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
+  <testcase name="calculateDamageEstimateBorderFixture" classname="io.camunda.tests.ClaimsExternalSystemsIT" time="1.942">
+    <system-out><![CDATA[2026-06-17T20:21:20.159+02:00  INFO 19389 --- [claims-processing-agent-tests] [           main] i.c.p.t.i.d.TestDeploymentService        : Deployed resources from @TestDeployment: <test-claims-tools:1>,<CamundaInsurance_ClaimsProcessing:1>
 ]]></system-out>
   </testcase>
 </testsuite>
