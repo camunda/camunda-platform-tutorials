@@ -58,12 +58,38 @@ function parseSurefireDir(dir) {
       const attrs = m[1], body = m[3] || '';
       const name = (attrs.match(/name="([^"]*)"/) || [])[1] || '';
       const timeSec = Number((attrs.match(/time="([^"]*)"/) || [])[1]);
-      let status = 'pass', message = '';
+      let status = 'pass', message = '', failureDetail = '';
+      let derivedCompleted = [], derivedNotCompleted = [], activeElements = [], failingVariable = null;
       if (/<skipped/.test(body)) { status = 'skipped'; message = (body.match(/<skipped[^>]*message="([^"]*)"/) || [])[1] || ''; }
-      else if (/<failure/.test(body)) { status = 'fail'; message = (body.match(/<failure[^>]*message="([^"]*)"/) || [])[1] || ''; }
+      else if (/<failure/.test(body)) {
+        status = 'fail'; message = (body.match(/<failure[^>]*message="([^"]*)"/) || [])[1] || '';
+        const failCdata = (body.match(/<failure[^>]*>(?:\s*<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?\s*<\/failure>/) || [])[1] || '';
+        const failLines = decode(failCdata.replace(/^<!\[CDATA\[/, '').replace(/\]\]>$/, '')).split('\n');
+        const stackStart = failLines.findIndex(l => /^\s+at /.test(l));
+        failureDetail = (stackStart > 0 ? failLines.slice(0, stackStart) : failLines.slice(0, 5)).join('\n').trim();
+        // Parse "should have completed elements [...] but the following elements were not completed:" to
+        // recover which elements actually ran — these become real green coverage in the diagram.
+        const assertedM = failureDetail.match(/should have completed elements \[([^\]]+)\]/);
+        const notCompletedM = failureDetail.match(/but the following elements were not completed:([\s\S]+)/);
+        if (assertedM && notCompletedM) {
+          const parseIds = s => [...(s.match(/'([^']+)'/g) || [])].map(q => q.slice(1, -1));
+          const asserted = parseIds(assertedM[1]);
+          derivedNotCompleted = parseIds(notCompletedM[1]);
+          const notSet = new Set(derivedNotCompleted);
+          derivedCompleted = asserted.filter(id => !notSet.has(id));
+        }
+        // Parse active elements appended by assertDecisionFastFail / assertCompletedOrDiagnose.
+        for (const line of failureDetail.split('\n')) {
+          const am = line.match(/^\s+(\S+)\s+\[ACTIVE\]$/);
+          if (am) activeElements.push(am[1]);
+        }
+        // Parse failing variable name from variable assertion failures.
+        const varFM = failureDetail.match(/should have a variable '([^']+)'/);
+        if (varFM) failingVariable = varFM[1];
+      }
       else if (/<error/.test(body)) { status = 'fail'; message = (body.match(/<error[^>]*message="([^"]*)"/) || [])[1] || ''; }
         const systemOut = decode((body.match(/<system-out><!\[CDATA\[([\s\S]*?)\]\]><\/system-out>/) || [])[1] || '');
-        cases[name] = { status, message: decode(message), systemOut, durationSec: Number.isFinite(timeSec) ? timeSec : null };
+        cases[name] = { status, message: decode(message), failureDetail, derivedCompleted, derivedNotCompleted, activeElements, failingVariable, systemOut, durationSec: Number.isFinite(timeSec) ? timeSec : null };
     }
   }
   return cases;
@@ -189,8 +215,55 @@ function extractElementIds(text) {
   return Array.from(new Set((String(text || '').match(idRe) || [])));
 }
 
+// Known children of the Agent_ClaimsAssessment ad-hoc subprocess.
+// When the container completes, all three tool tasks ran at least once.
+const AHSP_CHILDREN = ['PolicyLookup', 'GetCustomerProfile', 'CalculateDamageEstimate'];
+
+// Returns per-assertion statuses: 'pass', 'fail', or null (unknown) for each assertion in order.
+// Two modes:
+//   Element completion failure: use derivedCompleted/derivedNotCompleted.
+//   Variable failure: use position heuristic — assertions before the failing variable → pass.
+function computeAssertionStatuses(assertions, r) {
+  if (!r) return assertions.map(() => null);
+  if (r.status === 'pass') return assertions.map(a => a.kind === 'assert' ? 'pass' : null);
+  if (r.status !== 'fail') return assertions.map(() => null);
+
+  const derivedCompleted = r.derivedCompleted || [];
+  const derivedNotCompleted = r.derivedNotCompleted || [];
+
+  // Mode 1: element completion failure — ground truth from failure message parsing.
+  if (derivedCompleted.length || derivedNotCompleted.length) {
+    const completedSet = new Set(derivedCompleted);
+    const notCompletedSet = new Set(derivedNotCompleted);
+    return assertions.map(a => {
+      if (a.kind !== 'assert') return null;
+      const ids = extractElementIds(a.text);
+      if (!ids.length) return null;
+      if (ids.every(id => completedSet.has(id))) return 'pass';
+      if (ids.some(id => notCompletedSet.has(id))) return 'fail';
+      return null;
+    });
+  }
+
+  // Mode 2: variable assertion failure — use ordering heuristic.
+  // Assertions listed before the one mentioning the failing variable passed (phased test pattern).
+  if (r.failingVariable) {
+    const fv = r.failingVariable.toLowerCase();
+    let seenFailPoint = false;
+    return assertions.map(a => {
+      if (a.kind !== 'assert') return null;
+      const mentionsFailVar = String(a.text).toLowerCase().includes(fv);
+      if (mentionsFailVar) { seenFailPoint = true; return 'fail'; }
+      if (!seenFailPoint) return 'pass';
+      return 'fail';  // conservative: after the fail point
+    });
+  }
+
+  return assertions.map(() => null);
+}
+
 function actualFromCoverage(assertText, cov) {
-  if (!cov) return null;
+  if (!cov || cov.fabricated) return null;
   const text = String(assertText || '').toLowerCase();
   if (!text.includes('completed')) return null;
   const ids = extractElementIds(assertText);
@@ -240,14 +313,22 @@ function shouldHideAssert(text, layer) {
   return false;
 }
 
-function renderAssertionSteps(assertions, observed, layer, cov) {
-  return (assertions || []).map(a => {
+function renderAssertionSteps(assertions, observed, layer, cov, r) {
+  const statuses = computeAssertionStatuses(assertions || [], r);
+  return (assertions || []).map((a, i) => {
     if (a.kind === 'assert' && shouldHideAssert(a.text, layer)) {
       return '';
     }
     const actual = a.kind === 'assert' ? actualForAssertion(a.text, observed, cov) : null;
     const actualHtml = actual ? `<div class="actual"><b>Actual:</b> ${esc(actual)}</div>` : '';
-    return `<li class="${a.kind}"><span class="tag ${a.kind}">${a.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(a.text)}${actualHtml}</li>`;
+    let liClass = a.kind;
+    if (a.kind === 'assert') {
+      const st = statuses[i];
+      if (st === 'pass') liClass += ' as-pass';
+      else if (st === 'fail') liClass += ' as-fail';
+      // null → neutral (skipped/missing handled by ol.steps.dim)
+    }
+    return `<li class="${liClass}"><span class="tag ${a.kind}">${a.kind === 'assert' ? 'ASSERT' : 'ACT'}</span>${esc(a.text)}${actualHtml}</li>`;
   }).filter(Boolean).join('');
 }
 
@@ -462,7 +543,7 @@ for (const cat of spec.categories) {
       const cov = rowCov[req.id];
       const observed = observedForRequirement(req);
       const costEur = estimateCostFromObserved(observed);
-      const steps = renderAssertionSteps((tc.instructions || []).map(translate), observed, cat.layer, cov);
+      const steps = renderAssertionSteps((tc.instructions || []).map(translate), observed, cat.layer, cov, r);
       detail = `<ol class="steps">${steps}</ol>`;
       detail += renderObservedMetrics(observed, cov, cat.layer, costEur);
       const line = findJsonScenarioLine(join(repoRoot, SRC_REL.process), tc.name);
@@ -480,11 +561,91 @@ for (const cat of spec.categories) {
       // pick coverage for the diagram this row belongs to
       const pid = rdgKey === 'comp-tools' ? spec.toolsProcessId : spec.processId;
       const runCov = runs.find(c => c.pid === pid);
-      if (runCov) rowCov[req.id] = { completed: runCov.completed, taken: runCov.taken };
+      if (runCov) {
+        const cov = { completed: runCov.completed, taken: runCov.taken };
+        // For failed tests, augment real CPT coverage with active elements (from diagnostic)
+        // and expected elements (assertions that never completed).
+        if (r.status === 'fail' && (r.activeElements || []).length > 0) {
+          const completedSet = new Set(runCov.completed);
+          const activeSet = new Set(r.activeElements);
+          const allAssertedIds = [...new Set(
+            (req.assertions || [])
+              .filter(a => a.kind === 'assert')
+              .flatMap(a => extractElementIds(a.text))
+          )];
+          cov.active = [...activeSet];
+          cov.expected = allAssertedIds.filter(id => !completedSet.has(id) && !activeSet.has(id));
+        }
+        rowCov[req.id] = cov;
+      }
+      // Failing tests with no per-test coverage: derive expected element IDs from assertion texts
+      // so clicking the row clears the stale baseline diagram and shows orange "expected" markers.
+      if (!rowCov[req.id] && (r.status === 'fail' || r.status === 'skipped')) {
+        const assertedIds = [...new Set(
+          (req.assertions || [])
+            .filter(a => a.kind === 'assert' && String(a.text).toLowerCase().includes('completed'))
+            .flatMap(a => extractElementIds(a.text))
+        )];
+        if (r.status === 'fail') {
+          // Use parsed element completion from the failure message when available — that is the
+          // ground truth (which elements actually ran vs. which were never activated).
+          const hasDerived = r.derivedCompleted && r.derivedCompleted.length > 0;
+          if (hasDerived) {
+            // Element completion failure: ground truth from failure message.
+            let derivedCompleted = r.derivedCompleted || [];
+            if (derivedCompleted.includes('Agent_ClaimsAssessment')) {
+              derivedCompleted = [...derivedCompleted, ...AHSP_CHILDREN];
+            }
+            rowCov[req.id] = {
+              completed: derivedCompleted,
+              taken: [],
+              expected: r.derivedNotCompleted && r.derivedNotCompleted.length
+                ? r.derivedNotCompleted : [],
+              fabricated: false,
+            };
+          } else if (r.failingVariable && (r.activeElements || []).length > 0) {
+            // Variable failure with active-element diagnostics: infer path from assertion ordering.
+            // Assertions before the failing variable assertion → their elements completed.
+            const activeSet = new Set(r.activeElements || []);
+            const fv = r.failingVariable.toLowerCase();
+            let seenFailPoint = false;
+            const completedInferred = [], expectedInferred = [];
+            for (const a of (req.assertions || [])) {
+              if (a.kind !== 'assert') continue;
+              const mentionsFailVar = String(a.text).toLowerCase().includes(fv);
+              if (mentionsFailVar) { seenFailPoint = true; continue; }
+              const ids = extractElementIds(a.text).filter(id => !activeSet.has(id));
+              if (!seenFailPoint) completedInferred.push(...ids);
+              else expectedInferred.push(...ids);
+            }
+            let completed = [...new Set(completedInferred)];
+            if (completed.includes('Agent_ClaimsAssessment')) {
+              completed = [...completed, ...AHSP_CHILDREN];
+            }
+            rowCov[req.id] = {
+              completed,
+              taken: [],
+              expected: [...new Set(expectedInferred)],
+              active: [...activeSet],
+              fabricated: false,
+            };
+          } else {
+            rowCov[req.id] = {
+              completed: [],
+              taken: [],
+              expected: hasDerived ? [] : assertedIds,
+              fabricated: true,
+            };
+          }
+        } else if (r.status === 'skipped') {
+          // Always register skipped rows so clicking clears the diagram; show grey markers if any element IDs.
+          rowCov[req.id] = { completed: [], taken: [], skipped: assertedIds, fabricated: true };
+        }
+      }
       const cov = rowCov[req.id] || null;
 
       if (req.assertions && req.assertions.length) {
-        const steps = renderAssertionSteps(req.assertions, observed, cat.layer, cov);
+        const steps = renderAssertionSteps(req.assertions, observed, cat.layer, cov, r);
         detail = `<ol class="steps">${steps}</ol>`;
       } else {
         detail = `<p class="muted">No inline assertions defined. See source for the full assertion chain.</p>`;
@@ -493,6 +654,9 @@ for (const cat of spec.categories) {
       if (srcRel) {
         const line = findMethodLine(join(repoRoot, srcRel), req.match);
         rowLink = srcLink(githubUrl(srcRel, line));
+      }
+      if (r.failureDetail) {
+        detail += `<pre class="failure-detail">${esc(r.failureDetail)}</pre>`;
       }
       detail += renderObservedMetrics(observed, cov, cat.layer, costEur);
     }
@@ -573,9 +737,13 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  tr.req.clickable{cursor:pointer}tr.req.clickable:hover{background:#f3f8ff}tr.req.active{background:#eaf2ff}
  tr.detail{display:none}tr.detail.open{display:table-row}tr.detail td{background:#fbfcfe}
  ol.steps{margin:6px 0;padding-left:20px}ol.steps li{margin:3px 0;font-size:12.5px}
- ol.steps li.assert{color:#0b6}ol.steps li.action{color:#334155}
+ ol.steps li.assert{color:#64748b}ol.steps li.action{color:#334155}
+ ol.steps li.assert.as-pass{color:#0b6}
+ ol.steps li.assert.as-fail{color:#b91c1c}
+ ol.steps li.assert.as-pass .tag.assert{background:#16a34a}
+ ol.steps li.assert.as-fail .tag.assert{background:#dc2626}
  .tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:6px;color:#fff;vertical-align:middle}
- .tag.assert{background:#16a34a}.tag.action{background:#64748b}
+ .tag.assert{background:#9aa4b2}.tag.action{background:#64748b}
  ol.steps.dim li.assert,ol.steps.dim li.action{color:#9aa3b0}
  ol.steps.dim .tag.assert,ol.steps.dim .tag.action{background:#b6bcc6}
  .muted{color:#8a93a2;font-size:12px;margin:6px 0}
@@ -594,9 +762,16 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .skiprow{font-size:13px;margin:8px 0}.reason{color:#586174;font-size:12px}
 .observed{margin:8px 0 2px;font-size:12px;color:#334155;background:#eef5ff;border:1px solid #d7e7ff;border-radius:6px;padding:6px 8px}
 .actual{margin:4px 0 0;font-size:12px;color:#334155;background:#eef5ff;border:1px solid #d7e7ff;border-radius:6px;padding:4px 7px;display:inline-block}
+.failure-detail{background:#fef2f2;border:1px solid #fecaca;border-left:3px solid #dc2626;border-radius:6px;padding:8px 12px;font-size:11.5px;color:#7f1d1d;margin:8px 0 4px;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,monospace}
  .cov .djs-visual>:is(rect,circle,polygon){stroke:#16a34a !important;stroke-width:2px !important;fill:#dcfce7 !important}
  .cov .djs-visual>path{stroke:#16a34a !important;stroke-width:2px !important}
  .covf .djs-visual>path{stroke:#16a34a !important;stroke-width:3px !important}
+ .cov-exp .djs-visual>:is(rect,circle,polygon){stroke:#ea580c !important;stroke-width:2px !important;fill:#fff7ed !important}
+ .cov-exp .djs-visual>path{stroke:#ea580c !important;stroke-width:2px !important}
+ .cov-active .djs-visual>:is(rect,circle,polygon){stroke:#d97706 !important;stroke-width:2.5px !important;fill:#fef3c7 !important}
+ .cov-active .djs-visual>path{stroke:#d97706 !important;stroke-width:2.5px !important}
+ .cov-skip .djs-visual>:is(rect,circle,polygon){stroke:#9aa3b0 !important;stroke-width:1.5px !important;stroke-dasharray:4 2 !important}
+ .cov-skip .djs-visual>path{stroke:#9aa3b0 !important;stroke-width:1.5px !important;stroke-dasharray:4 2 !important}
 </style></head><body>
 <header><h1>Claims Processing Agent — CPT Requirement Report</h1>
 <div class="sub">Three layers, each requirement proven by a named test. Expand a row for its steps; green = the path that instance took.</div></header>
@@ -627,9 +802,13 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  }
  function zoomIfNeeded(key){ if(!NEEDS_ZOOM.has(key)) return; try{ VIEWERS[key] && VIEWERS[key].get('canvas').zoom('fit-viewport'); }catch(_){} NEEDS_ZOOM.delete(key); }
  function clearMarkers(key){ const v=VIEWERS[key]; if(!v) return; const c=v.get('canvas'); const reg=v.get('elementRegistry');
-   reg.getAll().forEach(e=>{ try{c.removeMarker(e.id,'cov');c.removeMarker(e.id,'covf');}catch(_){} }); }
+   reg.getAll().forEach(e=>{ try{c.removeMarker(e.id,'cov');c.removeMarker(e.id,'covf');c.removeMarker(e.id,'cov-exp');c.removeMarker(e.id,'cov-active');c.removeMarker(e.id,'cov-skip');}catch(_){} }); }
  function highlight(key, cov){ const v=VIEWERS[key]; if(!v||!cov) return; const c=v.get('canvas'); clearMarkers(key);
-   (cov.completed||[]).forEach(id=>{try{c.addMarker(id,'cov')}catch(_){}}); (cov.taken||[]).forEach(id=>{try{c.addMarker(id,'covf')}catch(_){}}); }
+   (cov.completed||[]).forEach(id=>{try{c.addMarker(id,'cov')}catch(_){}});
+   (cov.taken||[]).forEach(id=>{try{c.addMarker(id,'covf')}catch(_){}});
+   (cov.expected||[]).forEach(id=>{try{c.addMarker(id,'cov-exp')}catch(_){}});
+   (cov.active||[]).forEach(id=>{try{c.addMarker(id,'cov-active')}catch(_){}});
+   (cov.skipped||[]).forEach(id=>{try{c.addMarker(id,'cov-skip')}catch(_){}}); }
  (async () => {
    for (const d of DIAGRAMS) {
      const el = document.getElementById('dg-' + d.key); if (!el) continue;
