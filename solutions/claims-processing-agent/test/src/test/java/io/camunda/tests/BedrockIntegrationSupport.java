@@ -10,9 +10,10 @@ final class BedrockIntegrationSupport {
 
     static void prepareSystemPropertiesFromEnvironment() {
         normalizeProperty("aws.bedrock.region", "AWS_BEDROCK_REGION", false);
-        normalizeProperty("aws.bedrock.access.key", "AWS_BEDROCK_ACCESS_KEY", false);
-        normalizeProperty("aws.bedrock.secret.key", "AWS_BEDROCK_SECRET_KEY", false);
-        normalizeProperty("aws.bedrock.session.token", "AWS_BEDROCK_SESSION_TOKEN", false);
+        // Credentials are intentionally NOT promoted to system properties to prevent
+        // Maven Surefire from capturing them in test report XML <properties> blocks.
+        // Spring Boot reads AWS_BEDROCK_ACCESS_KEY / SECRET_KEY / SESSION_TOKEN directly
+        // from the environment via ${ENV_VAR} references in application-integration.yml.
         normalizeProperty("aws.bedrock.model", "AWS_BEDROCK_MODEL", true);
         normalizeProperty("aws.bedrock.model.id", "AWS_BEDROCK_MODEL_ID", true);
         normalizeBedrockModelIdentifier();

@@ -116,6 +116,9 @@
                             </includes>
                             <systemPropertyVariables>
                                 <spring.profiles.active>integration</spring.profiles.active>
+                                <!-- Enables Bedrock-gated assertions; running -P integration-test
+                                     implies intent to run all integration tests. -->
+                                <run.bedrock.tests>true</run.bedrock.tests>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>

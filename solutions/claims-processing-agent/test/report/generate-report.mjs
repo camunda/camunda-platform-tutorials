@@ -4,7 +4,7 @@
 // breakdowns (deterministically translated from the .test.json schema), per-test diagram
 // path highlighting on selection, fixed test labels, and ID-ascending sort.
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -16,10 +16,16 @@ const repoRoot = join(here, '..', '..', '..', '..');
 
 // ---------- GitHub source links ----------
 const GITHUB_BASE = 'https://github.com/HanselIdes/camunda-8-tutorials/blob/demo';
+const GITHUB_TREE = 'https://github.com/HanselIdes/camunda-8-tutorials/tree/demo';
 const SRC_REL = {
   process: 'solutions/claims-processing-agent/test/src/test/resources/test-cases/CamundaInsurance_ClaimsProcessing.test.json',
   component: 'solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsExternalSystemsIT.java',
   processIntegration: 'solutions/claims-processing-agent/test/src/test/java/io/camunda/tests/ClaimsProcessingAgentIT.java',
+};
+const LOGS_REL = {
+  process: 'solutions/claims-processing-agent/test/report/artifacts/process/surefire',
+  component: 'solutions/claims-processing-agent/test/report/artifacts/integration/surefire',
+  processIntegration: 'solutions/claims-processing-agent/test/report/artifacts/integration/surefire',
 };
 function githubUrl(relPath, line) {
   return `${GITHUB_BASE}/${relPath}${line ? '#L' + line : ''}`;
@@ -129,6 +135,34 @@ function formatDuration(sec) {
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
 }
+
+function suiteTimestamp(dir) {
+  if (!existsSync(dir)) return null;
+  let latest = null;
+  for (const f of readdirSync(dir).filter(n => n.endsWith('.xml'))) {
+    const fullPath = join(dir, f);
+    const xml = readFileSync(fullPath, 'utf8');
+    // Prefer explicit timestamp attribute; fall back to file mtime.
+    const attrM = xml.match(/<testsuite\b[^>]*\btimestamp="([^"]+)"/);
+    const ts = attrM ? attrM[1] : statSync(fullPath).mtime.toISOString();
+    if (!latest || ts > latest) latest = ts;
+  }
+  return latest;
+}
+
+function fmtTimestamp(iso) {
+  if (!iso) return null;
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' });
+  } catch { return iso; }
+}
+
+const suiteRunTimestamps = {
+  process: suiteTimestamp(join(artifacts, 'process', 'surefire')),
+  integration: suiteTimestamp(join(artifacts, 'integration', 'surefire')),
+};
+const reportGeneratedAt = new Date().toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' });
 
   function extractObservedValues() {
     const valuesById = {};
@@ -550,7 +584,9 @@ for (const cat of spec.categories) {
     .reduce((sum, req) => sum + estimateCostFromObserved(observedForRequirement(req)), 0);
   totalSuiteCostEur += sectionCostEur;
   const setupNote = setupTeardownSec != null && setupTeardownSec > 0 ? ` <span class="dot">•</span> <span class="setup-note">Setup/teardown: ${fmtDuration(setupTeardownSec)}</span>` : '';
-  const sectionStatsHtml = `<p class="stats"><b>Tests:</b> ${sectionPassed}/${sectionTotal} passed <span class="dot">•</span> <b>Total duration:</b> ${fmtDuration(sectionDurationSec)} <span class="dot">•</span> <b>Estimated cost:</b> ${formatEur(sectionCostEur, 4)}${setupNote}</p>`;
+  const runTs = fmtTimestamp(suiteRunTimestamps[cat.run]);
+  const runTsNote = runTs ? ` <span class="dot">•</span> <span class="run-ts">Last run: ${runTs}</span>` : '';
+  const sectionStatsHtml = `<p class="stats"><b>Tests:</b> ${sectionPassed}/${sectionTotal} passed <span class="dot">•</span> <b>Total duration:</b> ${fmtDuration(sectionDurationSec)} <span class="dot">•</span> <b>Estimated cost:</b> ${formatEur(sectionCostEur, 4)}${setupNote}${runTsNote}</p>`;
 
   // collect unique diagram keys needed in this section
   const sectionDgKeys = [defaultDgKey];
@@ -708,10 +744,12 @@ for (const cat of spec.categories) {
   }
   const hint = 'Click a requirement to expand its steps and highlight the path that test instance took.';
   const catSrcRel = SRC_REL[cat.layer];
-  const catHeaderLink = catSrcRel ? srcLink(githubUrl(catSrcRel), 'source ↗') : '';
+  const catHeaderLink = catSrcRel ? srcLink(githubUrl(catSrcRel), 'code ↗') : '';
+  const catLogsRel = LOGS_REL[cat.layer];
+  const catLogsLink = catLogsRel ? srcLink(`${GITHUB_TREE}/${catLogsRel}`, 'logs ↗') : '';
   const diagHtml = sectionDgKeys.map((k, i) =>
     `<div class="diagram${i > 0 ? ' d-none' : ''}" id="dg-${k}"></div>`).join('');
-  sections += `<section><h2>${esc(cat.name)}${catHeaderLink ? ' ' + catHeaderLink : ''}</h2><p class="blurb">${esc(cat.blurb)}</p>${sectionStatsHtml}
+  sections += `<section><h2>${esc(cat.name)}${catHeaderLink ? ' ' + catHeaderLink : ''}${catLogsLink ? ' ' + catLogsLink : ''}</h2><p class="blurb">${esc(cat.blurb)}</p>${sectionStatsHtml}
     <div class="split">
       <div class="diag-col">${diagHtml}</div>
       <div class="req-col">
@@ -757,6 +795,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .stats{margin:0 0 12px;color:#475569;font-size:12px}
  .stats .dot{margin:0 8px;color:#94a3b8}
  .setup-note{color:#64748b;font-size:11px}
+ .run-ts{color:#94a3b8;font-size:11px}
+ .gen-ts{color:#6b7a90;font-size:11px;margin-top:2px}
  .bands{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
  .meta-row{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
  .dur-chip{flex:1;min-width:220px;background:#fff;border:1px solid #e3e6ea;border-left:5px solid #3b82f6;border-radius:10px;padding:12px 14px}
@@ -818,7 +858,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><title>Claims Pro
  .cov-skip .djs-visual>path{stroke:#9aa3b0 !important;stroke-width:1.5px !important;stroke-dasharray:4 2 !important}
 </style></head><body>
 <header><h1>Claims Processing Agent — CPT Requirement Report</h1>
-<div class="sub">Three layers, each requirement proven by a named test. Expand a row for its steps; green = the path that instance took.</div></header>
+<div class="sub">Three layers, each requirement proven by a named test. Expand a row for its steps; green = the path that instance took.</div>
+<div class="sub gen-ts">Generated ${esc(reportGeneratedAt)}</div></header>
 <main>
  <div class="bands">${bandHtml}</div>
  ${metaRowHtml}

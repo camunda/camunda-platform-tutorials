@@ -19,23 +19,25 @@ camunda:
     # Gotcha: inference-profile ARNs can be double-encoded in some local paths.
     # Prefer aws.bedrock.model.id (or AWS_BEDROCK_MODEL_ID) when available.
     connectors-secrets:
-      AWS_BEDROCK_REGION: ${aws.bedrock.region}
-      AWS_BEDROCK_ACCESS_KEY: ${aws.bedrock.access.key}
-      AWS_BEDROCK_SECRET_KEY: ${aws.bedrock.secret.key}
-      AWS_BEDROCK_SESSION_TOKEN: ${aws.bedrock.session.token:}
-      AWS_BEDROCK_MODEL: ${aws.bedrock.model.id:${aws.bedrock.model}}
+      AWS_BEDROCK_REGION: ${AWS_BEDROCK_REGION}
+      AWS_BEDROCK_ACCESS_KEY: ${AWS_BEDROCK_ACCESS_KEY}
+      AWS_BEDROCK_SECRET_KEY: ${AWS_BEDROCK_SECRET_KEY}
+      AWS_BEDROCK_SESSION_TOKEN: ${AWS_BEDROCK_SESSION_TOKEN:}
+      AWS_BEDROCK_MODEL: ${AWS_BEDROCK_MODEL_ID:${AWS_BEDROCK_MODEL}}
     # LLM-as-judge provider for the agentic quality assertions (CR-4, CR-5).
     # Reuses the same Bedrock credentials as the connector runtime.
+    # All references use env var names directly (AWS_*) so Spring can resolve them
+    # at context load time — before @BeforeAll sets any system properties.
     judge:
       threshold: 0.7
       chat-model:
         provider: amazon-bedrock
-        model: ${aws.bedrock.model.id:${aws.bedrock.model}}
-        region: ${aws.bedrock.region}
+        model: ${AWS_BEDROCK_MODEL_ID:${AWS_BEDROCK_MODEL}}
+        region: ${AWS_BEDROCK_REGION}
         credentials:
-          access-key: ${aws.bedrock.access.key}
-          secret-key: ${aws.bedrock.secret.key}
-          session-token: ${aws.bedrock.session.token:}
+          access-key: ${AWS_BEDROCK_ACCESS_KEY}
+          secret-key: ${AWS_BEDROCK_SECRET_KEY}
+          session-token: ${AWS_BEDROCK_SESSION_TOKEN:}
     # Embedding model for semantic-similarity assertions (SIR-4). Bedrock Titan
     # embeddings; the model need not match the agent or the judge.
     similarity:
@@ -43,12 +45,12 @@ camunda:
       embedding-model:
         provider: amazon-bedrock
         model: amazon.titan-embed-text-v2:0
-        region: ${aws.bedrock.region}
+        region: ${AWS_BEDROCK_REGION}
         dimensions: 256
         credentials:
-          access-key: ${aws.bedrock.access.key}
-          secret-key: ${aws.bedrock.secret.key}
-          session-token: ${aws.bedrock.session.token:}
+          access-key: ${AWS_BEDROCK_ACCESS_KEY}
+          secret-key: ${AWS_BEDROCK_SECRET_KEY}
+          session-token: ${AWS_BEDROCK_SESSION_TOKEN:}
 
 logging:
   level:
