@@ -1,10 +1,12 @@
 {
-  "id": "request-additional-docs-form",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.5",
   "exporter": {
-    "name": "Camunda Modeler",
-    "version": "5.46.1"
+    "name": "Camunda Web Modeler",
+    "version": "5e1c81f"
   },
   "schemaVersion": 16,
+  "id": "request-additional-docs-form",
   "type": "default",
   "components": [
     {
@@ -67,7 +69,9 @@
       "type": "checkbox",
       "key": "documentsReceived",
       "label": "All requested documents have been received from the customer",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "id": "field_documentsReceived"
     }
   ]

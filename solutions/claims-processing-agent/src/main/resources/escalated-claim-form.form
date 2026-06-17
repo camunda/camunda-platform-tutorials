@@ -1,10 +1,12 @@
 {
-  "id": "escalated-claim-form",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.5",
   "exporter": {
-    "name": "Camunda Modeler",
-    "version": "5.46.1"
+    "name": "Camunda Web Modeler",
+    "version": "5e1c81f"
   },
   "schemaVersion": 16,
+  "id": "escalated-claim-form",
   "type": "default",
   "components": [
     {
@@ -135,12 +137,26 @@
       "type": "select",
       "key": "adjusterResolution",
       "label": "Resolution",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Approve - Pay Claim", "value": "APPROVE" },
-        { "label": "Deny - Insufficient Evidence", "value": "DENY" },
-        { "label": "Deny - Fraud Suspected", "value": "DENY_FRAUD" },
-        { "label": "Request Further Investigation", "value": "INVESTIGATE" }
+        {
+          "label": "Approve - Pay Claim",
+          "value": "APPROVE"
+        },
+        {
+          "label": "Deny - Insufficient Evidence",
+          "value": "DENY"
+        },
+        {
+          "label": "Deny - Fraud Suspected",
+          "value": "DENY_FRAUD"
+        },
+        {
+          "label": "Request Further Investigation",
+          "value": "INVESTIGATE"
+        }
       ],
       "id": "field_adjusterResolution"
     },
@@ -148,14 +164,18 @@
       "type": "number",
       "key": "adjusterSettlementAmount",
       "label": "Settlement Amount (USD, enter 0 if denying)",
-      "validate": { "min": 0 },
+      "validate": {
+        "min": 0
+      },
       "id": "field_settlementAmount"
     },
     {
       "type": "textarea",
       "key": "adjusterNotes",
       "label": "Adjuster Notes",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "rows": 4,
       "id": "field_adjusterNotes"
     }

@@ -1,10 +1,12 @@
 {
-  "id": "assessment-failure-form",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.5",
   "exporter": {
-    "name": "Camunda Modeler",
-    "version": "5.46.1"
+    "name": "Camunda Web Modeler",
+    "version": "5e1c81f"
   },
   "schemaVersion": 16,
+  "id": "assessment-failure-form",
   "type": "default",
   "components": [
     {
@@ -58,11 +60,22 @@
       "type": "select",
       "key": "failureAction",
       "label": "Action",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Retry Assessment", "value": "RETRY" },
-        { "label": "Escalate to Senior Adjuster", "value": "ESCALATE" },
-        { "label": "Close Claim - Unable to Process", "value": "CLOSE" }
+        {
+          "label": "Retry Assessment",
+          "value": "RETRY"
+        },
+        {
+          "label": "Escalate to Senior Adjuster",
+          "value": "ESCALATE"
+        },
+        {
+          "label": "Close Claim - Unable to Process",
+          "value": "CLOSE"
+        }
       ],
       "id": "field_failureAction"
     },
@@ -70,7 +83,9 @@
       "type": "textarea",
       "key": "supervisorNotes",
       "label": "Supervisor Notes",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "rows": 4,
       "id": "field_supervisorNotes"
     }
