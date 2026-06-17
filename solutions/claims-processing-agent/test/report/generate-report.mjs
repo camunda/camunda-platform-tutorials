@@ -259,7 +259,9 @@ function computeAssertionStatuses(assertions, r) {
     });
   }
 
-  return assertions.map(() => null);
+  // Mode 3: test failed but no CPT failure detail (uncaught exception, IAM 403, etc.).
+  // No ground truth — mark every assert red so the failure is visible.
+  return assertions.map(a => a.kind === 'assert' ? 'fail' : null);
 }
 
 function actualFromCoverage(assertText, cov) {
