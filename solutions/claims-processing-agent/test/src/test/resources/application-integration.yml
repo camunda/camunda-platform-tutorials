@@ -38,7 +38,7 @@ camunda:
           access-key: ${AWS_BEDROCK_ACCESS_KEY}
           secret-key: ${AWS_BEDROCK_SECRET_KEY}
           session-token: ${AWS_BEDROCK_SESSION_TOKEN:}
-    # Embedding model for semantic-similarity assertions (SIR-4). Bedrock Titan
+    # Embedding model for semantic-similarity assertions (CIR-4). Bedrock Titan
     # embeddings; the model need not match the agent or the judge.
     similarity:
       threshold: 0.5
