@@ -1,0 +1,65 @@
+{
+  "components": [
+    {
+      "text": "# Compliance review needed\n\nThe agent flagged this shipment for manual review. Check its findings below, then record your decision.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ReviewHeading"
+    },
+    {
+      "text": "**Shipment notes:** {{if shipmentNotes = null or shipmentNotes = \"\" then scenario else shipmentNotes}}\n\n**Gene marker found:** {{if markerRecord = null then \"none\" else markerRecord.geneSymbol + \" (RefSeq \" + markerRecord.refSeqId + \", \" + markerRecord.chrom + \")\"}}\n\n**Destination country:** {{if countryInfo = null then \"unknown\" else countryInfo.name + \" (capital: \" + countryInfo.capital + \", currency: \" + countryInfo.currency + \")\"}}\n\n**Compliance score:** {{complianceScore}}\n\n**Agent's decision:** {{decision}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_ReviewFindings"
+    },
+    {
+      "label": "Reviewer decision",
+      "values": [
+        {
+          "label": "Approve for export",
+          "value": "approved"
+        },
+        {
+          "label": "Reject shipment",
+          "value": "rejected"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_review_decision",
+        "columns": null
+      },
+      "id": "Field_ReviewDecision",
+      "key": "reviewDecision",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Reviewer comments",
+      "description": "Explain your decision - this is recorded alongside the process instance.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_review_comments",
+        "columns": null
+      },
+      "id": "Field_ReviewComments",
+      "key": "reviewComments"
+    }
+  ],
+  "type": "default",
+  "id": "seed-export-compliance-review",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}
