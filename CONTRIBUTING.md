@@ -46,7 +46,7 @@ To make this easy to share, but also easy to try out for users we strive for a c
 
 We have infrasturcture to read metadata for an example from a file and render info cards for it on the camunda.com website, blogposts, but also create embeddable cards for third party sides, personal blog posts, etc...
 
-![A runnable example card, with a process preview, a description, a "Run in SaaS" button and a "Read the docs" link](docs/images/runnable-example-card.png)
+![A runnable example card, with a process preview, a description, a "Run in SaaS" button and a "Read the docs" link](runnable-example-card.png)
 
 The whole thing hinges on a single manifest, `camunda-example.json`, committed next to your BPMN/DMN/Form files. Nothing else needs to change or be built —
 this file *is* the mechanism. For example, [`examples/task-agent/camunda-example.json`](examples/task-agent/camunda-example.json):
