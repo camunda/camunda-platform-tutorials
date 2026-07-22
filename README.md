@@ -4,6 +4,12 @@ Step-by-step tutorials to guide users through Camunda Platform 8 use cases end-t
 
 If you are looking for examples on how to implement certain patterns and looking for (mainly) Java examples, check out the [Camunda 8 Example Repository](https://github.com/camunda-community-hub/camunda-8-examples).
 
+Producing content that people should be able to try, not just read (a blog post, a demo, a talk)? See [Creating a shareable, runnable example](CONTRIBUTING.md#creating-a-shareable-runnable-example) — one manifest file makes an example linkable and embeddable everywhere: camunda.com, blog posts, and any external site.
+
+Examples:
+
+* [Task Agent — Seed Export Compliance](examples/task-agent)
+
 Quick Starts:
 
 * [Microservices Orchestration](quick-start/microservice-orchestration)

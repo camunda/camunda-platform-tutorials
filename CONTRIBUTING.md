@@ -7,6 +7,7 @@ Thank you for contributing! This repo is the source of truth for the process blu
 ## Table of Contents
 
 - [What belongs in this repo](#what-belongs-in-this-repo)
+- [Creating a shareable, runnable example](#creating-a-shareable-runnable-example)
 - [BPMN modeling guidelines](#bpmn-modeling-guidelines)
 - [Testing requirements](#testing-requirements)
 - [BPMN linting](#bpmn-linting)
@@ -28,7 +29,91 @@ Each solution in `solutions/<name>/` must contain:
 
 Quick-start tutorials in `quick-start/<name>/` follow the same structure.
 
+**Examples** in `examples/<name>/` follow the same structure, plus one more file —
+see [Creating a shareable, runnable example](#creating-a-shareable-runnable-example):
+
+| File/directory | Required | Notes |
+|----------------|----------|-------|
+| `camunda-example.json` | Yes | The manifest that makes this example linkable and embeddable anywhere — see below |
+| `docs/` | Recommended | Preview image(s) referenced by the manifest's `thumbnail` field |
+
 ---
+
+## Creating a shareable, runnable example
+
+We love show don't tell. So whenever we are describing patterns or making a point, we try to also provide a runnable example.
+To make this easy to share, but also easy to try out for users we strive for a consistent format for those examples.
+
+We have infrasturcture to read metadata for an example from a file and render info cards for it on the camunda.com website, blogposts, but also create embeddable cards for third party sides, personal blog posts, etc...
+
+![A runnable example card, with a process preview, a description, a "Run in SaaS" button and a "Read the docs" link](docs/images/runnable-example-card.png)
+
+The whole thing hinges on a single manifest, `camunda-example.json`, committed next to your BPMN/DMN/Form files. Nothing else needs to change or be built —
+this file *is* the mechanism. For example, [`examples/task-agent/camunda-example.json`](examples/task-agent/camunda-example.json):
+
+```json
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Seed export compliance agent",
+  "subtitle": "A runnable Task Agent",
+  "description": "One agent subprocess, three real tool calls — a SQL lookup, a GraphQL API, and a REST calculation. It reads free-form shipment notes, then clears compliant shipments automatically or hands the rest to a human for review.",
+  "creator": "Camunda",
+  "camundaVersion": "8.8+",
+  "thumbnail": "docs/seed-export-compliance-agent.png",
+  "thumbnailAlt": "BPMN model: a Compliance Check Agent subprocess with SQL, GraphQL, REST and record-decision tools, routing to an export-team notification or a human review task.",
+  "resources": [
+    "models/seed-export-compliance-agent.bpmn",
+    "models/seed-export-shipment-ready.form",
+    "models/seed-export-compliance-review.form"
+  ],
+  "importTitle": "Seed Export Compliance Agent",
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/task-agent",
+  "support": "https://forum.camunda.io/"
+}
+```
+
+| Field | Required | Notes |
+|---|---|---|
+| `title` | ✅ | Headline shown on every card |
+| `description` | ✅ | One or two plain-language sentences — this is marketing copy, not a spec |
+| `resources` | ✅ | Repo-relative paths to every `.bpmn`/`.dmn`/`.form` file the example needs — all get bundled into one Web Modeler import |
+| `thumbnail` | recommended | Repo-relative path to a preview image of the process model (a screenshot of the diagram is enough) |
+| `thumbnailAlt` | recommended | Describe the diagram's shape (agent box, tools, gateway, outcomes) — read by screen readers and used as SEO alt text |
+| `importTitle` | optional | Title shown inside Web Modeler after import; defaults to `title` |
+| `documentation` | optional | Defaults to this folder's GitHub URL — set explicitly only if docs live elsewhere |
+| `subtitle`, `creator`, `camundaVersion`, `support` | optional | Not yet rendered everywhere; carried along for future use and Marketplace submission |
+
+Field names deliberately mirror the
+[Camunda Marketplace blueprint submission](https://marketplace.camunda.com/en-US/pages/submitBlueprint)
+fields, so a well-documented example here is most of the way to a Marketplace
+listing already, if you choose to submit it. You can add fields beyond this
+list if a future consumer needs them (see `sampleVariables` in
+`examples/task-agent/camunda-example.json` for an example — used to seed a
+one-click test run); unrecognized fields are ignored, so this is safe to do
+incrementally.
+
+### How to use it
+
+1. **Build the example.** Same rules as any solution or quick-start: correct,
+   deployable, tested (see [What belongs in this repo](#what-belongs-in-this-repo)
+   and [Testing requirements](#testing-requirements)).
+2. **Add `camunda-example.json`** next to the BPMN/DMN/Form files, as above.
+3. **Hand out the folder URL** — not the manifest file, the *folder*, e.g.:
+   ```
+   https://github.com/camunda/camunda-8-tutorials/tree/main/examples/task-agent
+   ```
+   That URL is the only thing anyone downstream needs — the website team for a
+   camunda.com card, a blog author pasting it into a Sanity block, you dropping
+   it into an `<iframe>` on a partner site, or just a plain link in Slack or a
+   slide (it also works as-is: opening the folder on GitHub is a perfectly fine
+   fallback for anyone who doesn't use the card at all).
+
+For exactly how camunda.com turns that URL into a card, a blog embed, or an
+external `<iframe>`, see
+[`camunda.com-website/.claude/docs/runnable-examples.md`](https://github.com/camunda/camunda.com-website/blob/main/.claude/docs/runnable-examples.md)
+in the website repo — that's the spec for how the manifest gets consumed.
+Consider also adding your example to this repo's own [README](README.md) under
+"Examples" so people browsing the repo can find it.
 
 ## BPMN modeling guidelines
 
