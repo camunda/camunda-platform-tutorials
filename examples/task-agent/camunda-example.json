@@ -1,0 +1,32 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Seed export compliance agent",
+  "subtitle": "A runnable Task Agent",
+  "description": "One agent subprocess, three real tool calls — a SQL lookup, a GraphQL API, and a REST calculation. It reads free-form shipment notes, then clears compliant shipments automatically or hands the rest to a human for review.",
+  "creator": "Camunda",
+  "camundaVersion": "8.8+",
+  "thumbnail": "docs/seed-export-compliance-agent.png",
+  "thumbnailAlt": "BPMN model: a Compliance Check Agent subprocess with SQL, GraphQL, REST and record-decision tools, routing to an export-team notification or a human review task.",
+  "resources": [
+    "models/seed-export-compliance-agent.bpmn",
+    "models/seed-export-shipment-ready.form",
+    "models/seed-export-compliance-review.form"
+  ],
+  "importTitle": "Seed Export Compliance Agent",
+  "sampleVariables": [
+    {
+      "label": "Likely cleared",
+      "variables": {
+        "shipmentNotes": "SHIP-2026-0731 is prepared for transfer to Brazil. Supporting paperwork includes reference code TP53"
+      }
+    },
+    {
+      "label": "Likely flagged for review",
+      "variables": {
+        "shipmentNotes": "SHIP-2026-0900 is prepared for transfer to Germany. Supporting paperwork includes reference code BRCA1"
+      }
+    }
+  ],
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/task-agent",
+  "support": "https://forum.camunda.io/"
+}
