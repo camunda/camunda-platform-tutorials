@@ -5,6 +5,8 @@
   "description": "One orchestrator agent that delegates to three specialist agents - loan, account, and card support - each running as its own process with a real tool call. The orchestrator decides which specialist(s) to invoke, combines their answers, and resolves automatically or hands off to a human.",
   "creator": "Camunda",
   "camundaVersion": "8.9+",
+  "thumbnail": "docs/orchestrator-agent.png",
+  "thumbnailAlt": "BPMN model: a Bank Support Orchestrator Agent orchestrating loan, account, and card support agents, routing to a human review task if needed.",
   "resources": [
     "models/bank-support-orchestrator.bpmn",
     "models/bank-support-loan-agent.bpmn",
