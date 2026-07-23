@@ -4,6 +4,8 @@
 
 A concrete runnable **Orchestrator Agent** example based on the pattern at [camunda.com/orchestrate/agents](https://camunda.com/orchestrate/agents/).
 
+![Process Model](docs/orchestrator-agent.png)
+
 It contains:
 
 - one orchestrator agent that reasons about which specialist agent(s) to invoke, in what order, and with what context
