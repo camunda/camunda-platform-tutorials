@@ -1,0 +1,65 @@
+{
+  "components": [
+    {
+      "text": "# Support case needs review\n\nOne or more specialist agents couldn't fully resolve this case on their own. Check the details below, then record your decision.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ReviewHeading"
+    },
+    {
+      "text": "**Customer message:** {{if customerRequest = null or customerRequest = \"\" then scenario else customerRequest}}\n\n**Specialist findings:**\n{{combinedSummary}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_ReviewFindings"
+    },
+    {
+      "label": "Reviewer decision",
+      "values": [
+        {
+          "label": "Resolved by human",
+          "value": "resolved"
+        },
+        {
+          "label": "Escalate further",
+          "value": "escalated"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_review_decision",
+        "columns": null
+      },
+      "id": "Field_ReviewDecision",
+      "key": "reviewDecision",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Reviewer comments",
+      "description": "Explain what you did to resolve this case - this is recorded alongside the process instance.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_review_comments",
+        "columns": null
+      },
+      "id": "Field_ReviewComments",
+      "key": "reviewComments"
+    }
+  ],
+  "type": "default",
+  "id": "bank-support-review",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}
