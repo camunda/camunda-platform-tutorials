@@ -1,0 +1,86 @@
+{
+  "components": [
+    {
+      "text": "# Use a predefined scenario...",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_Heading"
+    },
+    {
+      "label": "Scenario",
+      "values": [
+        {
+          "label": "Loan question (resolved automatically)",
+          "value": "I'm refinancing my $240,000 mortgage at 6.5% interest over 30 years - what would my new monthly payment be?"
+        },
+        {
+          "label": "Loan + account question (resolved automatically, calls two agents)",
+          "value": "Please check whether DE89370400440532013000 is a valid IBAN for my transfer, and also tell me what my monthly payment would look like on a $200,000 loan at 6% over 30 years."
+        },
+        {
+          "label": "Account question (needs human review)",
+          "value": "Can you confirm whether DE89370400440532013001 is a valid account number before I set up a transfer?"
+        },
+        {
+          "label": "Card question (resolved automatically)",
+          "value": "I don't recognize a small charge on my card - the first six digits are 453201, can you tell me which bank issued it?"
+        },
+        {
+          "label": "Custom (write your own below)",
+          "value": ""
+        }
+      ],
+      "description": "Use a pre-defined scenario - to use it, leave Customer request below blank.",
+      "type": "select",
+      "layout": {
+        "row": "Row_scenario",
+        "columns": null
+      },
+      "id": "Field_Scenario",
+      "key": "scenario",
+      "defaultValue": "I'm refinancing my $240,000 mortgage at 6.5% interest over 30 years - what would my new monthly payment be?"
+    },
+    {
+      "text": "The following requests are used:\n* Loan only: I'm refinancing my $240,000 mortgage at 6.5% interest over 30 years - what would my new monthly payment be?\n* Loan + account (shows the orchestrator delegating to two agents at once): Please check whether DE89370400440532013000 is a valid IBAN for my transfer, and also tell me what my monthly payment would look like on a $200,000 loan at 6% over 30 years.\n* Account only (fails IBAN validation, routed to human review): Can you confirm whether DE89370400440532013001 is a valid account number before I set up a transfer?\n* Card only: I don't recognize a small charge on my card - the first six digits are 453201, can you tell me which bank issued it?",
+      "type": "text",
+      "layout": {
+        "row": "Row_scenario_list",
+        "columns": null
+      },
+      "id": "Field_ScenarioList"
+    },
+    {
+      "text": "# ...or hand in your own data",
+      "type": "text",
+      "layout": {
+        "row": "Row_custom_heading",
+        "columns": null
+      },
+      "id": "Field_CustomHeading"
+    },
+    {
+      "label": "Customer request",
+      "description": "If set, overrides the scenario above. Leave blank to use the scenario selected above. The orchestrator reads this to decide which specialist agent(s) to call.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_customer_request",
+        "columns": null
+      },
+      "id": "Field_CustomerRequest",
+      "key": "customerRequest",
+      "defaultValue": ""
+    }
+  ],
+  "type": "default",
+  "id": "bank-support-request",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Bank support orchestrator agent",
+  "subtitle": "A runnable Orchestrator Agent",
+  "description": "One orchestrator agent that delegates to three specialist agents - loan, account, and card support - each running as its own process with a real tool call. The orchestrator decides which specialist(s) to invoke, combines their answers, and resolves automatically or hands off to a human.",
+  "creator": "Camunda",
+  "camundaVersion": "8.9+",
+  "resources": [
+    "models/bank-support-orchestrator.bpmn",
+    "models/bank-support-loan-agent.bpmn",
+    "models/bank-support-account-agent.bpmn",
+    "models/bank-support-card-agent.bpmn",
+    "models/bank-support-request.form",
+    "models/bank-support-review.form"
+  ],
+  "importTitle": "Bank Support Orchestrator",
+  "sampleVariables": [
+    {
+      "label": "Loan question (resolved automatically)",
+      "variables": {
+        "customerRequest": "I'm refinancing my $240,000 mortgage at 6.5% interest over 30 years - what would my new monthly payment be?"
+      }
+    },
+    {
+      "label": "Loan + account question (resolved automatically, calls two agents)",
+      "variables": {
+        "customerRequest": "Please check whether DE89370400440532013000 is a valid IBAN for my transfer, and also tell me what my monthly payment would look like on a $200,000 loan at 6% over 30 years."
+      }
+    },
+    {
+      "label": "Account question (needs human review)",
+      "variables": {
+        "customerRequest": "Can you confirm whether DE89370400440532013001 is a valid account number before I set up a transfer?"
+      }
+    },
+    {
+      "label": "Card question (resolved automatically)",
+      "variables": {
+        "customerRequest": "I don't recognize a small charge on my card - the first six digits are 453201, can you tell me which bank issued it?"
+      }
+    }
+  ],
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/orchestrator-agent",
+  "support": "https://forum.camunda.io/"
+}
