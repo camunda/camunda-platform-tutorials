@@ -1,0 +1,18 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Event-driven agent",
+  "subtitle": "A runnable Event-Driven Agent",
+  "description": "A fraud-investigation agent that only exists because an external webhook fired - no form, no polling, no scheduled job. While the agent is mid-investigation, a second, independent webhook can interrupt it at any moment via a message boundary event: a customer-confirmed-fraud report always wins over whatever the agent was reasoning about, structurally, not by prompt instruction.",
+  "creator": "Camunda",
+  "camundaVersion": "8.8+",
+  "thumbnail": "docs/event-driven-agent.svg",
+  "thumbnailAlt": "BPMN model: a webhook start event feeding a Fraud Investigation Agent ad-hoc subprocess, which can be interrupted at any time by a second webhook (an interrupting message boundary event) that routes straight to freezing the card and a human handoff, bypassing whatever the agent was doing.",
+  "resources": [
+    "models/fraud-alert-triage-agent.bpmn",
+    "models/fraud-alert-review.form",
+    "models/fraud-team-handoff.form"
+  ],
+  "importTitle": "Event-Driven Agent",
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/event-driven-agent",
+  "support": "https://forum.camunda.io/"
+}

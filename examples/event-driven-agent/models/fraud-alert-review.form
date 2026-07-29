@@ -1,0 +1,59 @@
+{
+  "components": [
+    {
+      "text": "# Fraud alert needs your review\n\nThe agent investigated this alert and did not think it was safe to clear automatically. Check its reasoning below, then record your decision.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ReviewHeading"
+    },
+    {
+      "text": "**Alert ID:** {{alertId}}\n\n**Customer:** {{customerId}} (card ending {{cardLast4}})\n\n**Merchant:** {{merchantName}} ({{merchantCountry}})\n\n**Amount:** {{transactionAmount}} {{transactionCurrency}}\n\n**Monitoring system risk score:** {{riskScore}}\n\n**Alert reason:** {{alertReason}}\n\n**Agent's outcome:** {{investigationOutcome}}\n\n**Agent's reasoning:** {{investigationSummary}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_ReviewFindings"
+    },
+    {
+      "label": "Analyst decision",
+      "values": [
+        { "label": "Confirm fraud - freeze the card", "value": "confirm-fraud" },
+        { "label": "Dismiss - not fraud", "value": "dismiss" }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_analyst_decision",
+        "columns": null
+      },
+      "id": "Field_AnalystDecision",
+      "key": "analystDecision",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Analyst notes",
+      "description": "Explain your decision - this is recorded alongside the process instance and carried through to the fraud team if you confirm fraud.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_analyst_notes",
+        "columns": null
+      },
+      "id": "Field_AnalystNotes",
+      "key": "analystNotes"
+    }
+  ],
+  "type": "default",
+  "id": "fraud-alert-review",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

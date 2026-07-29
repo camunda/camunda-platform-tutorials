@@ -1,0 +1,45 @@
+{
+  "components": [
+    {
+      "text": "# Fraud team case handoff\n\nThe card has already been frozen. This case reached the fraud team via **{{handoffTrigger}}** - close it out below.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_HandoffHeading"
+    },
+    {
+      "text": "**Alert ID:** {{alertId}}\n\n**Customer:** {{customerId}} (card ending {{cardLast4}})\n\n**Merchant:** {{merchantName}}\n\n**Amount:** {{transactionAmount}} {{transactionCurrency}}\n\n**Why this case is here:** {{handoffReason}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_HandoffFindings"
+    },
+    {
+      "label": "Case closing notes",
+      "description": "How the fraud team resolved this case (e.g. new card issued, dispute filed, customer contacted).",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_case_notes",
+        "columns": null
+      },
+      "id": "Field_CaseClosedNotes",
+      "key": "caseClosedNotes",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "fraud-team-handoff",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}
