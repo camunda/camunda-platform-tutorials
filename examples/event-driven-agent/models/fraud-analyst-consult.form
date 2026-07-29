@@ -10,7 +10,16 @@
       "id": "Field_ConsultHeading"
     },
     {
-      "text": "**Agent's question:** {{analystQuestion}}\n\n**Context so far:** {{analystConsultContext}}",
+      "text": "**Alert:** {{originalAlertId}} - {{originalMerchantName}} ({{originalMerchantCountry}})\n\n**Customer:** {{customerId}} (card ending {{originalCardLast4}})\n\n**Amount:** {{originalTransactionAmount}} {{originalTransactionCurrency}}\n\n**Monitoring system risk score:** {{originalRiskScore}}\n\n**Alert reason:** {{originalAlertReason}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_alertFacts",
+        "columns": null
+      },
+      "id": "Field_AlertFacts"
+    },
+    {
+      "text": "**Agent's question:** {{analystQuestion}}\n\n**Agent's own summary so far:** {{analystConsultContext}}",
       "type": "text",
       "layout": {
         "row": "Row_context",

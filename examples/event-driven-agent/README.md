@@ -6,7 +6,7 @@ A concrete runnable **Event-Driven Agent** example based on the pattern at [camu
 
 > Wakes up when something happens. Triggered by an event: a payment threshold breached, a document received, a timer fired, an external system signaling a state change. The agent resumes, reasons over the new context, and acts. No polling, no scheduled jobs. BPMN message, timer, and signal events are first-class constructs.
 
-![Process Model](docs/event-driven-agent.svg)
+![Process Model](docs/fraud-alert-triage-agent.png)
 
 It contains:
 
@@ -111,7 +111,9 @@ Inside `Fraud Investigation Agent`, the model can invoke:
 | 2 | Convert currency | REST | [frankfurter.app](https://frankfurter.app) (ECB reference rates) | `ConvertToBaseCurrency` |
 | 3 | Ask a human analyst | Human task, agent's own choice | Tasklist, form `fraud-analyst-consult` | `AskFraudAnalyst` (2-minute timer boundary) |
 
-The agent's policy: always cross-reference first, convert to USD if needed, then apply two hard thresholds - clearly clear (no related alerts, risk score under 40, USD amount under 1,000) or clearly escalate (2+ related alerts, or risk score 70+, or USD amount 5,000+). Anything in between is genuinely ambiguous, and the agent may - entirely its own call - invoke `AskFraudAnalyst` for a second opinion before deciding. If nobody answers within the attached timer (2 minutes here, standing in for a real SLA), the boundary event fires, the agent is told so, and it proceeds on its own judgment. Either way, the agent alone records the final `clear`/`escalate` outcome - the analyst is advisory, never a gate.
+The agent's policy: always cross-reference first, convert to USD if needed, then apply two hard thresholds - clearly clear (no related alerts, risk score under 40, USD amount under 1,000) or clearly escalate (2+ related alerts, or risk score 70+, or USD amount 5,000+). Anything in between is genuinely ambiguous, and the agent may - entirely its own call - invoke `AskFraudAnalyst` for a second opinion before deciding. If nobody answers within the attached timer (2 minutes here, standing in for a real SLA), the boundary event fires, the agent is told so, and it proceeds on its own judgment.
+
+There is no "record the decision" tool call. The AI Agent connector's own response format is set to `json` with a schema (`investigationOutcome`: enum `clear`/`escalate`, `investigationSummary`: string), so once the agent stops calling tools and gives its final answer, that answer *is* structured data - no extra round-trip pretending to be a tool. Two output mappings on the connector itself, `agent.responseJson.investigationOutcome` → `investigationOutcome` and `agent.responseJson.investigationSummary` → `investigationSummary`, land it directly in the same process variables the downstream gateway reads. The system prompt reflects this: it says "give your final answer", not "call a tool to record it". The analyst, when consulted, is still advisory - the agent alone produces this terminal structured answer, whatever it decided.
 
 The event-driven part is the **Second real-time alert** boundary event on the whole agent subprocess: a bare interrupting message boundary event, no connector, no separate URL, subscribed to the exact same message (name + `customerId` correlation key) as the start event. This is what the marketing page means by "BPMN message... events are first-class constructs": there's no polling loop checking "has anything new come in for this customer?", no flag the agent has to check between tool calls or during a human wait. Zeebe simply cancels the ad-hoc subprocess - and anything running inside it, including a pending `AskFraudAnalyst` task - the moment a second alert for that customer correlates, wherever the case happened to be. The agent's system prompt even says so explicitly: *"there is nothing special for you to do about it"* - the guarantee is structural, not something the model has to cooperate with.
 

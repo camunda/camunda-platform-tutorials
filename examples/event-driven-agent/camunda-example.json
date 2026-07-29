@@ -5,7 +5,7 @@
   "description": "A fraud-investigation agent that only exists because an external webhook fired - no form, no polling, no scheduled job. The same webhook endpoint both starts a case and, via Zeebe message correlation, can interrupt an already-running one: a second real-time alert for the same customer always wins over whatever the agent was doing, structurally, not by prompt instruction. The agent can also invoke a human analyst as one of its own tools (its judgment call, not a mandatory gate) with an SLA timer if nobody answers in time.",
   "creator": "Camunda",
   "camundaVersion": "8.8+",
-  "thumbnail": "docs/event-driven-agent.svg",
+  "thumbnail": "docs/fraud-alert-triage-agent.png",
   "thumbnailAlt": "BPMN model: a webhook message-start event feeding a Fraud Investigation Agent ad-hoc subprocess (with tools including an agent-invoked human analyst consult on a timer), interruptible at any time by a second correlated alert that routes straight to freezing the card and a human handoff.",
   "resources": [
     "models/fraud-alert-triage-agent.bpmn",
