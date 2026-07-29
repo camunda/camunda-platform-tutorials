@@ -1,0 +1,99 @@
+{
+  "components": [
+    {
+      "text": "# Submit an expense claim",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_Heading"
+    },
+    {
+      "text": "The fields below already hold a clear-cut, auto-approved scenario. To try the others, replace the values with one of these sets before submitting:\n\n| Scenario | Category | Amount | Currency | Justification |\n|---|---|---|---|---|\n| Clear approve (default) | meals | 45 | USD | Team lunch with three colleagues; standard restaurant receipt attached. |\n| Clear reject | lodging | 550 | USD | Presidential suite booked for a one-night conference stay. |\n| Gray zone, agent resolves | meals | 90 | EUR | Dinner with a prospective client to close a deal; four attendees, itemized receipt attached. |\n| Gray zone, agent escalates | lodging | 320 | USD | Hotel for an extended stay; exact reason unclear, awaiting further details from the employee. |",
+      "type": "text",
+      "layout": {
+        "row": "Row_scenarios",
+        "columns": null
+      },
+      "id": "Field_ScenarioTable"
+    },
+    {
+      "label": "Category",
+      "values": [
+        { "label": "Meals", "value": "meals" },
+        { "label": "Lodging", "value": "lodging" },
+        { "label": "Transport", "value": "transport" },
+        { "label": "Other", "value": "other" }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_category",
+        "columns": null
+      },
+      "id": "Field_Category",
+      "key": "category",
+      "defaultValue": "meals",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Amount",
+      "type": "number",
+      "layout": {
+        "row": "Row_amount",
+        "columns": null
+      },
+      "id": "Field_Amount",
+      "key": "amount",
+      "defaultValue": 45,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Currency",
+      "values": [
+        { "label": "USD", "value": "USD" },
+        { "label": "EUR", "value": "EUR" },
+        { "label": "GBP", "value": "GBP" }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_currency",
+        "columns": null
+      },
+      "id": "Field_Currency",
+      "key": "currency",
+      "defaultValue": "USD",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Justification",
+      "description": "Free text - the agent reads this whenever the automated policy can't decide on its own.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_justification",
+        "columns": null
+      },
+      "id": "Field_Justification",
+      "key": "justification",
+      "defaultValue": "Team lunch with three colleagues; standard restaurant receipt attached.",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "expense-claim-start",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

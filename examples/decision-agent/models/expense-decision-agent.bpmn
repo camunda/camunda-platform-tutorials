@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ExpenseDecisionAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <bpmn:process id="expense-decision-agent" name="Expense Decision Agent" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_ClaimSubmitted" name="Expense claim submitted">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="expense-claim-start" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_ToPolicy</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_ToPolicy" sourceRef="StartEvent_ClaimSubmitted" targetRef="BusinessRuleTask_EvaluatePolicy" />
+    <bpmn:businessRuleTask id="BusinessRuleTask_EvaluatePolicy" name="Evaluate expense policy">
+      <bpmn:documentation>Deterministic policy check: known categories with amounts inside the clear approve/reject bands are decided here, without ever invoking the agent.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="expense_policy_decision" resultVariable="policyDecision" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ToPolicy</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToPolicyGateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_ToPolicyGateway" sourceRef="BusinessRuleTask_EvaluatePolicy" targetRef="Gateway_PolicyOutcome" />
+    <bpmn:exclusiveGateway id="Gateway_PolicyOutcome" name="Policy&#10;outcome?" default="Flow_PolicyNeedsReview">
+      <bpmn:incoming>Flow_ToPolicyGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_PolicyApproved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PolicyRejected</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PolicyNeedsReview</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_PolicyApproved" name="approved" sourceRef="Gateway_PolicyOutcome" targetRef="Event_08k9fom">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=policyDecision = "approved"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PolicyRejected" name="rejected" sourceRef="Gateway_PolicyOutcome" targetRef="Event_0khxkkv">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=policyDecision = "rejected"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PolicyNeedsReview" name="needs&#10;review" sourceRef="Gateway_PolicyOutcome" targetRef="ExpenseReasoningAgent" />
+    <bpmn:adHocSubProcess id="ExpenseReasoningAgent" name="Expense Reasoning Agent" zeebe:modelerTemplate="io.camunda.connectors.agenticai.aiagent.jobworker.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Only invoked for the cases the policy engine flagged as needs-review: gray-zone amounts, non-USD claims, or uncovered categories.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult&#10;}" />
+        <zeebe:taskDefinition type="io.camunda.agenticai:aiagent-job-worker:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="openaiCompatible" target="provider.type" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
+          <zeebe:input source="=&#34;You are a demo workflow assistant that resolves expense claims an automated policy engine could not decide on its own.&#10;&#10;You must invoke tools using the actual tool-calling mechanism available to you - never describe or simulate a tool call in your plain-text response, and never invent, guess, or fabricate what a tool would return.&#10;&#10;The standard reimbursement policy, already checked once by the rule engine before you were called, is:&#10;- meals: approve up to $75, reject above $150&#10;- lodging: approve up to $250, reject above $400&#10;- transport: approve up to $100, reject above $200&#10;You are only ever invoked for the cases the rule engine could not resolve on its own: amounts in the gray zone between those approve/reject bands, claims in a currency other than USD, or categories the policy doesn&#39;t cover.&#10;&#10;One documented exception you may apply: a &#39;meals&#39; claim may be approved up to double its normal cap (i.e. up to $150) if the justification clearly describes client or prospect entertainment with multiple attendees and mentions a receipt.&#10;&#10;If the claim isn&#39;t in USD, call ConvertCurrency to get the USD amount before judging it against the policy bands above - never estimate a conversion yourself.&#10;&#10;Record your decision only once you&#39;ve reached it, and only once: &#39;approved&#39; if it fits within policy (including the documented exception), &#39;rejected&#39; if it clearly exceeds every applicable cap, or &#39;escalate&#39; if the claim is genuinely ambiguous and you can&#39;t responsibly decide either way. Always include your reasoning. What happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;Expense claim under review:&#10;Category: &#34; + category + &#34;&#10;Amount: &#34; + string(amount) + &#34; &#34; + currency + &#34;&#10;Justification: &#34; + justification + &#34;&#10;&#10;The automated policy engine flagged this claim as needing review. Please assess it and record your decision.&#34;" target="data.userPrompt.prompt" />
+          <zeebe:input target="agentContext" />
+          <zeebe:input source="in-process" target="data.memory.storage.type" />
+          <zeebe:input source="=20" target="data.memory.contextWindowSize" />
+          <zeebe:input source="=10" target="data.limits.maxModelCalls" />
+          <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
+          <zeebe:input source="text" target="data.response.format.type" />
+          <zeebe:input source="=false" target="data.response.format.parseJson" />
+          <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
+          <zeebe:input source="=false" target="data.response.includeAgentContext" />
+          <zeebe:input target="agent" />
+          <zeebe:output source="=agent" target="agent" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="10" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.aiagent.jobworker.v1" />
+          <zeebe:header key="retryBackoff" value="PT30S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_PolicyNeedsReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToAgentGateway</bpmn:outgoing>
+      <bpmn:serviceTask id="ConvertCurrency" name="Convert currency" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:documentation>Converts a non-USD claim amount to USD via the free, public frankfurter.dev exchange-rate API (European Central Bank reference rates, no key required) so the agent can judge it against the same policy bands used by the rule engine.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=false" target="ignoreNullValues" />
+            <zeebe:input source="noAuth" target="authentication.type" />
+            <zeebe:input source="GET" target="method" />
+            <zeebe:input source="https://api.frankfurter.dev/v1/latest" target="url" />
+            <zeebe:input source="={&#10;  amount: fromAi(toolCall.amount, &#34;The claim&#39;s amount in its original currency, to convert to USD.&#34;, &#34;number&#34;),&#10;  from: fromAi(toolCall.fromCurrency, &#34;The claim&#39;s original currency code, e.g. EUR or GBP.&#34;, &#34;string&#34;),&#10;  to: &#34;USD&#34;&#10;}" target="queryParameters" />
+            <zeebe:input source="=false" target="storeResponse" />
+            <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="elementTemplateVersion" value="13" />
+            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+            <zeebe:header key="resultExpression" value="={&#10;  convertedAmountUSD: response.body.rates.USD,&#10;  toolCallResult: &#34;Converted &#34; + string(response.body.amount) + &#34; &#34; + response.body.base + &#34; to &#34; + string(response.body.rates.USD) + &#34; USD (ECB reference rate).&#34;&#10;}" />
+            <zeebe:header key="retryBackoff" value="PT5S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:scriptTask id="RecordAgentDecision" name="Record agent decision">
+        <bpmn:documentation>Captures the agent's recommendation and reasoning as process variables</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:script expression="=agentDecision" resultVariable="agentDecision" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=fromAi(toolCall.agentDecision, &#34;Your recommendation: &#39;approved&#39; if the claim fits within policy (including the documented exception), &#39;rejected&#39; if it clearly exceeds every applicable cap, &#39;escalate&#39; if the claim is genuinely ambiguous.&#34;, &#34;string&#34;)" target="agentDecision" />
+            <zeebe:input source="=fromAi(toolCall.agentReasoning, &#34;A short explanation of why you reached this recommendation.&#34;, &#34;string&#34;)" target="agentReasoning" />
+            <zeebe:output source="=agentDecision" target="agentDecision" />
+            <zeebe:output source="=agentReasoning" target="agentReasoning" />
+            <zeebe:output source="=agentDecision + &#34;: &#34; + agentReasoning" target="toolCallResult" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+      </bpmn:scriptTask>
+    </bpmn:adHocSubProcess>
+    <bpmn:sequenceFlow id="Flow_ToAgentGateway" sourceRef="ExpenseReasoningAgent" targetRef="Gateway_AgentOutcome" />
+    <bpmn:exclusiveGateway id="Gateway_AgentOutcome" name="Agent&#10;resolved?" default="Flow_AgentEscalate">
+      <bpmn:incoming>Flow_ToAgentGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_AgentApproved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_AgentRejected</bpmn:outgoing>
+      <bpmn:outgoing>Flow_AgentEscalate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_AgentApproved" name="approved" sourceRef="Gateway_AgentOutcome" targetRef="NotifyApprovedReimbursement">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=agentDecision = "approved"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_AgentRejected" name="rejected" sourceRef="Gateway_AgentOutcome" targetRef="NotifyRejectedClaim">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=agentDecision = "rejected"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_AgentEscalate" name="escalate" sourceRef="Gateway_AgentOutcome" targetRef="HumanTask_ReviewExpenseClaim" />
+    <bpmn:serviceTask id="NotifyApprovedReimbursement" name="Notify approved reimbursement" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Posts the approved reimbursement to httpbin.io's echo endpoint (a stand-in for a real payroll/finance notification channel)</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="https://httpbin.io/post" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=false" target="followRedirects" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={&#10;  category: category,&#10;  amount: amount,&#10;  currency: currency,&#10;  justification: justification,&#10;  policyDecision: policyDecision,&#10;  agentDecision: agentDecision,&#10;  agentReasoning: agentReasoning,&#10;  decisionSource: if agentDecision = null then &#34;policy&#34; else &#34;agent&#34;&#10;}" target="body" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="13" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={&#10;  notificationReceipt: response.body&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT5S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AgentApproved</bpmn:incoming>
+      <bpmn:incoming>Flow_1kfu6is</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEndApproved</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_ToEndApproved" sourceRef="NotifyApprovedReimbursement" targetRef="EndEvent_ReimbursementApproved" />
+    <bpmn:endEvent id="EndEvent_ReimbursementApproved" name="Reimbursement approved">
+      <bpmn:incoming>Flow_ToEndApproved</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="NotifyRejectedClaim" name="Notify rejected claim" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Posts the rejected claim to httpbin.io's echo endpoint (a stand-in for a real payroll/finance notification channel)</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="https://httpbin.io/post" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=false" target="followRedirects" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={&#10;  category: category,&#10;  amount: amount,&#10;  currency: currency,&#10;  justification: justification,&#10;  policyDecision: policyDecision,&#10;  agentDecision: agentDecision,&#10;  agentReasoning: agentReasoning,&#10;  decisionSource: if agentDecision = null then &#34;policy&#34; else &#34;agent&#34;&#10;}" target="body" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="13" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={&#10;  notificationReceipt: response.body&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT5S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AgentRejected</bpmn:incoming>
+      <bpmn:incoming>Flow_0ogbruz</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEndRejected</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_ToEndRejected" sourceRef="NotifyRejectedClaim" targetRef="EndEvent_ClaimRejected" />
+    <bpmn:endEvent id="EndEvent_ClaimRejected" name="Claim rejected">
+      <bpmn:incoming>Flow_ToEndRejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="HumanTask_ReviewExpenseClaim" name="Review expense claim">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="expense-claim-review" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AgentEscalate</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEndManual</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_ToEndManual" sourceRef="HumanTask_ReviewExpenseClaim" targetRef="EndEvent_ManuallyDecided" />
+    <bpmn:endEvent id="EndEvent_ManuallyDecided" name="Claim manually decided">
+      <bpmn:incoming>Flow_ToEndManual</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="Event_08k9fom" name="Approve">
+      <bpmn:incoming>Flow_PolicyApproved</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_1o6cmdp" name="Approve" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="Event_0khxkkv" name="Reject">
+      <bpmn:incoming>Flow_PolicyRejected</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0tfueqn" name="Reject" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Event_1j5cfzr" name="Approve">
+      <bpmn:outgoing>Flow_1kfu6is</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0db3ry4" name="Approve" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1kfu6is" sourceRef="Event_1j5cfzr" targetRef="NotifyApprovedReimbursement" />
+    <bpmn:intermediateCatchEvent id="Event_0u2dhqx" name="Reject">
+      <bpmn:outgoing>Flow_0ogbruz</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0yszqm6" name="Reject" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0ogbruz" sourceRef="Event_0u2dhqx" targetRef="NotifyRejectedClaim" />
+    <bpmn:textAnnotation id="TextAnnotation_10q8vgq">
+      <bpmn:text>The agent is the instance for non-standard cases. A real deployment would likely orchestrate more tools to be useful - kept simple for the example</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0mwfn28" associationDirection="None" sourceRef="ExpenseReasoningAgent" targetRef="TextAnnotation_10q8vgq" />
+    <bpmn:textAnnotation id="TextAnnotation_0130wya">
+      <bpmn:text>A deterministic decision might come first for easy cases</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1nq3ifs" associationDirection="None" sourceRef="BusinessRuleTask_EvaluatePolicy" targetRef="TextAnnotation_0130wya" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="expense-decision-agent">
+      <bpmndi:BPMNShape id="StartEvent_ClaimSubmitted_di" bpmnElement="StartEvent_ClaimSubmitted">
+        <dc:Bounds x="162" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="145" y="285" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BusinessRuleTask_EvaluatePolicy_di" bpmnElement="BusinessRuleTask_EvaluatePolicy">
+        <dc:Bounds x="250" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PolicyOutcome_di" bpmnElement="Gateway_PolicyOutcome" isMarkerVisible="true">
+        <dc:Bounds x="400" y="235" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="206" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AgentOutcome_di" bpmnElement="Gateway_AgentOutcome" isMarkerVisible="true">
+        <dc:Bounds x="900" y="235" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="866" y="283" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="HumanTask_ReviewExpenseClaim_di" bpmnElement="HumanTask_ReviewExpenseClaim">
+        <dc:Bounds x="1040" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ManuallyDecided_di" bpmnElement="EndEvent_ManuallyDecided">
+        <dc:Bounds x="1200" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1181" y="285" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotifyRejectedClaim_di" bpmnElement="NotifyRejectedClaim">
+        <dc:Bounds x="1040" y="329" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotifyApprovedReimbursement_di" bpmnElement="NotifyApprovedReimbursement">
+        <dc:Bounds x="1040" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ReimbursementApproved_di" bpmnElement="EndEvent_ReimbursementApproved">
+        <dc:Bounds x="1200" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1179" y="175" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ClaimRejected_di" bpmnElement="EndEvent_ClaimRejected">
+        <dc:Bounds x="1200" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1183" y="394" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0wta6ki_di" bpmnElement="Event_1j5cfzr">
+        <dc:Bounds x="912" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="910" y="125" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1m56tnr_di" bpmnElement="Event_0u2dhqx">
+        <dc:Bounds x="907" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="909" y="435" width="32" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ndx4bn_di" bpmnElement="Event_08k9fom">
+        <dc:Bounds x="407" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="404" y="58" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0x9wrod_di" bpmnElement="Event_0khxkkv">
+        <dc:Bounds x="407" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="409" y="435" width="32" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExpenseReasoningAgent_di" bpmnElement="ExpenseReasoningAgent" isExpanded="true">
+        <dc:Bounds x="500" y="160" width="340" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConvertCurrency_di" bpmnElement="ConvertCurrency">
+        <dc:Bounds x="540" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RecordAgentDecision_di" bpmnElement="RecordAgentDecision">
+        <dc:Bounds x="680" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0mwfn28_di" bpmnElement="Association_0mwfn28">
+        <di:waypoint x="669" y="380" />
+        <di:waypoint x="668" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1nq3ifs_di" bpmnElement="Association_1nq3ifs">
+        <di:waypoint x="300" y="300" />
+        <di:waypoint x="300" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToPolicy_di" bpmnElement="Flow_ToPolicy">
+        <di:waypoint x="198" y="260" />
+        <di:waypoint x="250" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToPolicyGateway_di" bpmnElement="Flow_ToPolicyGateway">
+        <di:waypoint x="350" y="260" />
+        <di:waypoint x="400" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PolicyApproved_di" bpmnElement="Flow_PolicyApproved">
+        <di:waypoint x="425" y="235" />
+        <di:waypoint x="425" y="118" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="437" y="174" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PolicyRejected_di" bpmnElement="Flow_PolicyRejected">
+        <di:waypoint x="425" y="285" />
+        <di:waypoint x="425" y="392" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="440" y="335" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PolicyNeedsReview_di" bpmnElement="Flow_PolicyNeedsReview">
+        <di:waypoint x="450" y="260" />
+        <di:waypoint x="500" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="226" width="32" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentApproved_di" bpmnElement="Flow_AgentApproved">
+        <di:waypoint x="925" y="235" />
+        <di:waypoint x="925" y="150" />
+        <di:waypoint x="1040" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="937" y="180" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEndApproved_di" bpmnElement="Flow_ToEndApproved">
+        <di:waypoint x="1140" y="150" />
+        <di:waypoint x="1200" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentEscalate_di" bpmnElement="Flow_AgentEscalate">
+        <di:waypoint x="950" y="260" />
+        <di:waypoint x="1040" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="952" y="242" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEndManual_di" bpmnElement="Flow_ToEndManual">
+        <di:waypoint x="1140" y="260" />
+        <di:waypoint x="1200" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentRejected_di" bpmnElement="Flow_AgentRejected">
+        <di:waypoint x="925" y="285" />
+        <di:waypoint x="925" y="369" />
+        <di:waypoint x="1040" y="369" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="294" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEndRejected_di" bpmnElement="Flow_ToEndRejected">
+        <di:waypoint x="1140" y="369" />
+        <di:waypoint x="1200" y="369" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToAgentGateway_di" bpmnElement="Flow_ToAgentGateway">
+        <di:waypoint x="840" y="260" />
+        <di:waypoint x="900" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_10q8vgq_di" bpmnElement="TextAnnotation_10q8vgq">
+        <dc:Bounds x="618" y="480" width="224" height="72" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0130wya_di" bpmnElement="TextAnnotation_0130wya">
+        <dc:Bounds x="250" y="340" width="130" height="57" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1kfu6is_di" bpmnElement="Flow_1kfu6is">
+        <di:waypoint x="948" y="100" />
+        <di:waypoint x="994" y="100" />
+        <di:waypoint x="994" y="130" />
+        <di:waypoint x="1040" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ogbruz_di" bpmnElement="Flow_0ogbruz">
+        <di:waypoint x="943" y="410" />
+        <di:waypoint x="992" y="410" />
+        <di:waypoint x="992" y="390" />
+        <di:waypoint x="1040" y="390" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

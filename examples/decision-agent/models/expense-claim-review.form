@@ -1,0 +1,59 @@
+{
+  "components": [
+    {
+      "text": "# Expense claim needs your decision\n\nThe policy engine flagged this claim for review, and the agent could not confidently resolve it either. Check the details below, then record your decision.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ReviewHeading"
+    },
+    {
+      "text": "**Category:** {{category}}\n\n**Amount:** {{amount}} {{currency}}\n\n**Justification:** {{justification}}\n\n**Policy engine outcome:** {{policyDecision}}\n\n**Agent's recommendation:** {{agentDecision}}\n\n**Agent's reasoning:** {{agentReasoning}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_ReviewFindings"
+    },
+    {
+      "label": "Reviewer decision",
+      "values": [
+        { "label": "Approve claim", "value": "approved" },
+        { "label": "Reject claim", "value": "rejected" }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_review_decision",
+        "columns": null
+      },
+      "id": "Field_ReviewDecision",
+      "key": "reviewDecision",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Reviewer comments",
+      "description": "Explain your decision - this is recorded alongside the process instance.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_review_comments",
+        "columns": null
+      },
+      "id": "Field_ReviewComments",
+      "key": "reviewComments"
+    }
+  ],
+  "type": "default",
+  "id": "expense-claim-review",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

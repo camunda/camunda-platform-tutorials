@@ -2,7 +2,7 @@
   "name": "camunda-8-tutorials",
   "private": true,
   "scripts": {
-    "lint": "find quick-start solutions -name '*.bpmn' -not -path '*/test/*' -not -path '*/target/*' | xargs bpmnlint --config .bpmnlintrc"
+    "lint": "find quick-start solutions examples -name '*.bpmn' -not -path '*/test/*' -not -path '*/target/*' | xargs bpmnlint --config .bpmnlintrc"
   },
   "devDependencies": {
     "bpmnlint": "^11.12.0",

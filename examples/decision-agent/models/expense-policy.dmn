@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ExpensePolicy" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <decision id="expense_policy_decision" name="Expense Policy Decision">
+    <decisionTable id="DecisionTable_ExpensePolicy" hitPolicy="FIRST">
+      <input id="Input_Currency" label="currency">
+        <inputExpression id="InputExpression_Currency" typeRef="string">
+          <text>currency</text>
+        </inputExpression>
+      </input>
+      <input id="Input_Category" label="category">
+        <inputExpression id="InputExpression_Category" typeRef="string">
+          <text>category</text>
+        </inputExpression>
+      </input>
+      <input id="Input_Amount" label="amount">
+        <inputExpression id="InputExpression_Amount" typeRef="number">
+          <text>amount</text>
+        </inputExpression>
+      </input>
+      <output id="Output_Outcome" label="outcome" name="outcome" typeRef="string" />
+      <rule id="Rule_ForeignCurrency">
+        <inputEntry id="UnaryTests_ForeignCurrency_Currency">
+          <text>not("USD")</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_ForeignCurrency_Category">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_ForeignCurrency_Amount">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_ForeignCurrency">
+          <text>"needs-review"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_MealsApprove">
+        <inputEntry id="UnaryTests_MealsApprove_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_MealsApprove_Category">
+          <text>"meals"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_MealsApprove_Amount">
+          <text>&lt;=75</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_MealsApprove">
+          <text>"approved"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_MealsReview">
+        <inputEntry id="UnaryTests_MealsReview_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_MealsReview_Category">
+          <text>"meals"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_MealsReview_Amount">
+          <text>(75..150]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_MealsReview">
+          <text>"needs-review"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_MealsReject">
+        <inputEntry id="UnaryTests_MealsReject_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_MealsReject_Category">
+          <text>"meals"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_MealsReject_Amount">
+          <text>&gt;150</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_MealsReject">
+          <text>"rejected"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_LodgingApprove">
+        <inputEntry id="UnaryTests_LodgingApprove_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_LodgingApprove_Category">
+          <text>"lodging"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_LodgingApprove_Amount">
+          <text>&lt;=250</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_LodgingApprove">
+          <text>"approved"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_LodgingReview">
+        <inputEntry id="UnaryTests_LodgingReview_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_LodgingReview_Category">
+          <text>"lodging"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_LodgingReview_Amount">
+          <text>(250..400]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_LodgingReview">
+          <text>"needs-review"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_LodgingReject">
+        <inputEntry id="UnaryTests_LodgingReject_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_LodgingReject_Category">
+          <text>"lodging"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_LodgingReject_Amount">
+          <text>&gt;400</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_LodgingReject">
+          <text>"rejected"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_TransportApprove">
+        <inputEntry id="UnaryTests_TransportApprove_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_TransportApprove_Category">
+          <text>"transport"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_TransportApprove_Amount">
+          <text>&lt;=100</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_TransportApprove">
+          <text>"approved"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_TransportReview">
+        <inputEntry id="UnaryTests_TransportReview_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_TransportReview_Category">
+          <text>"transport"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_TransportReview_Amount">
+          <text>(100..200]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_TransportReview">
+          <text>"needs-review"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_TransportReject">
+        <inputEntry id="UnaryTests_TransportReject_Currency">
+          <text>"USD"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_TransportReject_Category">
+          <text>"transport"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_TransportReject_Amount">
+          <text>&gt;200</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_TransportReject">
+          <text>"rejected"</text>
+        </outputEntry>
+      </rule>
+      <rule id="Rule_UncoveredCategory">
+        <inputEntry id="UnaryTests_UncoveredCategory_Currency">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_UncoveredCategory_Category">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_UncoveredCategory_Amount">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_UncoveredCategory">
+          <text>"needs-review"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="expense_policy_decision">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

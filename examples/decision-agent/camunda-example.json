@@ -1,0 +1,57 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Expense decision agent",
+  "subtitle": "A runnable Decision Agent",
+  "description": "A DMN business rule table auto-approves or auto-rejects clear-cut expense claims. Only the gray-zone cases it flags as needs-review - foreign currency, borderline amounts, uncovered categories - reach an agent, which converts currency via a real API and reasons over a documented exception before resolving or escalating to a human.",
+  "creator": "Camunda",
+  "camundaVersion": "8.8+",
+  "thumbnail": "docs/expense-decision-agent.png",
+  "thumbnailAlt": "BPMN model: an Evaluate expense policy DMN business rule task routing to an Expense Reasoning Agent subprocess or straight to notification, with a human review task for escalated cases.",
+  "resources": [
+    "models/expense-decision-agent.bpmn",
+    "models/expense-policy.dmn",
+    "models/expense-claim-start.form",
+    "models/expense-claim-review.form"
+  ],
+  "importTitle": "Expense Decision Agent",
+  "sampleVariables": [
+    {
+      "label": "Clear approve (policy decides, agent never runs)",
+      "variables": {
+        "category": "meals",
+        "amount": 45,
+        "currency": "USD",
+        "justification": "Team lunch with three colleagues; standard restaurant receipt attached."
+      }
+    },
+    {
+      "label": "Clear reject (policy decides, agent never runs)",
+      "variables": {
+        "category": "lodging",
+        "amount": 550,
+        "currency": "USD",
+        "justification": "Presidential suite booked for a one-night conference stay."
+      }
+    },
+    {
+      "label": "Gray zone, agent resolves (foreign currency + documented exception)",
+      "variables": {
+        "category": "meals",
+        "amount": 90,
+        "currency": "EUR",
+        "justification": "Dinner with a prospective client to close a deal; four attendees, itemized receipt attached."
+      }
+    },
+    {
+      "label": "Gray zone, agent escalates (genuinely ambiguous)",
+      "variables": {
+        "category": "lodging",
+        "amount": 320,
+        "currency": "USD",
+        "justification": "Hotel for an extended stay; exact reason unclear, awaiting further details from the employee."
+      }
+    }
+  ],
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/decision-agent",
+  "support": "https://forum.camunda.io/"
+}
