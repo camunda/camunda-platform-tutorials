@@ -1,0 +1,60 @@
+{
+  "components": [
+    {
+      "text": "# The agent wants a second opinion\n\nThe agent decided this case was ambiguous enough to ask a human before deciding. This is its own judgment call, not a mandatory checkpoint - it still makes the final decision. You have a limited time to respond (see the process for the exact SLA); if you don't answer in time, the agent proceeds on its own.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ConsultHeading"
+    },
+    {
+      "text": "**Agent's question:** {{analystQuestion}}\n\n**Context so far:** {{analystConsultContext}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_context",
+        "columns": null
+      },
+      "id": "Field_ConsultContext"
+    },
+    {
+      "label": "Your assessment",
+      "values": [
+        { "label": "Looks legitimate", "value": "looks-legitimate" },
+        { "label": "Looks suspicious", "value": "looks-suspicious" },
+        { "label": "Not enough information to tell", "value": "insufficient-info" }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_assessment",
+        "columns": null
+      },
+      "id": "Field_AnalystAssessment",
+      "key": "analystAssessment",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Notes for the agent",
+      "description": "Optional - anything you want the agent to factor into its decision.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_notes",
+        "columns": null
+      },
+      "id": "Field_AnalystNotes",
+      "key": "analystNotes"
+    }
+  ],
+  "type": "default",
+  "id": "fraud-analyst-consult",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

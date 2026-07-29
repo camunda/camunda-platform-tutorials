@@ -10,13 +10,22 @@
       "id": "Field_HandoffHeading"
     },
     {
-      "text": "**Alert ID:** {{alertId}}\n\n**Customer:** {{customerId}} (card ending {{cardLast4}})\n\n**Merchant:** {{merchantName}}\n\n**Amount:** {{transactionAmount}} {{transactionCurrency}}\n\n**Why this case is here:** {{handoffReason}}",
+      "text": "**Original alert under investigation:** {{originalAlertId}} - {{originalMerchantName}} ({{originalMerchantCountry}}), {{originalTransactionAmount}} {{originalTransactionCurrency}}\n\n**Customer:** {{customerId}} (card ending {{originalCardLast4}})\n\n**Why this case is here:** {{handoffReason}}",
       "type": "text",
       "layout": {
         "row": "Row_findings",
         "columns": null
       },
       "id": "Field_HandoffFindings"
+    },
+    {
+      "text": "**If a second alert interrupted the investigation, this is the one that triggered it:**\n\n**Current alert:** {{currentAlertId}} - {{merchantName}} ({{merchantCountry}}), {{transactionAmount}} {{transactionCurrency}}, card ending {{currentCardLast4}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_current_alert",
+        "columns": null
+      },
+      "id": "Field_CurrentAlert"
     },
     {
       "label": "Case closing notes",

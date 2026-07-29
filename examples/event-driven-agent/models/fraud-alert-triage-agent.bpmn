@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_FraudAlertTriageAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
-  <bpmn:message id="Message_CustomerConfirmedFraud" name="fraud-confirmed">
+  <bpmn:message id="Message_FraudAlert" name="fraud-alert">
     <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=alertId" />
+      <zeebe:subscription correlationKey="=customerId" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:process id="fraud-alert-triage-agent" name="Fraud Alert Triage Agent (Event-Driven Agent)" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_FraudAlertWebhook" name="Fraud alert received" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnector.v1" zeebe:modelerTemplateVersion="14" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
-      <bpmn:documentation>Fires whenever the (fictional) real-time transaction-monitoring system posts a new fraud alert to this webhook. No polling, no scheduled job checking for new alerts - the process only exists once an event arrives. Trigger it yourself with:
+    <bpmn:startEvent id="StartEvent_FraudAlertWebhook" name="Fraud alert received" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorStartMessage.v1" zeebe:modelerTemplateVersion="15" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
+      <bpmn:documentation>The only way into this process - there is no start form. Fires whenever the (fictional) real-time transaction-monitoring system posts a fraud alert to this one webhook. The same endpoint is reused for every alert on the same customer: a message start event with a required correlation key (customerId) means the very first alert for a customer starts a new instance, while any later alert for that same customer, while the case is still open, correlates straight into the running instance instead - this is native Zeebe message correlation, not custom "if already running" logic. No polling, no scheduled job.
 
-curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: application/json" -d "{\"alertId\":\"ALERT-6601\",\"customerId\":\"CUST-40100\",\"cardLast4\":\"2210\",\"transactionAmount\":145.50,\"transactionCurrency\":\"USD\",\"merchantName\":\"Riverside Coffee Roasters\",\"merchantCountry\":\"United States\",\"riskScore\":38,\"alertReason\":\"New merchant category for this customer, amount is modest relative to typical spend.\"}"</bpmn:documentation>
+First call for a customer (starts a new instance):
+
+curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: application/json" -d "{\"alertId\":\"ALERT-6601\",\"customerId\":\"CUST-40100\",\"cardLast4\":\"2210\",\"transactionAmount\":145.50,\"transactionCurrency\":\"USD\",\"merchantName\":\"Riverside Coffee Roasters\",\"merchantCountry\":\"United States\",\"riskScore\":38,\"alertReason\":\"New merchant category for this customer, amount is modest relative to typical spend.\"}"
+
+A second call with the same customerId, while that instance is still running, does not start a second instance - see the interrupting boundary event on the agent for what happens instead.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:properties>
           <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
@@ -19,16 +23,38 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
           <zeebe:property name="inbound.auth.type" value="NONE" />
           <zeebe:property name="consumeUnmatchedEvents" value="true" />
           <zeebe:property name="synchronousResponse" value="false" />
+          <zeebe:property name="correlationRequired" value="required" />
+          <zeebe:property name="correlationKeyExpression" value="=request.body.customerId" />
           <zeebe:property name="deduplicationModeManualFlag" value="false" />
           <zeebe:property name="deduplicationMode" value="AUTO" />
           <zeebe:property name="resultExpression" value="=request.body" />
         </zeebe:properties>
       </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_ToAgent</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ToSnapshot</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_FraudAlertStart" messageRef="Message_FraudAlert" />
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_ToAgent" sourceRef="StartEvent_FraudAlertWebhook" targetRef="FraudInvestigationAgent" />
+    <bpmn:sequenceFlow id="Flow_ToSnapshot" sourceRef="StartEvent_FraudAlertWebhook" targetRef="SnapshotOriginalAlert" />
+    <bpmn:scriptTask id="SnapshotOriginalAlert" name="Snapshot original alert">
+      <bpmn:documentation>Freezes a copy of the alert that actually started this instance, under separate "original*" variable names. If a second alert later correlates into the interrupting boundary event below, it overwrites the plain alertId/merchantName/etc. variables with its own data - this snapshot is what lets the handoff form still show what was originally under investigation.</bpmn:documentation>
+      <bpmn:incoming>Flow_ToSnapshot</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToAgent</bpmn:outgoing>
+      <bpmn:extensionElements>
+        <zeebe:script expression="=alertId" resultVariable="originalAlertId" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=customerId" target="originalCustomerId" />
+          <zeebe:output source="=cardLast4" target="originalCardLast4" />
+          <zeebe:output source="=transactionAmount" target="originalTransactionAmount" />
+          <zeebe:output source="=transactionCurrency" target="originalTransactionCurrency" />
+          <zeebe:output source="=merchantName" target="originalMerchantName" />
+          <zeebe:output source="=merchantCountry" target="originalMerchantCountry" />
+          <zeebe:output source="=riskScore" target="originalRiskScore" />
+          <zeebe:output source="=alertReason" target="originalAlertReason" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_ToAgent" sourceRef="SnapshotOriginalAlert" targetRef="FraudInvestigationAgent" />
     <bpmn:adHocSubProcess id="FraudInvestigationAgent" name="Fraud Investigation Agent" zeebe:modelerTemplate="io.camunda.connectors.agenticai.aiagent.jobworker.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
-      <bpmn:documentation>Investigates the alert (transaction cross-reference, currency conversion) and decides whether it can be cleared automatically or needs a human fraud analyst. It can be interrupted at any moment - mid tool call or not - by a "customer confirmed fraud" event arriving from outside; when that happens, everything the agent was doing is abandoned and the case goes straight to card-freeze and human handoff.</bpmn:documentation>
+      <bpmn:documentation>Investigates the alert (transaction cross-reference, currency conversion, optionally a human analyst's opinion) and decides whether it can be cleared automatically or should be escalated. It can be interrupted at any moment - whether it is mid tool-call or waiting on the analyst - by a second real-time alert for the same customer; when that happens, everything the agent was doing (including a pending human task) is abandoned and the case goes straight to card-freeze and human handoff.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult&#10;}" />
         <zeebe:taskDefinition type="io.camunda.agenticai:aiagent-job-worker:1" retries="3" />
@@ -37,8 +63,8 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
-          <zeebe:input source="=&#34;You are a demo fraud-investigation assistant. A real-time transaction-monitoring system has already scored this alert and handed it to you to investigate before it either closes automatically or reaches a human fraud analyst.&#10;&#10;You must invoke tools using the actual tool-calling mechanism available to you - never describe or simulate a tool call in your plain-text response, and never invent, guess, or fabricate what a tool would return.&#10;&#10;Investigation steps, in order:&#10;1. Always call CrossReferenceTransactionHistory first, with the customer ID and the card&#39;s last 4 digits. This is the same full-account, all-linked-cards history lookup the real fraud platform runs on every alert - it genuinely takes several seconds, and that is expected, not an error.&#10;2. If the transaction currency is not already USD, call ConvertToBaseCurrency to get the USD-equivalent amount before you reason about the amount. Never estimate a conversion yourself.&#10;3. Decide the outcome using this policy, evaluated in order:&#10;   - If relatedAlerts90d is 0, the alert&#39;s own riskScore is below 50, and the transaction amount in USD is under 2000: the outcome is &#39;clear&#39;.&#10;   - Otherwise: the outcome is &#39;hold-for-review&#39;.&#10;4. Call RecordInvestigationOutcome exactly once, as your last tool call, with the outcome and a short summary of your reasoning that mentions the riskScore, relatedAlerts90d, and the USD amount you used.&#10;&#10;A customer-confirmed-fraud report can arrive from outside at any moment while you are still investigating. If that happens you will simply be stopped and will not see this conversation again - there is nothing special for you to do about it, so just keep investigating normally until you reach a conclusion.&#34;" target="data.systemPrompt.prompt" />
-          <zeebe:input source="=&#34;Fraud alert under investigation:&#10;Alert ID: &#34; + alertId + &#34;&#10;Customer ID: &#34; + customerId + &#34;&#10;Card ending: &#34; + cardLast4 + &#34;&#10;Transaction amount: &#34; + string(transactionAmount) + &#34; &#34; + transactionCurrency + &#34;&#10;Merchant: &#34; + merchantName + &#34; (&#34; + merchantCountry + &#34;)&#10;Monitoring system risk score: &#34; + string(riskScore) + &#34;&#10;Alert reason: &#34; + alertReason + &#34;&#10;&#10;Investigate this alert and record your outcome.&#34;" target="data.userPrompt.prompt" />
+          <zeebe:input source="=&#34;You are a demo fraud-investigation assistant. A real-time transaction-monitoring system has already scored this alert and handed it to you to investigate before it either closes automatically or gets escalated to card-freeze and the fraud team.&#10;&#10;You must invoke tools using the actual tool-calling mechanism available to you - never describe or simulate a tool call in your plain-text response, and never invent, guess, or fabricate what a tool would return.&#10;&#10;Investigation steps:&#10;1. Always call CrossReferenceTransactionHistory first, with the customer ID and the card&#39;s last 4 digits. This is the same full-account, all-linked-cards history lookup the real fraud platform runs on every alert - it genuinely takes several seconds, and that is expected, not an error.&#10;2. If the transaction currency is not already USD, call ConvertToBaseCurrency to get the USD-equivalent amount before you reason about the amount. Never estimate a conversion yourself.&#10;3. Weigh the case using relatedAlerts90d, the riskScore, and the USD amount:&#10;   - Clearly low risk (relatedAlerts90d is 0, riskScore is under 40, and the USD amount is under 1000): call RecordInvestigationOutcome directly with &#39;clear&#39;.&#10;   - Clearly high risk (relatedAlerts90d is 2 or more, or riskScore is 70 or above, or the USD amount is 5000 or above): call RecordInvestigationOutcome directly with &#39;escalate&#39;.&#10;   - Anything in between is genuinely ambiguous. You may call AskFraudAnalyst to get a second opinion from a human before deciding - this is entirely your own judgment call, not a requirement, and you keep the final decision either way. If you ask and get no response in time, you will be told so; use your own judgment instead.&#10;4. Call RecordInvestigationOutcome exactly once, as your last tool call, with the outcome (&#39;clear&#39; or &#39;escalate&#39;) and a short summary of your reasoning.&#10;&#10;A second real-time alert for the same customer can arrive from outside at any moment while you are still investigating - even while you are waiting on the analyst. If that happens you will simply be stopped and will not see this conversation again - there is nothing special for you to do about it, so just keep investigating normally until you reach a conclusion.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;Fraud alert under investigation:&#10;Alert ID: &#34; + originalAlertId + &#34;&#10;Customer ID: &#34; + originalCustomerId + &#34;&#10;Card ending: &#34; + originalCardLast4 + &#34;&#10;Transaction amount: &#34; + string(originalTransactionAmount) + &#34; &#34; + originalTransactionCurrency + &#34;&#10;Merchant: &#34; + originalMerchantName + &#34; (&#34; + originalMerchantCountry + &#34;)&#10;Monitoring system risk score: &#34; + string(originalRiskScore) + &#34;&#10;Alert reason: &#34; + originalAlertReason + &#34;&#10;&#10;Investigate this alert and record your outcome.&#34;" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
@@ -60,7 +86,7 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
       <bpmn:incoming>Flow_ToAgent</bpmn:incoming>
       <bpmn:outgoing>Flow_ToOutcomeGateway</bpmn:outgoing>
       <bpmn:serviceTask id="CrossReferenceTransactionHistory" name="Cross-reference transaction history" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
-        <bpmn:documentation>Simulates the fraud platform's full-history cross-reference: a real HTTP round trip against httpbin.io's /delay/8 endpoint (a public request-echo service) standing in for a slow enterprise lookup across every account and card linked to the customer. It deliberately takes about 8 seconds - that is the window in which you can fire the second ("fraud-confirmed") webhook and watch the agent get interrupted mid-investigation. The related-alert count itself is computed deterministically from the customer ID so the demo is reproducible.</bpmn:documentation>
+        <bpmn:documentation>Simulates the fraud platform's full-history cross-reference: a real HTTP round trip against httpbin.io's /delay/8 endpoint (a public request-echo service) standing in for a slow enterprise lookup across every account and card linked to the customer. It deliberately takes about 8 seconds - that is the window in which a second real-time alert for the same customer can arrive and interrupt the agent mid-investigation. The related-alert count itself is computed deterministically from the customer ID so the demo is reproducible.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
           <zeebe:ioMapping>
@@ -82,7 +108,7 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
         </bpmn:extensionElements>
       </bpmn:serviceTask>
       <bpmn:serviceTask id="ConvertToBaseCurrency" name="Convert to base currency" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
-        <bpmn:documentation>Converts a non-USD transaction amount to USD via the free, public frankfurter.app exchange-rate API (European Central Bank reference rates, no key required), so the agent's USD-amount policy check is comparing like with like.</bpmn:documentation>
+        <bpmn:documentation>Converts a non-USD transaction amount to USD via the free, public frankfurter.app exchange-rate API (European Central Bank reference rates, no key required), so the agent's USD-amount thresholds are comparing like with like.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
           <zeebe:ioMapping>
@@ -103,13 +129,40 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:serviceTask>
+      <bpmn:userTask id="AskFraudAnalyst" name="Ask fraud analyst">
+        <bpmn:documentation>Call this only when the case is genuinely ambiguous and you want a second opinion before deciding - it is entirely your own judgment call, not a requirement, and you keep the final decision either way. This pauses for a human response, but only for a limited time: see the attached timer. If nobody answers in time, you will be told so and should proceed on your own judgment instead of waiting further.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:formDefinition formId="fraud-analyst-consult" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=fromAi(toolCall.question, &#34;What you want the analyst to weigh in on.&#34;, &#34;string&#34;)" target="analystQuestion" />
+            <zeebe:input source="=fromAi(toolCall.context, &#34;A short summary of what you&#39;ve found so far and why the case is ambiguous.&#34;, &#34;string&#34;)" target="analystConsultContext" />
+            <zeebe:output source="=&#34;Analyst assessment: &#34; + analystAssessment + &#34;. Notes: &#34; + (if analystNotes != null then analystNotes else &#34;(none)&#34;)" target="toolCallResult" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+      <bpmn:boundaryEvent id="Boundary_AnalystTimeout" name="No response in time" attachedToRef="AskFraudAnalyst" cancelActivity="true">
+        <bpmn:documentation>Demo timer: 2 minutes, standing in for a real SLA (e.g. 4 hours) on how long the agent will wait for a human opinion before moving on with its own judgment. A timer event, just like the message events elsewhere in this process, is a first-class BPMN construct here - not a poll loop the agent has to run itself.</bpmn:documentation>
+        <bpmn:outgoing>Flow_ToAnalystTimeout</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerDef_AnalystTimeout">
+          <bpmn:timeDuration>PT2M</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_ToAnalystTimeout" sourceRef="Boundary_AnalystTimeout" targetRef="RecordAnalystTimeout" />
+      <bpmn:scriptTask id="RecordAnalystTimeout" name="Record analyst timeout">
+        <bpmn:documentation>Reported back to the agent as the result of AskFraudAnalyst when the timer wins the race - the agent is expected to proceed on its own judgment from here.</bpmn:documentation>
+        <bpmn:incoming>Flow_ToAnalystTimeout</bpmn:incoming>
+        <bpmn:extensionElements>
+          <zeebe:script expression="=&#34;No analyst response within the SLA window; proceed with your own judgment.&#34;" resultVariable="toolCallResult" />
+        </bpmn:extensionElements>
+      </bpmn:scriptTask>
       <bpmn:scriptTask id="RecordInvestigationOutcome" name="Record investigation outcome">
         <bpmn:documentation>Call this exactly once, as your last action, to report the investigation outcome and your reasoning.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:script expression="=investigationOutcome" resultVariable="investigationOutcome" />
           <zeebe:ioMapping>
-            <zeebe:input source="=fromAi(toolCall.investigationOutcome, &#34;The outcome: &#39;clear&#39; to close the alert automatically, &#39;hold-for-review&#39; to send it to a human fraud analyst.&#34;, &#34;string&#34;)" target="investigationOutcome" />
-            <zeebe:input source="=fromAi(toolCall.investigationSummary, &#34;A short summary of your reasoning, mentioning the riskScore, relatedAlerts90d, and the USD amount you used.&#34;, &#34;string&#34;)" target="investigationSummary" />
+            <zeebe:input source="=fromAi(toolCall.investigationOutcome, &#34;The outcome: &#39;clear&#39; to close the alert automatically, &#39;escalate&#39; to freeze the card and hand off to the fraud team.&#34;, &#34;string&#34;)" target="investigationOutcome" />
+            <zeebe:input source="=fromAi(toolCall.investigationSummary, &#34;A short summary of your reasoning, mentioning the riskScore, relatedAlerts90d, the USD amount you used, and whether you consulted the analyst.&#34;, &#34;string&#34;)" target="investigationSummary" />
             <zeebe:output source="=investigationOutcome" target="investigationOutcome" />
             <zeebe:output source="=investigationSummary" target="investigationSummary" />
             <zeebe:output source="=investigationOutcome + &#34;: &#34; + investigationSummary" target="toolCallResult" />
@@ -117,40 +170,21 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
         </bpmn:extensionElements>
       </bpmn:scriptTask>
     </bpmn:adHocSubProcess>
-    <bpmn:boundaryEvent id="Boundary_CustomerConfirmedFraud" name="Customer confirmed fraud" attachedToRef="FraudInvestigationAgent" cancelActivity="true" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorBoundary.v1" zeebe:modelerTemplateVersion="14" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==">
-      <bpmn:documentation>A second, independent webhook. If the (fictional) fraud platform's phone/chat channel confirms with the customer that the transaction is fraudulent - at any point while the agent is still investigating, whether it is mid tool-call or about to conclude - this interrupts the ad-hoc subprocess immediately and unconditionally. There is no gateway, no confidence threshold, and no prompt instruction involved: the BPMN structure itself guarantees that a confirmed-fraud event always wins over whatever the agent was reasoning about.
-
-Trigger it yourself, correlated by alertId, with:
-
-curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: application/json" -d "{\"alertId\":\"ALERT-6601\",\"confirmedBy\":\"customer-callback\",\"confirmationNotes\":\"Customer states they did not make this purchase and have no knowledge of the merchant.\",\"confirmedAt\":\"2026-07-29T10:15:00Z\"}"</bpmn:documentation>
-      <bpmn:extensionElements>
-        <zeebe:properties>
-          <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
-          <zeebe:property name="inbound.method" value="post" />
-          <zeebe:property name="inbound.context" value="fraud-confirmed" />
-          <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
-          <zeebe:property name="inbound.auth.type" value="NONE" />
-          <zeebe:property name="consumeUnmatchedEvents" value="true" />
-          <zeebe:property name="synchronousResponse" value="false" />
-          <zeebe:property name="correlationKeyExpression" value="=request.body.alertId" />
-          <zeebe:property name="deduplicationModeManualFlag" value="false" />
-          <zeebe:property name="deduplicationMode" value="AUTO" />
-          <zeebe:property name="resultExpression" value="={&#10;  confirmedBy: request.body.confirmedBy,&#10;  confirmationNotes: request.body.confirmationNotes,&#10;  confirmedAt: request.body.confirmedAt&#10;}" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_InterruptToPrepare</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MsgDef_CustomerConfirmedFraud" messageRef="Message_CustomerConfirmedFraud" />
+    <bpmn:boundaryEvent id="Boundary_SecondAlert" name="Second real-time alert (same customer)" attachedToRef="FraudInvestigationAgent" cancelActivity="true">
+      <bpmn:documentation>No connector, no separate webhook, no separate URL - this is a bare BPMN interrupting message boundary event, subscribed to the same "fraud-alert" message and the same customerId correlation key as the start event. As long as this agent instance is running (whether it is mid tool-call, or its own AskFraudAnalyst human task is open), a matching subscription is open here. When a second alert for this customerId is published while this instance is active, Zeebe's message correlation prefers this already-open subscription over starting a new instance, so the same "fraud alert received" webhook that started the case can also interrupt it - the external system never needs to know or care which endpoint to call for a follow-up. Structurally, no path exists from the agent to anywhere except through this event once it fires: whatever the agent was doing, including a pending human task, is cancelled unconditionally.</bpmn:documentation>
+      <bpmn:outgoing>Flow_InterruptToMerge</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_SecondAlert" messageRef="Message_FraudAlert" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_ToOutcomeGateway" sourceRef="FraudInvestigationAgent" targetRef="Gateway_InvestigationOutcome" />
-    <bpmn:exclusiveGateway id="Gateway_InvestigationOutcome" name="Investigation outcome?" default="Flow_HoldForReview">
+    <bpmn:exclusiveGateway id="Gateway_InvestigationOutcome" name="Investigation outcome?" default="Flow_Escalate">
       <bpmn:incoming>Flow_ToOutcomeGateway</bpmn:incoming>
       <bpmn:outgoing>Flow_Clear</bpmn:outgoing>
-      <bpmn:outgoing>Flow_HoldForReview</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Escalate</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_Clear" name="clear" sourceRef="Gateway_InvestigationOutcome" targetRef="CloseAlertNotification">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=investigationOutcome = "clear"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_HoldForReview" name="hold for review" sourceRef="Gateway_InvestigationOutcome" targetRef="UserTask_ReviewFraudAlert" />
+    <bpmn:sequenceFlow id="Flow_Escalate" name="escalate" sourceRef="Gateway_InvestigationOutcome" targetRef="Gateway_HandoffMerge" />
     <bpmn:serviceTask id="CloseAlertNotification" name="Close alert notification" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
       <bpmn:documentation>Posts the automatic clearance to httpbin.io's echo endpoint (a stand-in for a real customer-notification/case-management system).</bpmn:documentation>
       <bpmn:incoming>Flow_Clear</bpmn:incoming>
@@ -179,49 +213,28 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
     <bpmn:endEvent id="EndEvent_AlertCleared" name="Alert cleared automatically">
       <bpmn:incoming>Flow_ToAlertClearedEnd</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="UserTask_ReviewFraudAlert" name="Review flagged fraud alert">
-      <bpmn:extensionElements>
-        <zeebe:userTask />
-        <zeebe:formDefinition formId="fraud-alert-review" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_HoldForReview</bpmn:incoming>
-      <bpmn:outgoing>Flow_ToAnalystGateway</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_ToAnalystGateway" sourceRef="UserTask_ReviewFraudAlert" targetRef="Gateway_AnalystDecision" />
-    <bpmn:exclusiveGateway id="Gateway_AnalystDecision" name="Analyst decision?" default="Flow_Dismiss">
-      <bpmn:incoming>Flow_ToAnalystGateway</bpmn:incoming>
-      <bpmn:outgoing>Flow_ConfirmFraud</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Dismiss</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_ConfirmFraud" name="confirm fraud" sourceRef="Gateway_AnalystDecision" targetRef="Gateway_HandoffMerge">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=analystDecision = "confirm-fraud"</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_Dismiss" name="dismiss" sourceRef="Gateway_AnalystDecision" targetRef="EndEvent_AlertDismissed" />
-    <bpmn:endEvent id="EndEvent_AlertDismissed" name="Alert dismissed by analyst">
-      <bpmn:incoming>Flow_Dismiss</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="Gateway_HandoffMerge" name="Confirmed fraud (either path)">
-      <bpmn:documentation>Plain merge, no condition: joins the two ways a case can reach the fraud team - an analyst confirming fraud after a manual review, or the interrupt event confirming fraud while the agent was still investigating.</bpmn:documentation>
-      <bpmn:incoming>Flow_ConfirmFraud</bpmn:incoming>
-      <bpmn:incoming>Flow_InterruptToPrepare</bpmn:incoming>
+    <bpmn:exclusiveGateway id="Gateway_HandoffMerge" name="Escalated (either path)">
+      <bpmn:documentation>Plain merge, no condition: joins the two ways a case can reach the fraud team - the agent escalating on its own (possibly after consulting the analyst), or the interrupt event firing because a second real-time alert arrived for the same customer.</bpmn:documentation>
+      <bpmn:incoming>Flow_Escalate</bpmn:incoming>
+      <bpmn:incoming>Flow_InterruptToMerge</bpmn:incoming>
       <bpmn:outgoing>Flow_ToPrepareHandoff</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_InterruptToPrepare" sourceRef="Boundary_CustomerConfirmedFraud" targetRef="Gateway_HandoffMerge" />
+    <bpmn:sequenceFlow id="Flow_InterruptToMerge" sourceRef="Boundary_SecondAlert" targetRef="Gateway_HandoffMerge" />
     <bpmn:sequenceFlow id="Flow_ToPrepareHandoff" sourceRef="Gateway_HandoffMerge" targetRef="PrepareHandoffSummary" />
     <bpmn:scriptTask id="PrepareHandoffSummary" name="Prepare handoff summary">
-      <bpmn:documentation>Builds one consistent summary for the handoff task regardless of which path was taken to get here.</bpmn:documentation>
+      <bpmn:documentation>Builds one consistent summary for the handoff task regardless of which path was taken to get here. If investigationOutcome is set, RecordInvestigationOutcome actually ran, so this was the agent's own escalation; if it is still unset, the ad-hoc subprocess was cancelled before it got there, so this was the interrupt.</bpmn:documentation>
       <bpmn:incoming>Flow_ToPrepareHandoff</bpmn:incoming>
       <bpmn:outgoing>Flow_ToFreezeCard</bpmn:outgoing>
       <bpmn:extensionElements>
-        <zeebe:script expression="=if confirmationNotes != null then &#34;customer-confirmed-event&#34; else &#34;analyst-review&#34;" resultVariable="handoffTrigger" />
+        <zeebe:script expression="=if investigationOutcome != null then &#34;agent-escalation&#34; else &#34;second-alert-interrupt&#34;" resultVariable="handoffTrigger" />
         <zeebe:ioMapping>
-          <zeebe:output source="=if confirmationNotes != null then &#34;Customer confirmed fraud via callback (&#34; + confirmedBy + &#34;): &#34; + confirmationNotes else &#34;Fraud analyst confirmed fraud in manual review. Analyst notes: &#34; + (if analystNotes != null then analystNotes else &#34;(none provided)&#34;)" target="handoffReason" />
+          <zeebe:output source="=if investigationOutcome != null then &#34;Agent escalated after investigation: &#34; + investigationSummary else &#34;A second real-time alert for the same customer arrived while the first was still under investigation (possible card-testing / impossible-travel pattern) - the investigation was abandoned and the case escalated immediately, regardless of what the agent had concluded so far.&#34;" target="handoffReason" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_ToFreezeCard" sourceRef="PrepareHandoffSummary" targetRef="FreezeCard" />
     <bpmn:serviceTask id="FreezeCard" name="Freeze card" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
-      <bpmn:documentation>Posts the card-freeze instruction to httpbin.io's echo endpoint (a stand-in for a real card-management/processor system). Reachable only via a confirmed-fraud path - either an analyst's manual confirmation or the interrupt event - never automatically from the agent's own reasoning.</bpmn:documentation>
+      <bpmn:documentation>Posts the card-freeze instruction to httpbin.io's echo endpoint (a stand-in for a real card-management/processor system). Reachable only via an escalated path - either the agent's own decision or the interrupt event - never automatically for a case the agent cleared.</bpmn:documentation>
       <bpmn:incoming>Flow_ToFreezeCard</bpmn:incoming>
       <bpmn:outgoing>Flow_ToHandoffTask</bpmn:outgoing>
       <bpmn:extensionElements>
@@ -234,7 +247,7 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
-          <zeebe:input source="={&#10;  alertId: alertId,&#10;  customerId: customerId,&#10;  cardLast4: cardLast4,&#10;  handoffTrigger: handoffTrigger,&#10;  handoffReason: handoffReason&#10;}" target="body" />
+          <zeebe:input source="={&#10;  currentAlertId: alertId,&#10;  customerId: customerId,&#10;  currentCardLast4: cardLast4,&#10;  originalAlertId: originalAlertId,&#10;  handoffTrigger: handoffTrigger,&#10;  handoffReason: handoffReason&#10;}" target="body" />
           <zeebe:input source="=false" target="ignoreNullValues" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
@@ -266,58 +279,58 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
           <dc:Bounds x="120" y="245" width="82" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SnapshotOriginalAlert_di" bpmnElement="SnapshotOriginalAlert">
+        <dc:Bounds x="230" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FraudInvestigationAgent_di" bpmnElement="FraudInvestigationAgent" isExpanded="true">
-        <dc:Bounds x="240" y="40" width="620" height="380" />
+        <dc:Bounds x="380" y="40" width="780" height="420" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CrossReferenceTransactionHistory_di" bpmnElement="CrossReferenceTransactionHistory">
-        <dc:Bounds x="280" y="80" width="100" height="80" />
+        <dc:Bounds x="420" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ConvertToBaseCurrency_di" bpmnElement="ConvertToBaseCurrency">
-        <dc:Bounds x="440" y="80" width="100" height="80" />
+        <dc:Bounds x="580" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RecordInvestigationOutcome_di" bpmnElement="RecordInvestigationOutcome">
-        <dc:Bounds x="600" y="80" width="100" height="80" />
+        <dc:Bounds x="1000" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Boundary_CustomerConfirmedFraud_di" bpmnElement="Boundary_CustomerConfirmedFraud">
-        <dc:Bounds x="722" y="382" width="36" height="36" />
+      <bpmndi:BPMNShape id="AskFraudAnalyst_di" bpmnElement="AskFraudAnalyst">
+        <dc:Bounds x="740" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_AnalystTimeout_di" bpmnElement="Boundary_AnalystTimeout">
+        <dc:Bounds x="772" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="690" y="425" width="100" height="40" />
+          <dc:Bounds x="748" y="185" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RecordAnalystTimeout_di" bpmnElement="RecordAnalystTimeout">
+        <dc:Bounds x="740" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_SecondAlert_di" bpmnElement="Boundary_SecondAlert">
+        <dc:Bounds x="862" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="465" width="100" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_InvestigationOutcome_di" bpmnElement="Gateway_InvestigationOutcome" isMarkerVisible="true">
-        <dc:Bounds x="925" y="195" width="50" height="50" />
+        <dc:Bounds x="1225" y="195" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="908" y="165" width="84" height="27" />
+          <dc:Bounds x="1208" y="165" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CloseAlertNotification_di" bpmnElement="CloseAlertNotification">
-        <dc:Bounds x="1040" y="80" width="100" height="80" />
+        <dc:Bounds x="1340" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_AlertCleared_di" bpmnElement="EndEvent_AlertCleared">
-        <dc:Bounds x="1202" y="102" width="36" height="36" />
+        <dc:Bounds x="1502" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1180" y="145" width="82" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_ReviewFraudAlert_di" bpmnElement="UserTask_ReviewFraudAlert">
-        <dc:Bounds x="1040" y="300" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_AnalystDecision_di" bpmnElement="Gateway_AnalystDecision" isMarkerVisible="true">
-        <dc:Bounds x="1202" y="315" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1188" y="285" width="80" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_AlertDismissed_di" bpmnElement="EndEvent_AlertDismissed">
-        <dc:Bounds x="1202" y="440" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1180" y="483" width="82" height="40" />
+          <dc:Bounds x="1480" y="145" width="82" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_HandoffMerge_di" bpmnElement="Gateway_HandoffMerge" isMarkerVisible="true">
         <dc:Bounds x="1345" y="315" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1327" y="285" width="86" height="27" />
+          <dc:Bounds x="1330" y="285" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareHandoffSummary_di" bpmnElement="PrepareHandoffSummary">
@@ -335,57 +348,46 @@ curl -X POST "&lt;your webhook URL from the Webhooks tab&gt;" -H "Content-Type: 
           <dc:Bounds x="1920" y="365" width="82" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_ToAgent_di" bpmnElement="Flow_ToAgent">
+      <bpmndi:BPMNEdge id="Flow_ToSnapshot_di" bpmnElement="Flow_ToSnapshot">
         <di:waypoint x="178" y="220" />
-        <di:waypoint x="240" y="220" />
+        <di:waypoint x="230" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToAgent_di" bpmnElement="Flow_ToAgent">
+        <di:waypoint x="330" y="220" />
+        <di:waypoint x="380" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToAnalystTimeout_di" bpmnElement="Flow_ToAnalystTimeout">
+        <di:waypoint x="790" y="178" />
+        <di:waypoint x="790" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToOutcomeGateway_di" bpmnElement="Flow_ToOutcomeGateway">
-        <di:waypoint x="860" y="220" />
-        <di:waypoint x="925" y="220" />
+        <di:waypoint x="1160" y="220" />
+        <di:waypoint x="1225" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Clear_di" bpmnElement="Flow_Clear">
-        <di:waypoint x="950" y="195" />
-        <di:waypoint x="950" y="120" />
-        <di:waypoint x="1040" y="120" />
+        <di:waypoint x="1250" y="195" />
+        <di:waypoint x="1250" y="120" />
+        <di:waypoint x="1340" y="120" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="958" y="102" width="28" height="14" />
+          <dc:Bounds x="1258" y="102" width="28" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_HoldForReview_di" bpmnElement="Flow_HoldForReview">
-        <di:waypoint x="950" y="245" />
-        <di:waypoint x="950" y="340" />
-        <di:waypoint x="1040" y="340" />
+      <bpmndi:BPMNEdge id="Flow_Escalate_di" bpmnElement="Flow_Escalate">
+        <di:waypoint x="1250" y="245" />
+        <di:waypoint x="1250" y="340" />
+        <di:waypoint x="1345" y="340" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="958" y="310" width="65" height="14" />
+          <dc:Bounds x="1258" y="310" width="46" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToAlertClearedEnd_di" bpmnElement="Flow_ToAlertClearedEnd">
-        <di:waypoint x="1140" y="120" />
-        <di:waypoint x="1202" y="120" />
+        <di:waypoint x="1440" y="120" />
+        <di:waypoint x="1502" y="120" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ToAnalystGateway_di" bpmnElement="Flow_ToAnalystGateway">
-        <di:waypoint x="1140" y="340" />
-        <di:waypoint x="1202" y="340" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ConfirmFraud_di" bpmnElement="Flow_ConfirmFraud">
-        <di:waypoint x="1252" y="340" />
-        <di:waypoint x="1345" y="340" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1268" y="322" width="65" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_Dismiss_di" bpmnElement="Flow_Dismiss">
-        <di:waypoint x="1227" y="365" />
-        <di:waypoint x="1227" y="458" />
-        <di:waypoint x="1202" y="458" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1233" y="410" width="42" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_InterruptToPrepare_di" bpmnElement="Flow_InterruptToPrepare">
-        <di:waypoint x="740" y="418" />
-        <di:waypoint x="740" y="490" />
-        <di:waypoint x="1370" y="490" />
+      <bpmndi:BPMNEdge id="Flow_InterruptToMerge_di" bpmnElement="Flow_InterruptToMerge">
+        <di:waypoint x="880" y="458" />
+        <di:waypoint x="880" y="500" />
+        <di:waypoint x="1370" y="500" />
         <di:waypoint x="1370" y="365" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToPrepareHandoff_di" bpmnElement="Flow_ToPrepareHandoff">

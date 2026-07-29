@@ -1,6 +1,6 @@
 # Fraud Alert Triage Agent (Event-Driven Agent)
 
-[![Run In Camunda SaaS](https://img.shields.io/badge/Run%20In-Camunda%20SaaS-FC5D0D?style=for-the-badge)](https://modeler.cloud.camunda.io/import/resources?source=https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-alert-triage-agent.bpmn,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-alert-review.form,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-team-handoff.form&title=Event-Driven%20Agent)
+[![Run In Camunda SaaS](https://img.shields.io/badge/Run%20In-Camunda%20SaaS-FC5D0D?style=for-the-badge)](https://modeler.cloud.camunda.io/import/resources?source=https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-alert-triage-agent.bpmn,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-analyst-consult.form,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-team-handoff.form&title=Event-Driven%20Agent)
 
 A concrete runnable **Event-Driven Agent** example based on the pattern at [camunda.com/orchestrate/agents](https://camunda.com/orchestrate/agents/):
 
@@ -11,9 +11,10 @@ A concrete runnable **Event-Driven Agent** example based on the pattern at [camu
 It contains:
 
 - a process with **no start form at all** - the only way in is an inbound webhook, so the process simply does not exist until an external system posts to it
-- an agent subprocess whose first tool call deliberately takes ~8 real seconds, giving you an honest window to fire a second event at it mid-investigation
-- a second, independent webhook modeled as an **interrupting message boundary event** on the agent - it can fire at any point while the agent is running and unconditionally cancels whatever the agent was doing, no matter how far along or how confident it was
-- two independent ways to reach the same "confirmed fraud" outcome (a human analyst's manual review, or the interrupt event) that structurally converge on the same mandatory next steps
+- **one webhook endpoint, reused for every alert on the same customer** - a message start event with a required correlation key means a first alert starts a case, and a later alert for the same customer correlates straight into the running case instead. This is native Zeebe message correlation, not custom "check if already running" logic bolted on top
+- an interrupting message boundary event on the agent, subscribed to that same correlation - it can cancel the agent at any point, including while it is waiting on a human task, whenever a second real-time alert for that customer arrives
+- a human consultation that lives *inside* the agent's own tool loop - the agent decides for itself whether a case is ambiguous enough to ask a fraud analyst, and it keeps the final call either way. Contrast this with this repo's [Human-in-the-Loop Agent](../human-in-the-loop-agent) example, where the human gate is structurally mandatory; here it is the agent's own judgment
+- a timer boundary event bounding how long the agent will wait for that analyst - a demo-scale SLA, and the third first-class event type (message, message, timer) this example exercises
 
 It is intentionally compact so you can import, run, and interrupt quickly.
 
@@ -21,7 +22,7 @@ It is intentionally compact so you can import, run, and interrupt quickly.
 
 The smoothest path is to use a trial cluster in Camunda SaaS. Just use the following button and install the example into your cluster - you can sign up on the way if you don't yet have one:
 
-[![Run In Camunda SaaS](https://img.shields.io/badge/Run%20In-Camunda%20SaaS-FC5D0D?style=for-the-badge)](https://modeler.cloud.camunda.io/import/resources?source=https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-alert-triage-agent.bpmn,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-alert-review.form,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-team-handoff.form&title=Event-Driven%20Agent)
+[![Run In Camunda SaaS](https://img.shields.io/badge/Run%20In-Camunda%20SaaS-FC5D0D?style=for-the-badge)](https://modeler.cloud.camunda.io/import/resources?source=https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-alert-triage-agent.bpmn,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-analyst-consult.form,https://raw.githubusercontent.com/camunda/camunda-8-tutorials/main/examples/event-driven-agent/models/fraud-team-handoff.form&title=Event-Driven%20Agent)
 
 Why SaaS first:
 
@@ -30,41 +31,40 @@ Why SaaS first:
 
 1. Click the button above to import the process and both forms into Camunda SaaS as one project.
 2. Open **fraud-alert-triage-agent** and click **Deploy** (not "Deploy and run" - there's no start form to open, since this process only starts from a webhook).
-3. Click the **Fraud alert received** start event, open the **Webhooks** tab in the properties panel, and copy its URL. It looks like `https://<region>.connectors.camunda.io/<cluster-id>/inbound/fraud-alert-received`.
-4. Fire the first webhook - this is the "likely flagged" scenario (see [Demo scenarios](#demo-scenarios) below for the others):
+3. Click the **Fraud alert received** start event, open the **Webhooks** tab in the properties panel, and copy its URL. It looks like `https://<region>.connectors.camunda.io/<cluster-id>/inbound/fraud-alert-received`. This is the **only** webhook URL in this example - you'll reuse it for every alert.
+4. Fire the first alert - this is the "ambiguous" scenario, the one most likely to make the agent invoke its own analyst-consult tool (see [Demo scenarios](#demo-scenarios) for the others):
 
    ```bash
    curl -X POST "<the URL you copied>" \
      -H "Content-Type: application/json" \
      -d '{
        "alertId": "ALERT-6602",
-       "customerId": "CUST-40103",
+       "customerId": "CUST-40101",
        "cardLast4": "7788",
-       "transactionAmount": 2450.00,
+       "transactionAmount": 2200.00,
        "transactionCurrency": "USD",
-       "merchantName": "Nordic Electronics Oslo",
-       "merchantCountry": "Norway",
-       "riskScore": 62,
-       "alertReason": "First-time merchant category and country for this customer, amount well above their typical transaction size."
+       "merchantName": "Sunset Auto Parts",
+       "merchantCountry": "United States",
+       "riskScore": 52,
+       "alertReason": "Slightly elevated amount for a returning merchant category; one related alert in the past quarter that was previously dismissed as a false positive."
      }'
    ```
 
 5. Watch the flow in Operate: a process instance appears the moment the webhook lands, and the `Fraud Investigation Agent` subprocess starts reasoning immediately - no polling, nothing waiting for the next cron tick.
-6. This scenario ends up flagged, so the case lands on **Review flagged fraud alert** in Tasklist, pre-filled with the agent's own summary. Complete it choosing either decision to finish the process.
+6. If the agent decides to consult a human, an **Ask fraud analyst** task appears in Tasklist within its own attempt. Answer it (or leave it - it times out automatically after 2 minutes and the agent proceeds without it) and the agent records its final outcome. Depending on what happens, the case either closes automatically or reaches **Fraud team case handoff** in Tasklist.
 
 ## Try the interrupt (the actual point of this example)
 
-Steps 1-3 above are the same. This time, use the "clean-looking" scenario and interrupt it while it's still running:
+Steps 1-3 above are the same - same URL, no second endpoint. This time you'll call it **twice** for the same customer, which is exactly how the real system would behave: it doesn't know or care whether this is a first alert or a follow-up, it just posts every alert it has to the same place.
 
-1. Click the **Customer confirmed fraud** boundary event on the agent, open its **Webhooks** tab, and copy that URL too (it's a separate endpoint from the start event's).
-2. Fire the **first** webhook with this payload - on paper it looks mundane, and left alone the agent would very likely clear it automatically in a few seconds:
+1. Fire the first alert - on paper it looks mundane, and left alone the agent would very likely clear it automatically in a few seconds:
 
    ```bash
-   curl -X POST "<fraud-alert-received URL>" \
+   curl -X POST "<your webhook URL>" \
      -H "Content-Type: application/json" \
      -d '{
-       "alertId": "ALERT-6603",
-       "customerId": "CUST-40108",
+       "alertId": "ALERT-6604",
+       "customerId": "CUST-40112",
        "cardLast4": "3315",
        "transactionAmount": 4800,
        "transactionCurrency": "NOK",
@@ -75,45 +75,53 @@ Steps 1-3 above are the same. This time, use the "clean-looking" scenario and in
      }'
    ```
 
-3. **Immediately** - within about 8 seconds, while `Cross-reference transaction history` is still running - fire the **second** webhook, correlated by the same `alertId`:
+2. **Immediately** - within about 8 seconds, while `Cross-reference transaction history` is still running - fire a **second** alert with the **same `customerId`**, describing a classic card-testing / impossible-travel pattern:
 
    ```bash
-   curl -X POST "<fraud-confirmed URL>" \
+   curl -X POST "<your webhook URL>" \
      -H "Content-Type: application/json" \
      -d '{
-       "alertId": "ALERT-6603",
-       "confirmedBy": "customer-callback",
-       "confirmationNotes": "Customer states they did not make this purchase and have no knowledge of the merchant.",
-       "confirmedAt": "2026-07-29T10:15:00Z"
+       "alertId": "ALERT-6605",
+       "customerId": "CUST-40112",
+       "cardLast4": "3315",
+       "transactionAmount": 1.00,
+       "transactionCurrency": "USD",
+       "merchantName": "QuickMart Convenience #4471",
+       "merchantCountry": "Philippines",
+       "riskScore": 81,
+       "alertReason": "Second authorization attempt on this card within seconds - different country and merchant category from the first alert. Classic card-testing / impossible-travel pattern."
      }'
    ```
 
-4. Watch Operate: the agent subprocess is cancelled mid-flight - you'll see it end with an interrupting boundary event, not a normal completion - and the token jumps straight to `Freeze card`, then the **Fraud team case handoff** task in Tasklist. The agent never gets to finish its investigation, and nothing about its own reasoning had any say in the outcome.
+3. Watch Operate: the **second** call does not create a second process instance. Because both calls share the same `customerId` correlation key, and an instance for that key is already running, Zeebe correlates the second message into the already-open subscription on the agent's interrupting boundary event instead of starting a new case. The agent subprocess is cancelled mid-flight - you'll see it end via the interrupting boundary event, not a normal completion - and the token jumps straight to `Freeze card`, then **Fraud team case handoff** in Tasklist. The agent never gets to finish its first investigation, and nothing about its own reasoning had any say in the outcome.
 
-If you're not fast enough and the agent finishes on its own first, that's fine - just start a fresh instance (a new `alertId`) and try again. The 8-second delay is deliberate and documented on the `Cross-reference transaction history` tool, precisely so this is reproducible instead of a lucky race.
+   > **First time trying this:** confirm in Operate that step 2 really did correlate into the *existing* instance rather than spin up a second one. This relies on Zeebe's general message-correlation semantics (an open subscription on a running instance wins over starting a new one) rather than a special case Camunda has published a dedicated test for - it should behave exactly like the equivalent, Camunda-validated pattern for event subprocesses, but it's worth seeing it happen once with your own eyes.
+
+If you're not fast enough and the agent finishes on its own first, that's fine - just start a fresh instance (a new `customerId`) and try again. The 8-second delay is deliberate and documented on the `Cross-reference transaction history` tool, precisely so this is reproducible instead of a lucky race.
 
 ## What happens technically
 
-There is no start form. The **Fraud alert received** start event is the [Webhook connector](https://docs.camunda.io/docs/components/connectors/protocol/http-webhook/) applied to a plain start event - the process is created the instant an external system posts to it, and the entire incoming JSON body becomes the process's variables.
+There is no start form. **Fraud alert received** is the [Webhook connector](https://docs.camunda.io/docs/components/connectors/protocol/http-webhook/), applied to a *message* start event rather than a plain one, with a required correlation key (`customerId`). The entire incoming JSON body becomes process variables. A `Snapshot original alert` step immediately copies those into separate `original*` variables, so that if a later alert overwrites the plain ones, the handoff task can still show what was originally under investigation alongside whatever triggered the escalation.
 
-Inside `Fraud Investigation Agent`, the model invokes tools backed by real public services:
+Inside `Fraud Investigation Agent`, the model can invoke:
 
-| # | Capability | Protocol | Public service used | Tool / BPMN element |
+| # | Capability | Protocol | Backing service | Tool / BPMN element |
 |---|---|---|---|---|
 | 1 | Cross-reference history | REST (deliberately slow) | [httpbin.io](https://httpbin.io) `/delay/8` | `CrossReferenceTransactionHistory` |
 | 2 | Convert currency | REST | [frankfurter.app](https://frankfurter.app) (ECB reference rates) | `ConvertToBaseCurrency` |
+| 3 | Ask a human analyst | Human task, agent's own choice | Tasklist, form `fraud-analyst-consult` | `AskFraudAnalyst` (2-minute timer boundary) |
 
-The agent's policy: cross-reference the customer's history first (always), convert to USD if the transaction isn't already in USD, then clear the alert only if there are no related alerts in the last 90 days, the monitoring system's own risk score is under 50, **and** the USD amount is under 2,000 - otherwise it holds the case for a human fraud analyst.
+The agent's policy: always cross-reference first, convert to USD if needed, then apply two hard thresholds - clearly clear (no related alerts, risk score under 40, USD amount under 1,000) or clearly escalate (2+ related alerts, or risk score 70+, or USD amount 5,000+). Anything in between is genuinely ambiguous, and the agent may - entirely its own call - invoke `AskFraudAnalyst` for a second opinion before deciding. If nobody answers within the attached timer (2 minutes here, standing in for a real SLA), the boundary event fires, the agent is told so, and it proceeds on its own judgment. Either way, the agent alone records the final `clear`/`escalate` outcome - the analyst is advisory, never a gate.
 
-The event-driven part is the **Customer confirmed fraud** boundary event: a second [Webhook connector](https://docs.camunda.io/docs/components/connectors/protocol/http-webhook/), this time applied to an *interrupting message boundary event* attached to the whole agent subprocess, correlated by `alertId`. This is what the marketing page means by "BPMN message... events are first-class constructs" - there's no polling loop checking "has the customer called back yet?", no flag the agent has to check between tool calls. Zeebe simply cancels the ad-hoc subprocess the moment the message correlates, wherever it happened to be, and the token moves on. The agent's system prompt even says so explicitly: *"there is nothing special for you to do about it"* - the guarantee is structural, not something the model has to cooperate with.
+The event-driven part is the **Second real-time alert** boundary event on the whole agent subprocess: a bare interrupting message boundary event, no connector, no separate URL, subscribed to the exact same message (name + `customerId` correlation key) as the start event. This is what the marketing page means by "BPMN message... events are first-class constructs": there's no polling loop checking "has anything new come in for this customer?", no flag the agent has to check between tool calls or during a human wait. Zeebe simply cancels the ad-hoc subprocess - and anything running inside it, including a pending `AskFraudAnalyst` task - the moment a second alert for that customer correlates, wherever the case happened to be. The agent's system prompt even says so explicitly: *"there is nothing special for you to do about it"* - the guarantee is structural, not something the model has to cooperate with.
 
-Both paths that confirm fraud - an analyst's manual review, or the interrupt - flow through a plain merging gateway (`Confirmed fraud (either path)`) into `Prepare handoff summary`, which builds one consistent explanation before `Freeze card` and the human handoff. Whichever way a case got there, the fraud team sees the same shape of information.
+Both ways a case can reach the fraud team - the agent escalating on its own (possibly after consulting the analyst), or the interrupt firing - flow through a plain merging gateway (`Escalated (either path)`) into `Prepare handoff summary`, which builds one consistent explanation using whichever variables are actually set, before `Freeze card` and the human handoff.
 
 ## Demo scenarios
 
-All three scenarios are fired the same way - `curl` against the **Fraud alert received** webhook URL. None of them need a form.
+All scenarios are fired the same way - `curl` against the one **Fraud alert received** webhook URL. None of them need a form.
 
-### Likely cleared automatically
+### Clearly cleared automatically
 
 ```json
 {
@@ -129,13 +137,13 @@ All three scenarios are fired the same way - `curl` against the **Fraud alert re
 }
 ```
 
-`CUST-40100` → 0 related alerts, risk score 38, $145.50 - clears every threshold, so the agent clears it automatically and posts to `Close alert notification`. Nothing reaches a human.
+`CUST-40100` → 0 related alerts, risk score 38, $145.50 - clears every "clearly low risk" threshold, so the agent clears it directly. Nothing reaches a human.
 
-### Likely flagged for human review
+### Clearly escalated
 
 ```json
 {
-  "alertId": "ALERT-6602",
+  "alertId": "ALERT-6603",
   "customerId": "CUST-40103",
   "cardLast4": "7788",
   "transactionAmount": 2450.00,
@@ -147,25 +155,15 @@ All three scenarios are fired the same way - `curl` against the **Fraud alert re
 }
 ```
 
-`CUST-40103` → 3 related alerts (`40103 mod 4 = 3`), risk score 62, $2,450 - fails every threshold, so the agent holds it for review. Confirm fraud or dismiss it in Tasklist to see both endings.
+`CUST-40103` → 3 related alerts (`40103 mod 4 = 3`) alone clears the "clearly high risk" bar, so the agent escalates directly - no analyst consultation needed, straight to `Freeze card` and Tasklist.
+
+### Ambiguous - the agent may ask the analyst (see [above](#try-it-in-5-minutes-camunda-8-saas---recommended))
+
+`CUST-40101` → 1 related alert, risk score 52, $2,200 - lands in neither bucket. Whether the agent actually calls `AskFraudAnalyst` here is genuinely up to the model; try it a few times and you may see it decide either way.
 
 ### Interrupted mid-investigation (see [above](#try-the-interrupt-the-actual-point-of-this-example))
 
-```json
-{
-  "alertId": "ALERT-6603",
-  "customerId": "CUST-40108",
-  "cardLast4": "3315",
-  "transactionAmount": 4800,
-  "transactionCurrency": "NOK",
-  "merchantName": "Alpine Ski Rentals Oslo",
-  "merchantCountry": "Norway",
-  "riskScore": 45,
-  "alertReason": "Slightly above average ski-season purchase; first time renting from this merchant."
-}
-```
-
-`CUST-40108` → 0 related alerts (`40108 mod 4 = 0`), risk score 45 - on its own, this one is on track to clear. Firing the `fraud-confirmed` webhook for `ALERT-6603` while it's still investigating overrides that outcome completely, regardless of how the investigation would have ended.
+First alert `CUST-40112` → 0 related alerts, risk score 45, ~$495 after NOK conversion - on its own, on track to resolve calmly. A second alert for the same `customerId`, describing a rapid-fire, different-country, different-merchant, $1 test charge, overrides that outcome completely regardless of how the first investigation would have ended.
 
 The `relatedAlerts90d` figure is computed deterministically from the digits in `customerId` (`modulo(number(substring(customerId, 6)), 4)`) rather than pulled from a real database, so every run of a given scenario behaves the same way.
 
@@ -173,7 +171,7 @@ The `relatedAlerts90d` figure is computed deterministically from the digits in `
 
 Use this only if you need local Docker-based setup with your own LLM. The webhook mechanics work the same way, but you'll need to construct the URL yourself (no **Webhooks** tab in Desktop Modeler):
 
-`http(s)://<connectors base URL>/inbound/<webhook ID>` - `fraud-alert-received` and `fraud-confirmed` are the two webhook IDs in this model. See the [HTTP Webhook connector docs](https://docs.camunda.io/docs/components/connectors/protocol/http-webhook/#activate-the-http-webhook-connector-by-deploying-your-diagram) for the exact base URL for your setup.
+`http(s)://<connectors base URL>/inbound/fraud-alert-received` - see the [HTTP Webhook connector docs](https://docs.camunda.io/docs/components/connectors/protocol/http-webhook/#activate-the-http-webhook-connector-by-deploying-your-diagram) for the exact base URL for your setup.
 
 1. [Install a local LLM](https://docs.camunda.io/docs/next/guides/getting-started-agentic-orchestration/#set-up-ollama) (or use hosted credentials).
 2. Configure environment variables (example for local Ollama):
@@ -185,17 +183,18 @@ SECRET_CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL=gpt-oss:20b
 ```
 
 3. Start [Camunda 8 Run](https://docs.camunda.io/docs/self-managed/quickstart/developer-quickstart/c8run/).
-4. Deploy [models/fraud-alert-triage-agent.bpmn](models/fraud-alert-triage-agent.bpmn), [models/fraud-alert-review.form](models/fraud-alert-review.form), and [models/fraud-team-handoff.form](models/fraud-team-handoff.form).
+4. Deploy [models/fraud-alert-triage-agent.bpmn](models/fraud-alert-triage-agent.bpmn), [models/fraud-analyst-consult.form](models/fraud-analyst-consult.form), and [models/fraud-team-handoff.form](models/fraud-team-handoff.form).
 5. Trigger it with the same `curl` commands shown above, against your own webhook base URL.
 
 Camunda secrets read `secrets.<NAME>` from same-named environment variables.
 
 ## Notes and disclaimer
 
-This is an illustrative demo only.
+This is an illustrative demo only, deliberately simplified to make the event-driven mechanics legible in a few minutes.
 
+- **Real fraud investigation is a lot more complex than this.** Production systems weigh dozens of signals (device fingerprinting, behavioral biometrics, network-level velocity checks across merchants and issuers, case history, regulatory constraints on autonomous card actions, and far more), typically layer multiple models and rule engines rather than one LLM call, and involve compliance and legal review this example doesn't attempt to model. The point here is to show *how* Camunda models an event-driven agent - the webhook-only trigger, the shared-endpoint start-or-correlate mechanism, an agent-invoked (not mandatory) human step, and a timer-bounded wait - not to prescribe how fraud detection should actually work.
 - Public services are stand-ins for real enterprise systems (a card processor, a case-management platform).
-- The 8-second delay on `Cross-reference transaction history` exists purely so the interrupt demo is reproducible in a live walkthrough - a real fraud platform's history lookup wouldn't need to be artificially slowed down.
+- The 8-second delay on `Cross-reference transaction history` and the 2-minute analyst timeout exist purely so the interrupt and timeout demos are reproducible in a live walkthrough - a real fraud platform wouldn't need to be artificially slowed down, and a real SLA would likely be measured in hours.
 - No real customer, card, or transaction data is used.
 - Nothing here should be interpreted as fraud-detection or compliance guidance.
 
