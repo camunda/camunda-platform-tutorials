@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ExpenseDecisionAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ExpenseDecisionAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:process id="expense-decision-agent" name="Expense Decision Agent" isExecutable="true">
     <bpmn:startEvent id="StartEvent_ClaimSubmitted" name="Expense claim submitted">
       <bpmn:extensionElements>
@@ -209,32 +209,26 @@
           <dc:Bounds x="145" y="285" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BusinessRuleTask_EvaluatePolicy_di" bpmnElement="BusinessRuleTask_EvaluatePolicy">
+      <bpmndi:BPMNShape id="BusinessRuleTask_EvaluatePolicy_di" bpmnElement="BusinessRuleTask_EvaluatePolicy" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="250" y="220" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_PolicyOutcome_di" bpmnElement="Gateway_PolicyOutcome" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_PolicyOutcome_di" bpmnElement="Gateway_PolicyOutcome" isMarkerVisible="true" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="400" y="235" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="365" y="206" width="49" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_AgentOutcome_di" bpmnElement="Gateway_AgentOutcome" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="ExpenseReasoningAgent_di" bpmnElement="ExpenseReasoningAgent" isExpanded="true">
+        <dc:Bounds x="500" y="160" width="340" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConvertCurrency_di" bpmnElement="ConvertCurrency">
+        <dc:Bounds x="610" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AgentOutcome_di" bpmnElement="Gateway_AgentOutcome" isMarkerVisible="true" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
         <dc:Bounds x="900" y="235" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="866" y="283" width="48" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="HumanTask_ReviewExpenseClaim_di" bpmnElement="HumanTask_ReviewExpenseClaim">
-        <dc:Bounds x="1040" y="220" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_ManuallyDecided_di" bpmnElement="EndEvent_ManuallyDecided">
-        <dc:Bounds x="1200" y="242" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1181" y="285" width="76" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="NotifyRejectedClaim_di" bpmnElement="NotifyRejectedClaim">
-        <dc:Bounds x="1040" y="329" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotifyApprovedReimbursement_di" bpmnElement="NotifyApprovedReimbursement">
         <dc:Bounds x="1040" y="110" width="100" height="80" />
@@ -245,22 +239,22 @@
           <dc:Bounds x="1179" y="175" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotifyRejectedClaim_di" bpmnElement="NotifyRejectedClaim">
+        <dc:Bounds x="1040" y="329" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_ClaimRejected_di" bpmnElement="EndEvent_ClaimRejected">
         <dc:Bounds x="1200" y="351" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1183" y="394" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0wta6ki_di" bpmnElement="Event_1j5cfzr">
-        <dc:Bounds x="912" y="82" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="910" y="125" width="41" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="HumanTask_ReviewExpenseClaim_di" bpmnElement="HumanTask_ReviewExpenseClaim">
+        <dc:Bounds x="1040" y="220" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1m56tnr_di" bpmnElement="Event_0u2dhqx">
-        <dc:Bounds x="907" y="392" width="36" height="36" />
+      <bpmndi:BPMNShape id="EndEvent_ManuallyDecided_di" bpmnElement="EndEvent_ManuallyDecided">
+        <dc:Bounds x="1200" y="242" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="909" y="435" width="32" height="14" />
+          <dc:Bounds x="1181" y="285" width="76" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ndx4bn_di" bpmnElement="Event_08k9fom">
@@ -275,20 +269,26 @@
           <dc:Bounds x="409" y="435" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ExpenseReasoningAgent_di" bpmnElement="ExpenseReasoningAgent" isExpanded="true">
-        <dc:Bounds x="500" y="160" width="340" height="220" />
+      <bpmndi:BPMNShape id="Event_0wta6ki_di" bpmnElement="Event_1j5cfzr">
+        <dc:Bounds x="912" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="910" y="125" width="41" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ConvertCurrency_di" bpmnElement="ConvertCurrency">
-        <dc:Bounds x="540" y="230" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_1m56tnr_di" bpmnElement="Event_0u2dhqx">
+        <dc:Bounds x="907" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="909" y="435" width="32" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_0mwfn28_di" bpmnElement="Association_0mwfn28">
-        <di:waypoint x="669" y="380" />
-        <di:waypoint x="668" y="480" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1nq3ifs_di" bpmnElement="Association_1nq3ifs">
-        <di:waypoint x="300" y="300" />
-        <di:waypoint x="300" y="340" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_10q8vgq_di" bpmnElement="TextAnnotation_10q8vgq">
+        <dc:Bounds x="618" y="480" width="224" height="72" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0130wya_di" bpmnElement="TextAnnotation_0130wya">
+        <dc:Bounds x="250" y="340" width="130" height="57" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_ToPolicy_di" bpmnElement="Flow_ToPolicy">
         <di:waypoint x="198" y="260" />
         <di:waypoint x="250" y="260" />
@@ -318,6 +318,10 @@
           <dc:Bounds x="454" y="226" width="32" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToAgentGateway_di" bpmnElement="Flow_ToAgentGateway">
+        <di:waypoint x="840" y="260" />
+        <di:waypoint x="900" y="260" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AgentApproved_di" bpmnElement="Flow_AgentApproved">
         <di:waypoint x="925" y="235" />
         <di:waypoint x="925" y="150" />
@@ -325,21 +329,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="937" y="180" width="46" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ToEndApproved_di" bpmnElement="Flow_ToEndApproved">
-        <di:waypoint x="1140" y="150" />
-        <di:waypoint x="1200" y="150" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_AgentEscalate_di" bpmnElement="Flow_AgentEscalate">
-        <di:waypoint x="950" y="260" />
-        <di:waypoint x="1040" y="260" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="952" y="242" width="41" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ToEndManual_di" bpmnElement="Flow_ToEndManual">
-        <di:waypoint x="1140" y="260" />
-        <di:waypoint x="1200" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AgentRejected_di" bpmnElement="Flow_AgentRejected">
         <di:waypoint x="925" y="285" />
@@ -349,22 +338,25 @@
           <dc:Bounds x="930" y="294" width="40" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentEscalate_di" bpmnElement="Flow_AgentEscalate">
+        <di:waypoint x="950" y="260" />
+        <di:waypoint x="1040" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="952" y="242" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEndApproved_di" bpmnElement="Flow_ToEndApproved">
+        <di:waypoint x="1140" y="150" />
+        <di:waypoint x="1200" y="150" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToEndRejected_di" bpmnElement="Flow_ToEndRejected">
         <di:waypoint x="1140" y="369" />
         <di:waypoint x="1200" y="369" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ToAgentGateway_di" bpmnElement="Flow_ToAgentGateway">
-        <di:waypoint x="840" y="260" />
-        <di:waypoint x="900" y="260" />
+      <bpmndi:BPMNEdge id="Flow_ToEndManual_di" bpmnElement="Flow_ToEndManual">
+        <di:waypoint x="1140" y="260" />
+        <di:waypoint x="1200" y="260" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="TextAnnotation_10q8vgq_di" bpmnElement="TextAnnotation_10q8vgq">
-        <dc:Bounds x="618" y="480" width="224" height="72" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0130wya_di" bpmnElement="TextAnnotation_0130wya">
-        <dc:Bounds x="250" y="340" width="130" height="57" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1kfu6is_di" bpmnElement="Flow_1kfu6is">
         <di:waypoint x="948" y="100" />
         <di:waypoint x="994" y="100" />
@@ -376,6 +368,14 @@
         <di:waypoint x="992" y="410" />
         <di:waypoint x="992" y="390" />
         <di:waypoint x="1040" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0mwfn28_di" bpmnElement="Association_0mwfn28">
+        <di:waypoint x="669" y="380" />
+        <di:waypoint x="668" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1nq3ifs_di" bpmnElement="Association_1nq3ifs">
+        <di:waypoint x="300" y="300" />
+        <di:waypoint x="300" y="340" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
