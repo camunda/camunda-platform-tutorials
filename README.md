@@ -8,7 +8,7 @@ Producing content that people should be able to try, not just read (a blog post,
 
 Examples:
 
-* [Task Agent — Seed Export Compliance](examples/task-agent)
+* See [examples](examples/)
 
 Quick Starts:
 
