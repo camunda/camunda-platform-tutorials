@@ -1,0 +1,18 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Long-running agent",
+  "subtitle": "A runnable Long-Running Agent",
+  "description": "A credit-line-increase agent whose first tool submits a request to a credit bureau and then genuinely waits - potentially hours or days in reality - for the bureau's asynchronous reply, correlated via an inbound webhook, with zero engine resources consumed while it waits. An engine-native timer, scoped precisely to that one wait, tells the agent if the bureau's SLA elapses; the agent then decides for itself whether to hand the case to a different team (underwriting ops) for a manual decision.",
+  "creator": "Camunda",
+  "camundaVersion": "8.8+",
+  "thumbnail": "docs/credit-line-increase-agent.png",
+  "thumbnailAlt": "BPMN model: a start form feeding a Credit Review Agent ad-hoc subprocess whose tools are a request-then-wait chain (an HTTP call followed by a webhook-backed wait task with its own SLA timer) and an agent-invoked escalation to underwriting ops, both flowing into a shared customer notification step.",
+  "resources": [
+    "models/credit-line-increase-agent.bpmn",
+    "models/credit-line-request.form",
+    "models/underwriting-ops-escalation.form"
+  ],
+  "importTitle": "Long-Running Agent",
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/long-running-agent",
+  "support": "https://forum.camunda.io/"
+}

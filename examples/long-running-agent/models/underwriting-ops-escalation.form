@@ -1,0 +1,90 @@
+{
+  "components": [
+    {
+      "text": "# The agent wants a human decision",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_Heading"
+    },
+    {
+      "text": "The credit bureau did not reply within the SLA window, so the agent - entirely its own judgment call - is asking underwriting ops to decide instead of waiting any longer.",
+      "type": "text",
+      "layout": {
+        "row": "Row_note",
+        "columns": null
+      },
+      "id": "Field_Note"
+    },
+    {
+      "text": "**Customer:** {{customerId}}\n\n**Current limit:** ${{currentLimitUSD}} -> **Requested limit:** ${{requestedLimitUSD}}\n\n**Tenure:** {{customerTenureYears}} years - **Late payments (90d):** {{recentLatePayments90d}}\n\n**Reason given:** {{requestReason}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_applicationFacts",
+        "columns": null
+      },
+      "id": "Field_ApplicationFacts"
+    },
+    {
+      "text": "**Agent's question:** {{opsEscalationQuestion}}\n\n**Agent's own summary:** {{opsEscalationContext}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_context",
+        "columns": null
+      },
+      "id": "Field_Context"
+    },
+    {
+      "label": "Decision",
+      "values": [
+        { "label": "Approve as requested", "value": "approved" },
+        { "label": "Approve a reduced limit", "value": "reduced" },
+        { "label": "Deny", "value": "denied" }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_decision",
+        "columns": null
+      },
+      "id": "Field_Decision",
+      "key": "opsDecisionOutcome",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Approved limit (USD, if approving)",
+      "type": "number",
+      "layout": {
+        "row": "Row_approvedLimit",
+        "columns": null
+      },
+      "id": "Field_ApprovedLimit",
+      "key": "opsApprovedLimitUSD"
+    },
+    {
+      "label": "Notes for the agent",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_notes",
+        "columns": null
+      },
+      "id": "Field_Notes",
+      "key": "opsDecisionNotes",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "underwriting-ops-escalation",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 19
+}

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_CreditLineIncreaseAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <bpmn:message id="Message_BureauReport" name="bureau-report">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=customerId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:process id="credit-line-increase-agent" name="Credit Line Increase Agent (Long-Running Agent)" isExecutable="true">
+    <bpmn:documentation>A concrete runnable Long-Running Agent example, based on the pattern at camunda.com/orchestrate/agents.
+
+Started by a form (no webhook friction to kick things off). The agent's first tool submits a no-op request to a credit bureau and then, as a direct continuation of that same tool call, genuinely waits - potentially hours or days in reality - for the bureau's asynchronous reply, which arrives as an inbound webhook correlated on customerId. Zeebe holds that wait with no engine resources consumed - no worker thread, no polling job. If the bureau blows through its SLA, an engine-native timer fires and tells the agent so; the agent itself then decides whether to hand the case to a different team (underwriting ops) - its own judgment, informed by a native timeout signal, not the engine unilaterally overriding it.</bpmn:documentation>
+    <bpmn:startEvent id="StartEvent_CreditLineRequest" name="Credit line increase requested">
+      <bpmn:documentation>Start form. Its instructions text explains that, once the process is running, the bureau's reply must be sent as a webhook call (the "Wait for bureau report" task's webhook URL, copied from Modeler's Webhooks tab) rather than anything the form itself submits.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="credit-line-request" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_ToAgent</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_ToAgent" sourceRef="StartEvent_CreditLineRequest" targetRef="CreditReviewAgent" />
+    <bpmn:adHocSubProcess id="CreditReviewAgent" name="Credit Review Agent" zeebe:modelerTemplate="io.camunda.connectors.agenticai.aiagent.jobworker.v1" zeebe:modelerTemplateVersion="10" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Reviews the credit-line-increase request. Its first tool submits a no-op request to the credit bureau and then genuinely waits - potentially hours or days in reality - for the bureau's asynchronous reply, with no engine resources consumed while it waits. If the bureau's SLA elapses first, the agent is told so and may, entirely its own judgment call, ask underwriting ops (a different team) for a manual decision instead. Either way it finishes with one structured decision.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult&#10;}" />
+        <zeebe:taskDefinition type="io.camunda.agenticai:aiagent-job-worker:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="openaiCompatible" target="provider.type" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
+          <zeebe:input source="=&#34;You are a demo credit-line-increase assistant for a bank. A customer has asked to raise their credit limit; your job is to investigate and decide.&#10;&#10;You must invoke tools using the actual tool-calling mechanism available to you - never describe or simulate a tool call in your plain-text response, and never invent, guess, or fabricate what a tool would return.&#10;&#10;Steps:&#10;1. Always call RequestCreditBureauReport first, with the customer&#39;s details. This tool submits the request and then genuinely waits for the bureau&#39;s reply - it may take a long time to return (in a real system, hours or days), and that is expected, not an error. When it returns, you will either have the bureau&#39;s report (creditScoreExternal, existingDebtUSD, bureauFlags) or a note that the bureau did not answer within the SLA window.&#10;2. If you have the bureau&#39;s report, decide using these thresholds:&#10;   - Approve as requested (decisionOutcome &#39;approved&#39;) if creditScoreExternal is 700 or above, existingDebtUSD is under 3 times the requested limit, and there are no late payments in the last 90 days.&#10;   - Approve a reduced limit (decisionOutcome &#39;reduced&#39;) if creditScoreExternal is between 620 and 699, or there is exactly one late payment in the last 90 days, or bureauFlags mentions a minor issue. Propose an approvedLimitUSD roughly halfway between the current and requested limit.&#10;   - Deny (decisionOutcome &#39;denied&#39;) if creditScoreExternal is under 620, or there are 2 or more late payments in the last 90 days, or bureauFlags mentions something serious (for example delinquency or a fraud flag).&#10;3. If the bureau did not answer in time, you may call EscalateToUnderwritingOps to get a human underwriter&#39;s decision instead of waiting any longer - this is entirely your own judgment call, not a requirement, and you keep the final say. If you do, base your final answer on their decision.&#10;4. Once you&#39;ve reached a conclusion, stop calling tools and give your final answer: &#39;decisionOutcome&#39; must be &#39;approved&#39;, &#39;reduced&#39;, or &#39;denied&#39;; &#39;approvedLimitUSD&#39; is the limit you are granting (the requested limit if approved, a lower number if reduced, or the customer&#39;s current limit if denied); &#39;decisionSummary&#39; should briefly explain your reasoning, mentioning whichever of the bureau&#39;s report or underwriting ops&#39; decision you relied on. What happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;Credit line increase request:&#10;Customer ID: &#34; + customerId + &#34;&#10;Current limit: $&#34; + string(currentLimitUSD) + &#34;&#10;Requested limit: $&#34; + string(requestedLimitUSD) + &#34;&#10;Customer tenure: &#34; + string(customerTenureYears) + &#34; years&#10;Late payments in the last 90 days (per our own records): &#34; + string(recentLatePayments90d) + &#34;&#10;Reason given: &#34; + requestReason + &#34;&#10;&#10;Investigate this request and give your final decision.&#34;" target="data.userPrompt.prompt" />
+          <zeebe:input target="agentContext" />
+          <zeebe:input source="in-process" target="data.memory.storage.type" />
+          <zeebe:input source="=20" target="data.memory.contextWindowSize" />
+          <zeebe:input source="=10" target="data.limits.maxModelCalls" />
+          <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
+          <zeebe:input source="json" target="data.response.format.type" />
+          <zeebe:input source="={&#10;  &#34;type&#34;: &#34;object&#34;,&#10;  &#34;properties&#34;: {&#10;    &#34;decisionOutcome&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;enum&#34;: [&#34;approved&#34;, &#34;reduced&#34;, &#34;denied&#34;],&#10;      &#34;description&#34;: &#34;The final decision on the credit line increase.&#34;&#10;    },&#10;    &#34;approvedLimitUSD&#34;: {&#10;      &#34;type&#34;: &#34;number&#34;,&#10;      &#34;description&#34;: &#34;The credit limit being granted: the requested limit if approved, a lower number if reduced, or the current limit if denied.&#34;&#10;    },&#10;    &#34;decisionSummary&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;description&#34;: &#34;A short explanation of your reasoning, mentioning the bureau&#39;s report or underwriting ops&#39; decision, whichever you relied on.&#34;&#10;    }&#10;  },&#10;  &#34;required&#34;: [&#34;decisionOutcome&#34;, &#34;approvedLimitUSD&#34;, &#34;decisionSummary&#34;]&#10;}" target="data.response.format.schema" />
+          <zeebe:input source="CreditLineDecision" target="data.response.format.schemaName" />
+          <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
+          <zeebe:input source="=false" target="data.response.includeAgentContext" />
+          <zeebe:input target="agent" />
+          <zeebe:output source="=agent" target="agent" />
+          <zeebe:output source="=agent.responseJson.decisionOutcome" target="decisionOutcome" />
+          <zeebe:output source="=agent.responseJson.approvedLimitUSD" target="approvedLimitUSD" />
+          <zeebe:output source="=agent.responseJson.decisionSummary" target="decisionSummary" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="10" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.aiagent.jobworker.v1" />
+          <zeebe:header key="retryBackoff" value="PT30S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ToAgent</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToNotify</bpmn:outgoing>
+      <bpmn:serviceTask id="RequestCreditBureauReport" name="Request credit bureau report" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:documentation>Tool (root - the agent calls this one). A plain no-op REST call (httpbin.io echo) simulating "submitted the request to the bureau" - a fire, not a wait. Its only job is to kick off the request; the actual waiting happens in the next step of this same tool call, WaitForBureauReport.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=false" target="ignoreNullValues" />
+            <zeebe:input source="noAuth" target="authentication.type" />
+            <zeebe:input source="POST" target="method" />
+            <zeebe:input source="https://httpbin.io/post" target="url" />
+            <zeebe:input source="={&#10;  customerId: fromAi(toolCall.customerId, &#34;The customer&#39;s ID.&#34;, &#34;string&#34;),&#10;  currentLimitUSD: fromAi(toolCall.currentLimitUSD, &#34;The customer&#39;s current credit limit in USD.&#34;, &#34;number&#34;),&#10;  requestedLimitUSD: fromAi(toolCall.requestedLimitUSD, &#34;The credit limit the customer is requesting, in USD.&#34;, &#34;number&#34;),&#10;  customerTenureYears: fromAi(toolCall.customerTenureYears, &#34;How many years this customer has held the account.&#34;, &#34;number&#34;),&#10;  recentLatePayments90d: fromAi(toolCall.recentLatePayments90d, &#34;The number of late payments in the last 90 days, per our own records.&#34;, &#34;number&#34;)&#10;}" target="body" />
+            <zeebe:input source="=false" target="storeResponse" />
+            <zeebe:input source="=false" target="followRedirects" />
+            <zeebe:input source="=15" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="=15" target="readTimeoutInSeconds" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="elementTemplateVersion" value="13" />
+            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+            <zeebe:header key="resultExpression" value="={}" />
+            <zeebe:header key="retryBackoff" value="PT5S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:outgoing>Flow_RequestToWait</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_RequestToWait" sourceRef="RequestCreditBureauReport" targetRef="WaitForBureauReport" />
+      <bpmn:receiveTask id="WaitForBureauReport" name="Wait for bureau report" zeebe:modelerTemplate="io.camunda.connectors.webhook.WebhookConnectorReceive.v1" zeebe:modelerTemplateVersion="15" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyBpZD0naWNvbicgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB3aWR0aD0nMTgnIGhlaWdodD0nMTgnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPGRlZnM+CiAgICA8c3R5bGU+LmNscy0xIHsgZmlsbDogbm9uZTsgfTwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoCiAgICBkPSdNMjQsMjZhMywzLDAsMSwwLTIuODE2NC00SDEzdjFhNSw1LDAsMSwxLTUtNVYxNmE3LDcsMCwxLDAsNi45Mjg3LDhoNi4yNTQ5QTIuOTkxNCwyLjk5MTQsMCwwLDAsMjQsMjZaJy8+CiAgPHBhdGgKICAgIGQ9J00yNCwxNmE3LjAyNCw3LjAyNCwwLDAsMC0yLjU3LjQ4NzNsLTMuMTY1Ni01LjUzOTVhMy4wNDY5LDMuMDQ2OSwwLDEsMC0xLjczMjYuOTk4NWw0LjExODksNy4yMDg1Ljg2ODYtLjQ5NzZhNS4wMDA2LDUuMDAwNiwwLDEsMS0xLjg1MSw2Ljg0MThMMTcuOTM3LDI2LjUwMUE3LjAwMDUsNy4wMDA1LDAsMSwwLDI0LDE2WicvPgogIDxwYXRoCiAgICBkPSdNOC41MzIsMjAuMDUzN2EzLjAzLDMuMDMsMCwxLDAsMS43MzI2Ljk5ODVDMTEuNzQsMTguNDcsMTMuODYsMTQuNzYwNywxMy44OSwxNC43MDhsLjQ5NzYtLjg2ODItLjg2NzctLjQ5N2E1LDUsMCwxLDEsNi44MTItMS44NDM4bDEuNzMxNSwxLjAwMmE3LjAwMDgsNy4wMDA4LDAsMSwwLTEwLjM0NjIsMi4wMzU2Yy0uNDU3Ljc0MjctMS4xMDIxLDEuODcxNi0yLjA3MzcsMy41NzI4WicvPgogIDxyZWN0IGlkPSdfVHJhbnNwYXJlbnRfUmVjdGFuZ2xlXycgZGF0YS1uYW1lPScmbHQ7VHJhbnNwYXJlbnQgUmVjdGFuZ2xlJmd0OycgY2xhc3M9J2Nscy0xJwogICAgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJy8+Cjwvc3ZnPg==" messageRef="Message_BureauReport">
+        <bpmn:documentation>The star of this example. A "wait task" correlated on customerId, backed by the HTTP Webhook connector (same zero-friction mechanism as event-driven-agent's start event, just attached to a mid-process wait instead of a start). This is a genuine asynchronous wait - realistically hours to days - during which Zeebe consumes no engine resources at all. Not a separate tool: it is the direct continuation of RequestCreditBureauReport, so the agent experiences one tool call that simply takes a long time to return, exactly like a slow HTTP call. When the webhook lands, the agent resumes with full context, as if no time had passed.
+
+To simulate the bureau's reply, POST to this element's webhook URL (Modeler's Webhooks tab, once deployed):
+
+curl -X POST "&lt;the webhook URL&gt;" -H "Content-Type: application/json" -d "{\"customerId\":\"&lt;the customerId from the start form&gt;\",\"creditScoreExternal\":712,\"existingDebtUSD\":8400,\"bureauFlags\":\"none\"}"</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:properties>
+            <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
+            <zeebe:property name="inbound.method" value="post" />
+            <zeebe:property name="inbound.context" value="credit-line-bureau-report" />
+            <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
+            <zeebe:property name="inbound.auth.type" value="NONE" />
+            <zeebe:property name="consumeUnmatchedEvents" value="true" />
+            <zeebe:property name="synchronousResponse" value="false" />
+            <zeebe:property name="correlationKeyExpression" value="=request.body.customerId" />
+            <zeebe:property name="deduplicationModeManualFlag" value="false" />
+            <zeebe:property name="deduplicationMode" value="AUTO" />
+            <zeebe:property name="resultExpression" value="={&#10;  creditScoreExternal: request.body.creditScoreExternal,&#10;  existingDebtUSD: request.body.existingDebtUSD,&#10;  bureauFlags: request.body.bureauFlags,&#10;  toolCallResult: &#34;Bureau report received for &#34; + request.body.customerId + &#34;: credit score &#34; + string(request.body.creditScoreExternal) + &#34;, existing debt $&#34; + string(request.body.existingDebtUSD) + &#34;, flags: &#34; + request.body.bureauFlags + &#34;.&#34;&#10;}" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_RequestToWait</bpmn:incoming>
+      </bpmn:receiveTask>
+      <bpmn:boundaryEvent id="Boundary_BureauSLA" name="Bureau SLA exceeded&#10;(5 minutes)" attachedToRef="WaitForBureauReport">
+        <bpmn:documentation>Interrupting timer boundary directly on the wait step (demo-scaled to PT3M, standing in for a real multi-day SLA) - engine-native, not a poll loop. Scoped precisely to this one wait, unlike attaching it to the whole agent. Because this boundary lives on an element nested inside the ad-hoc subprocess, its outgoing flow stays inside the subprocess too - it reports the timeout back into the agent's own tool-call loop rather than jumping straight out to a task outside.</bpmn:documentation>
+        <bpmn:outgoing>Flow_ToBureauTimeoutRecord</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerDef_BureauSLA">
+          <bpmn:timeDuration>PT5M</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_ToBureauTimeoutRecord" sourceRef="Boundary_BureauSLA" targetRef="RecordBureauTimeout" />
+      <bpmn:scriptTask id="RecordBureauTimeout" name="Record bureau timeout">
+        <bpmn:documentation>Reported back to the agent as the result of the RequestCreditBureauReport/WaitForBureauReport tool call when the timer wins the race - same convention as event-driven-agent's RecordAnalystTimeout. Tells the agent no reply arrived in time and that EscalateToUnderwritingOps is available if it judges the case can't wait any longer; the agent keeps the call.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:script expression="=&#34;No credit bureau reply within the SLA window. EscalateToUnderwritingOps is available if you judge the case can&#39;t wait any longer - that is your own judgment call.&#34;" resultVariable="toolCallResult" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_ToBureauTimeoutRecord</bpmn:incoming>
+      </bpmn:scriptTask>
+      <bpmn:userTask id="EscalateToUnderwritingOps" name="Escalate to underwriting ops">
+        <bpmn:documentation>Tool (root - a second, independent thing the agent can call). Plain Camunda user task in Tasklist - a different team than whoever the bureau request was addressed to. Entirely the agent's own judgment call, typically made after RecordBureauTimeout tells it the bureau didn't answer in time, but not gated on it structurally. Multi-team coordination realized as an ordinary tool call, not a hard-coded reroute.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:formDefinition formId="underwriting-ops-escalation" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=fromAi(toolCall.question, &#34;What you want underwriting ops to decide.&#34;, &#34;string&#34;)" target="opsEscalationQuestion" />
+            <zeebe:input source="=fromAi(toolCall.context, &#34;A short summary of the application and why you&#39;re escalating (for example, the bureau report never arrived).&#34;, &#34;string&#34;)" target="opsEscalationContext" />
+            <zeebe:output source="=&#34;Underwriting ops decided: &#34; + opsDecisionOutcome + (if opsApprovedLimitUSD != null then &#34; at $&#34; + string(opsApprovedLimitUSD) else &#34;&#34;) + &#34;. Notes: &#34; + opsDecisionNotes" target="toolCallResult" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+      </bpmn:userTask>
+    </bpmn:adHocSubProcess>
+    <bpmn:sequenceFlow id="Flow_ToNotify" sourceRef="CreditReviewAgent" targetRef="NotifyCustomerDecision" />
+    <bpmn:serviceTask id="NotifyCustomerDecision" name="Notify customer of decision" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Plain no-op REST call (httpbin.io echo), standing in for a real customer-notification system. Reached the same way regardless of whether the agent decided on its own (bureau replied in time) or relayed underwriting ops' manual decision (bureau timed out) - the agent always finishes normally with one structured decision either way, so no merge gateway is needed here.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="https://httpbin.io/post" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=false" target="followRedirects" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={&#10;  customerId: customerId,&#10;  decisionOutcome: decisionOutcome,&#10;  approvedLimitUSD: approvedLimitUSD,&#10;  decisionSummary: decisionSummary&#10;}" target="body" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="13" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="retryBackoff" value="PT5S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ToNotify</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEnd</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="NotifyCustomerDecision" targetRef="EndEvent_Done" />
+    <bpmn:endEvent id="EndEvent_Done" name="Done">
+      <bpmn:incoming>Flow_ToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="credit-line-increase-agent">
+      <bpmndi:BPMNShape id="StartEvent_CreditLineRequest_di" bpmnElement="StartEvent_CreditLineRequest">
+        <dc:Bounds x="152" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="262" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CreditReviewAgent_di" bpmnElement="CreditReviewAgent" isExpanded="true">
+        <dc:Bounds x="240" y="100" width="460" height="340" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RequestCreditBureauReport_di" bpmnElement="RequestCreditBureauReport">
+        <dc:Bounds x="280" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WaitForBureauReport_di" bpmnElement="WaitForBureauReport">
+        <dc:Bounds x="440" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RecordBureauTimeout_di" bpmnElement="RecordBureauTimeout">
+        <dc:Bounds x="560" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EscalateToUnderwritingOps_di" bpmnElement="EscalateToUnderwritingOps">
+        <dc:Bounds x="290" y="340" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_BureauSLA_di" bpmnElement="Boundary_BureauSLA">
+        <dc:Bounds x="472" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="249" width="60" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_RequestToWait_di" bpmnElement="Flow_RequestToWait">
+        <di:waypoint x="380" y="190" />
+        <di:waypoint x="440" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToBureauTimeoutRecord_di" bpmnElement="Flow_ToBureauTimeoutRecord">
+        <di:waypoint x="490" y="248" />
+        <di:waypoint x="490" y="290" />
+        <di:waypoint x="560" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="NotifyCustomerDecision_di" bpmnElement="NotifyCustomerDecision">
+        <dc:Bounds x="760" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Done_di" bpmnElement="EndEvent_Done">
+        <dc:Bounds x="912" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="263" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_ToAgent_di" bpmnElement="Flow_ToAgent">
+        <di:waypoint x="188" y="240" />
+        <di:waypoint x="240" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToNotify_di" bpmnElement="Flow_ToNotify">
+        <di:waypoint x="700" y="240" />
+        <di:waypoint x="760" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEnd_di" bpmnElement="Flow_ToEnd">
+        <di:waypoint x="860" y="240" />
+        <di:waypoint x="912" y="240" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

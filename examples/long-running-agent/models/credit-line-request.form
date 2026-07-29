@@ -1,0 +1,116 @@
+{
+  "components": [
+    {
+      "text": "# Request a credit line increase",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_Heading"
+    },
+    {
+      "text": "**This form only starts the case.** Once submitted, the agent fires a no-op request to the credit bureau and then genuinely waits - the bureau's reply does **not** come back through a form. It arrives later as a **webhook call**: open the **credit-line-increase-agent** process definition in Modeler, click the **Wait for bureau report** task, and copy its webhook URL from the **Webhooks** tab (one URL, reused for every case - it correlates by customerId). Then `POST` the bureau's reply to it, e.g.\n\n```bash\ncurl -X POST \"<the webhook URL>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"customerId\": \"<the customerId you entered below>\",\n    \"creditScoreExternal\": 712,\n    \"existingDebtUSD\": 8400,\n    \"bureauFlags\": \"none\"\n  }'\n```\n\nIf you don't send it within the demo SLA window (3 minutes), the agent is told the bureau timed out and may - its own judgment call - ask underwriting ops for a manual decision in Tasklist instead.",
+      "type": "text",
+      "layout": {
+        "row": "Row_webhookNote",
+        "columns": null
+      },
+      "id": "Field_WebhookNote"
+    },
+    {
+      "label": "Customer ID",
+      "description": "Used as the correlation key for the bureau's later webhook reply - reuse this exact value in the curl command above.",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_customerId",
+        "columns": null
+      },
+      "id": "Field_CustomerId",
+      "key": "customerId",
+      "defaultValue": "CUST-70210",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Current credit limit (USD)",
+      "type": "number",
+      "layout": {
+        "row": "Row_currentLimit",
+        "columns": null
+      },
+      "id": "Field_CurrentLimit",
+      "key": "currentLimitUSD",
+      "defaultValue": 5000,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Requested credit limit (USD)",
+      "type": "number",
+      "layout": {
+        "row": "Row_requestedLimit",
+        "columns": null
+      },
+      "id": "Field_RequestedLimit",
+      "key": "requestedLimitUSD",
+      "defaultValue": 8000,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Customer tenure (years)",
+      "type": "number",
+      "layout": {
+        "row": "Row_tenure",
+        "columns": null
+      },
+      "id": "Field_Tenure",
+      "key": "customerTenureYears",
+      "defaultValue": 3,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Late payments in the last 90 days",
+      "type": "number",
+      "layout": {
+        "row": "Row_latePayments",
+        "columns": null
+      },
+      "id": "Field_LatePayments",
+      "key": "recentLatePayments90d",
+      "defaultValue": 0,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Reason for the request",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_reason",
+        "columns": null
+      },
+      "id": "Field_Reason",
+      "key": "requestReason",
+      "defaultValue": "Wants headroom for an upcoming home renovation purchase.",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "credit-line-request",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 19
+}
