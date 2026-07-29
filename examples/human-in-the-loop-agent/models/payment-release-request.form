@@ -1,0 +1,73 @@
+{
+  "components": [
+    {
+      "text": "# Payment release requested\n\nThe agent wants to release payment for this invoice. Nothing is paid until you decide - this is one of the agent's own tools, so it's waiting on you mid-reasoning, not asking you to redo its work afterwards.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ReleaseHeading"
+    },
+    {
+      "text": "**Vendor:** {{vendorName}}\n\n**Invoice number:** {{invoiceNumber}}\n\n**PO number:** {{poNumber}}\n\n**PO amount:** {{poAmount}} USD\n\n**Invoice amount:** {{invoiceAmount}} {{invoiceCurrency}}\n\n**Invoice notes:** {{invoiceNotes}}\n\n**Agent wants to release:** {{agentProposedAmountUSD}} USD\n\n**Agent's reasoning:** {{agentReleaseReasoning}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_ReleaseFindings"
+    },
+    {
+      "label": "Amount to approve (USD)",
+      "description": "Prefilled with the agent's proposed amount - adjust it before approving if you disagree.",
+      "type": "number",
+      "layout": {
+        "row": "Row_approvedAmount",
+        "columns": null
+      },
+      "id": "Field_ApprovedAmount",
+      "key": "approvedAmountUSD",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Your decision",
+      "values": [
+        { "label": "Approve release", "value": "approve" },
+        { "label": "Deny release", "value": "deny" }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_release_decision",
+        "columns": null
+      },
+      "id": "Field_ReleaseDecision",
+      "key": "releaseDecision",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Comments",
+      "description": "Explain your decision - the agent reads this immediately if you deny the release, and it's shown again at final sign-off either way.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_release_comments",
+        "columns": null
+      },
+      "id": "Field_ReleaseComments",
+      "key": "releaseReviewerComments"
+    }
+  ],
+  "type": "default",
+  "id": "payment-release-request",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

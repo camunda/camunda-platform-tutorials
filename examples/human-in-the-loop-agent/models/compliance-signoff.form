@@ -1,0 +1,58 @@
+{
+  "components": [
+    {
+      "text": "# Final compliance sign-off\n\nA second, independent check after the case is fully resolved. Unlike the payment-release approval, this step doesn't need to know how the agent reasoned - only what actually happened - which is exactly the kind of checkpoint any orchestration approach could bolt on after the fact.",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_ComplianceHeading"
+    },
+    {
+      "text": "**Vendor:** {{vendorName}}\n\n**Invoice number:** {{invoiceNumber}}\n\n**PO number:** {{poNumber}}\n\n**PO amount:** {{poAmount}} USD\n\n**Invoice amount:** {{invoiceAmount}} {{invoiceCurrency}}\n\n**Payment release decision:** {{releaseDecision}}\n\n**Approved amount:** {{approvedAmountUSD}} USD\n\n**Release reviewer comments:** {{releaseReviewerComments}}\n\n**Final outcome:** {{caseOutcome}}\n\n**Details:** {{caseSummary}}",
+      "type": "text",
+      "layout": {
+        "row": "Row_findings",
+        "columns": null
+      },
+      "id": "Field_ComplianceFindings"
+    },
+    {
+      "label": "Compliance decision",
+      "values": [
+        { "label": "Confirm - case closed", "value": "confirm" },
+        { "label": "Escalate for audit", "value": "escalate" }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_compliance_decision",
+        "columns": null
+      },
+      "id": "Field_ComplianceDecision",
+      "key": "complianceDecision",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Comments",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_compliance_comments",
+        "columns": null
+      },
+      "id": "Field_ComplianceComments",
+      "key": "complianceComments"
+    }
+  ],
+  "type": "default",
+  "id": "compliance-signoff",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

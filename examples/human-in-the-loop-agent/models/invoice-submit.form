@@ -1,0 +1,135 @@
+{
+  "components": [
+    {
+      "text": "# Submit an invoice for payment",
+      "type": "text",
+      "layout": {
+        "row": "Row_heading",
+        "columns": null
+      },
+      "id": "Field_Heading"
+    },
+    {
+      "text": "The fields below already hold a clean, matching scenario. To try the others, replace the values with one of these sets before submitting:\n\n| Scenario | PO amount | Invoice amount | Currency | Notes |\n|---|---|---|---|---|\n| Clean match (default) | 4200 | 4200 | USD | Quarterly office supplies delivery per PO, no changes. |\n| Documented adjustment | 12000 | 12540 | USD | Includes a $540 expedited freight surcharge, pre-approved by procurement via email on the 3rd. |\n| Foreign currency, converts and matches | 8000 | 7400 | EUR | Standard components delivery per PO, exact quantities. |\n| Vague justification (deny this one in Tasklist) | 5000 | 5350 | USD | Includes miscellaneous facility charges from the past quarter. |\n\nFor the first three, approve the release when the **Request payment release** task appears in Tasklist. For the last one, the vague justification is just specific enough that the agent will likely still try to release it - deny it instead, to see the agent adapt and notify the vendor of a dispute. Every scenario then reaches a second, independent **Final compliance sign-off** task once the agent is done.",
+      "type": "text",
+      "layout": {
+        "row": "Row_scenarios",
+        "columns": null
+      },
+      "id": "Field_ScenarioTable"
+    },
+    {
+      "label": "Vendor name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_vendor",
+        "columns": null
+      },
+      "id": "Field_VendorName",
+      "key": "vendorName",
+      "defaultValue": "Acme Office Supplies",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Invoice number",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_invoiceNumber",
+        "columns": null
+      },
+      "id": "Field_InvoiceNumber",
+      "key": "invoiceNumber",
+      "defaultValue": "INV-10234",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "PO number",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_poNumber",
+        "columns": null
+      },
+      "id": "Field_PoNumber",
+      "key": "poNumber",
+      "defaultValue": "PO-88291",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "PO amount (USD)",
+      "type": "number",
+      "layout": {
+        "row": "Row_poAmount",
+        "columns": null
+      },
+      "id": "Field_PoAmount",
+      "key": "poAmount",
+      "defaultValue": 4200,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Invoice amount",
+      "type": "number",
+      "layout": {
+        "row": "Row_invoiceAmount",
+        "columns": null
+      },
+      "id": "Field_InvoiceAmount",
+      "key": "invoiceAmount",
+      "defaultValue": 4200,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Invoice currency",
+      "values": [
+        { "label": "USD", "value": "USD" },
+        { "label": "EUR", "value": "EUR" },
+        { "label": "GBP", "value": "GBP" }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_invoiceCurrency",
+        "columns": null
+      },
+      "id": "Field_InvoiceCurrency",
+      "key": "invoiceCurrency",
+      "defaultValue": "USD",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Invoice notes",
+      "description": "Free text - the agent reads this to judge whether any overage above the PO amount is documented.",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_invoiceNotes",
+        "columns": null
+      },
+      "id": "Field_InvoiceNotes",
+      "key": "invoiceNotes",
+      "defaultValue": "Quarterly office supplies delivery per PO, no changes.",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "invoice-submit",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

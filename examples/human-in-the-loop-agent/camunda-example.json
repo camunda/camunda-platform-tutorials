@@ -1,0 +1,69 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Human-in-the-loop agent",
+  "subtitle": "A runnable Human-in-the-Loop Agent",
+  "description": "An agent reviews a vendor invoice against its purchase order, converts currency via a real API when needed, and decides whether to release payment or dispute it. Releasing payment is itself a tool the agent calls that is a human user task - the agent never leaves its reasoning loop to get that approval. A second, independent compliance sign-off task sits after the agent finishes, showing the difference between an in-loop, agent-native approval gate and a classic bolted-on-style checkpoint.",
+  "creator": "Camunda",
+  "camundaVersion": "8.8+",
+  "thumbnail": "docs/invoice-payment-agent.png",
+  "thumbnailAlt": "BPMN model: an Invoice Review Agent ad-hoc subprocess containing a Request payment release human task as one of the agent's own tools, gating a Release payment call, followed by a separate Final compliance sign-off human task outside the subprocess.",
+  "resources": [
+    "models/invoice-payment-agent.bpmn",
+    "models/invoice-submit.form",
+    "models/payment-release-request.form",
+    "models/compliance-signoff.form"
+  ],
+  "importTitle": "Human-in-the-Loop Agent",
+  "sampleVariables": [
+    {
+      "label": "Clean match - approve the release",
+      "variables": {
+        "vendorName": "Acme Office Supplies",
+        "invoiceNumber": "INV-10234",
+        "poNumber": "PO-88291",
+        "poAmount": 4200,
+        "invoiceAmount": 4200,
+        "invoiceCurrency": "USD",
+        "invoiceNotes": "Quarterly office supplies delivery per PO, no changes."
+      }
+    },
+    {
+      "label": "Documented adjustment - approve the release",
+      "variables": {
+        "vendorName": "Meridian Logistics",
+        "invoiceNumber": "INV-55871",
+        "poNumber": "PO-77410",
+        "poAmount": 12000,
+        "invoiceAmount": 12540,
+        "invoiceCurrency": "USD",
+        "invoiceNotes": "Includes a $540 expedited freight surcharge, pre-approved by procurement via email on the 3rd."
+      }
+    },
+    {
+      "label": "Foreign currency - agent converts, then approve the release",
+      "variables": {
+        "vendorName": "Nordholm Components AB",
+        "invoiceNumber": "INV-2231",
+        "poNumber": "PO-90112",
+        "poAmount": 8000,
+        "invoiceAmount": 7400,
+        "invoiceCurrency": "EUR",
+        "invoiceNotes": "Standard components delivery per PO, exact quantities."
+      }
+    },
+    {
+      "label": "Vague justification - deny the release",
+      "variables": {
+        "vendorName": "Briarwood Facilities Group",
+        "invoiceNumber": "INV-9987",
+        "poNumber": "PO-66234",
+        "poAmount": 5000,
+        "invoiceAmount": 5350,
+        "invoiceCurrency": "USD",
+        "invoiceNotes": "Includes miscellaneous facility charges from the past quarter."
+      }
+    }
+  ],
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/human-in-the-loop-agent",
+  "support": "https://forum.camunda.io/"
+}
