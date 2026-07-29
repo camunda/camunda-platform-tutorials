@@ -40,19 +40,22 @@
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
-          <zeebe:input source="=&#34;You are a demo workflow assistant that resolves expense claims an automated policy engine could not decide on its own.&#10;&#10;You must invoke tools using the actual tool-calling mechanism available to you - never describe or simulate a tool call in your plain-text response, and never invent, guess, or fabricate what a tool would return.&#10;&#10;The standard reimbursement policy, already checked once by the rule engine before you were called, is:&#10;- meals: approve up to $75, reject above $150&#10;- lodging: approve up to $250, reject above $400&#10;- transport: approve up to $100, reject above $200&#10;You are only ever invoked for the cases the rule engine could not resolve on its own: amounts in the gray zone between those approve/reject bands, claims in a currency other than USD, or categories the policy doesn&#39;t cover.&#10;&#10;One documented exception you may apply: a &#39;meals&#39; claim may be approved up to double its normal cap (i.e. up to $150) if the justification clearly describes client or prospect entertainment with multiple attendees and mentions a receipt.&#10;&#10;If the claim isn&#39;t in USD, call ConvertCurrency to get the USD amount before judging it against the policy bands above - never estimate a conversion yourself.&#10;&#10;Record your decision only once you&#39;ve reached it, and only once: &#39;approved&#39; if it fits within policy (including the documented exception), &#39;rejected&#39; if it clearly exceeds every applicable cap, or &#39;escalate&#39; if the claim is genuinely ambiguous and you can&#39;t responsibly decide either way. Always include your reasoning. What happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
-          <zeebe:input source="=&#34;Expense claim under review:&#10;Category: &#34; + category + &#34;&#10;Amount: &#34; + string(amount) + &#34; &#34; + currency + &#34;&#10;Justification: &#34; + justification + &#34;&#10;&#10;The automated policy engine flagged this claim as needing review. Please assess it and record your decision.&#34;" target="data.userPrompt.prompt" />
+          <zeebe:input source="=&#34;You are a demo workflow assistant that resolves expense claims an automated policy engine could not decide on its own.&#10;&#10;You must invoke tools using the actual tool-calling mechanism available to you - never describe or simulate a tool call in your plain-text response, and never invent, guess, or fabricate what a tool would return.&#10;&#10;The standard reimbursement policy, already checked once by the rule engine before you were called, is:&#10;- meals: approve up to $75, reject above $150&#10;- lodging: approve up to $250, reject above $400&#10;- transport: approve up to $100, reject above $200&#10;You are only ever invoked for the cases the rule engine could not resolve on its own: amounts in the gray zone between those approve/reject bands, claims in a currency other than USD, or categories the policy doesn&#39;t cover.&#10;&#10;One documented exception you may apply: a &#39;meals&#39; claim may be approved up to double its normal cap (i.e. up to $150) if the justification clearly describes client or prospect entertainment with multiple attendees and mentions a receipt.&#10;&#10;If the claim isn&#39;t in USD, call ConvertCurrency to get the USD amount before judging it against the policy bands above - never estimate a conversion yourself.&#10;&#10;Once you&#39;ve reached a conclusion, stop calling tools and give your final answer: &#39;decision&#39; must be &#39;approved&#39; if it fits within policy (including the documented exception), &#39;rejected&#39; if it clearly exceeds every applicable cap, or &#39;escalate&#39; if the claim is genuinely ambiguous and you can&#39;t responsibly decide either way. Always fill in &#39;reasoning&#39; with a short explanation. What happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;Expense claim under review:&#10;Category: &#34; + category + &#34;&#10;Amount: &#34; + string(amount) + &#34; &#34; + currency + &#34;&#10;Justification: &#34; + justification + &#34;&#10;&#10;The automated policy engine flagged this claim as needing review. Please assess it and give your final decision.&#34;" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
           <zeebe:input source="=10" target="data.limits.maxModelCalls" />
           <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
-          <zeebe:input source="text" target="data.response.format.type" />
-          <zeebe:input source="=false" target="data.response.format.parseJson" />
+          <zeebe:input source="json" target="data.response.format.type" />
+          <zeebe:input source="={&#10;  &#34;type&#34;: &#34;object&#34;,&#10;  &#34;properties&#34;: {&#10;    &#34;decision&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;enum&#34;: [&#34;approved&#34;, &#34;rejected&#34;, &#34;escalate&#34;],&#10;      &#34;description&#34;: &#34;The recommendation: approved if the claim fits policy (including the documented exception), rejected if it clearly exceeds every applicable cap, escalate if the claim is genuinely ambiguous.&#34;&#10;    },&#10;    &#34;reasoning&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;description&#34;: &#34;A short explanation of why this recommendation was reached.&#34;&#10;    }&#10;  },&#10;  &#34;required&#34;: [&#34;decision&#34;, &#34;reasoning&#34;]&#10;}" target="data.response.format.schema" />
+          <zeebe:input source="ExpenseDecision" target="data.response.format.schemaName" />
           <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
           <zeebe:input source="=false" target="data.response.includeAgentContext" />
           <zeebe:input target="agent" />
           <zeebe:output source="=agent" target="agent" />
+          <zeebe:output source="=agent.responseJson.decision" target="agentDecision" />
+          <zeebe:output source="=agent.responseJson.reasoning" target="agentReasoning" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="10" />
@@ -84,19 +87,6 @@
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:serviceTask>
-      <bpmn:scriptTask id="RecordAgentDecision" name="Record agent decision">
-        <bpmn:documentation>Captures the agent's recommendation and reasoning as process variables</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:script expression="=agentDecision" resultVariable="agentDecision" />
-          <zeebe:ioMapping>
-            <zeebe:input source="=fromAi(toolCall.agentDecision, &#34;Your recommendation: &#39;approved&#39; if the claim fits within policy (including the documented exception), &#39;rejected&#39; if it clearly exceeds every applicable cap, &#39;escalate&#39; if the claim is genuinely ambiguous.&#34;, &#34;string&#34;)" target="agentDecision" />
-            <zeebe:input source="=fromAi(toolCall.agentReasoning, &#34;A short explanation of why you reached this recommendation.&#34;, &#34;string&#34;)" target="agentReasoning" />
-            <zeebe:output source="=agentDecision" target="agentDecision" />
-            <zeebe:output source="=agentReasoning" target="agentReasoning" />
-            <zeebe:output source="=agentDecision + &#34;: &#34; + agentReasoning" target="toolCallResult" />
-          </zeebe:ioMapping>
-        </bpmn:extensionElements>
-      </bpmn:scriptTask>
     </bpmn:adHocSubProcess>
     <bpmn:sequenceFlow id="Flow_ToAgentGateway" sourceRef="ExpenseReasoningAgent" targetRef="Gateway_AgentOutcome" />
     <bpmn:exclusiveGateway id="Gateway_AgentOutcome" name="Agent&#10;resolved?" default="Flow_AgentEscalate">
@@ -290,9 +280,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ConvertCurrency_di" bpmnElement="ConvertCurrency">
         <dc:Bounds x="540" y="230" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="RecordAgentDecision_di" bpmnElement="RecordAgentDecision">
-        <dc:Bounds x="680" y="230" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_0mwfn28_di" bpmnElement="Association_0mwfn28">
         <di:waypoint x="669" y="380" />

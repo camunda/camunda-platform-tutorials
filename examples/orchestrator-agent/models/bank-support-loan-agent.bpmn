@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_BankSupportLoanAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_BankSupportLoanAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:process id="bank-support-loan-agent" name="Bank Support Loan Agent" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="Loan support requested">
       <bpmn:outgoing>Flow_ToAgent</bpmn:outgoing>
@@ -14,19 +14,22 @@
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
-          <zeebe:input source="=&#34;You are the Loan Support Agent for Camunda Bank. You only handle loan-related requests: mortgages, personal loans, interest rates, terms, and monthly payment estimates.&#10;&#10;Always invoke tools through the actual tool-calling mechanism - never describe or simulate a tool call in plain text, and never invent numbers the customer did not provide.&#10;&#10;1. Extract the loan amount, the annual interest rate, and the term in years from the customer&#39;s message.&#10;2. If the amount, rate, or term is missing, or the term is longer than 40 years, or the amount is above 2000000, skip straight to step 4 with status &#39;needs-human&#39;.&#10;3. Otherwise, call CalculateLoanPayment with the extracted amount, rate, and the term converted to months (years times 12).&#10;4. Call RecordLoanResolution exactly once with your final status (&#39;resolved&#39; or &#39;needs-human&#39;) and a short summary, including the monthly payment if you calculated one. Call it only once you are done - what happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;You are the Loan Support Agent for Camunda Bank. You only handle loan-related requests: mortgages, personal loans, interest rates, terms, and monthly payment estimates.&#10;&#10;Always invoke tools through the actual tool-calling mechanism - never describe or simulate a tool call in plain text, and never invent numbers the customer did not provide.&#10;&#10;1. Extract the loan amount, the annual interest rate, and the term in years from the customer&#39;s message.&#10;2. If the amount, rate, or term is missing, or the term is longer than 40 years, or the amount is above 2000000, skip straight to step 4 with status &#39;needs-human&#39;.&#10;3. Otherwise, call CalculateLoanPayment with the extracted amount, rate, and the term converted to months (years times 12).&#10;4. Once you&#39;ve reached a conclusion, stop calling tools and give your final answer: &#39;status&#39; must be &#39;resolved&#39; if you were able to fully answer the loan question yourself, or &#39;needs-human&#39; if the case needs a loan specialist (for example because information was missing, the term exceeds 40 years, or the amount exceeds 2000000). Always fill in &#39;summary&#39; with a short explanation, including the calculated monthly payment if you computed one. What happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=&#34;Customer request: &#34; + customerRequest" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
           <zeebe:input source="=10" target="data.limits.maxModelCalls" />
           <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
-          <zeebe:input source="text" target="data.response.format.type" />
-          <zeebe:input source="=false" target="data.response.format.parseJson" />
+          <zeebe:input source="json" target="data.response.format.type" />
+          <zeebe:input source="={&#10;  &#34;type&#34;: &#34;object&#34;,&#10;  &#34;properties&#34;: {&#10;    &#34;status&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;enum&#34;: [&#10;        &#34;resolved&#34;,&#10;        &#34;needs-human&#34;&#10;      ],&#10;      &#34;description&#34;: &#34;resolved if you were able to fully answer the loan question yourself, or needs-human if the case needs a loan specialist, for example because information was missing, the term exceeds 40 years, or the amount exceeds 2000000&#34;&#10;    },&#10;    &#34;summary&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;description&#34;: &#34;A short 1 to 3 sentence plain English summary of the outcome for this loan request, including the calculated monthly payment if you computed one&#34;&#10;    }&#10;  },&#10;  &#34;required&#34;: [&#10;    &#34;status&#34;,&#10;    &#34;summary&#34;&#10;  ]&#10;}" target="data.response.format.schema" />
+          <zeebe:input source="LoanResolution" target="data.response.format.schemaName" />
           <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
           <zeebe:input source="=false" target="data.response.includeAgentContext" />
           <zeebe:input target="agent" />
           <zeebe:output source="=agent" target="agent" />
+          <zeebe:output source="=agent.responseJson.status" target="status" />
+          <zeebe:output source="=agent.responseJson.summary" target="summary" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="10" />
@@ -58,17 +61,6 @@
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:serviceTask>
-      <bpmn:scriptTask id="RecordLoanResolution" name="Record loan resolution">
-        <bpmn:documentation>Captures the agent's final resolution for this loan case as structured data returned to the orchestrator.</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:script expression="=resolution" resultVariable="resolution" />
-          <zeebe:ioMapping>
-            <zeebe:input source="={&#10;  status: fromAi(toolCall.status, &#34;Either resolved if you were able to fully answer the loan question yourself, or needs-human if the case needs a loan specialist, for example because information was missing, the term exceeds 40 years, or the amount exceeds 2000000&#34;, &#34;string&#34;),&#10;  summary: fromAi(toolCall.summary, &#34;A short 1 to 3 sentence plain English summary of the outcome for this loan request, including the calculated monthly payment if you computed one&#34;, &#34;string&#34;)&#10;}" target="resolution" />
-            <zeebe:output source="=resolution" target="resolution" />
-            <zeebe:output source="=resolution" target="toolCallResult" />
-          </zeebe:ioMapping>
-        </bpmn:extensionElements>
-      </bpmn:scriptTask>
     </bpmn:adHocSubProcess>
     <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="LoanSupportAgent" targetRef="EndEvent_1" />
     <bpmn:endEvent id="EndEvent_1" name="Loan case handled">
@@ -88,34 +80,31 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="LoanSupportAgent_di" bpmnElement="LoanSupportAgent" isExpanded="true">
-        <dc:Bounds x="280" y="80" width="330" height="200" />
+        <dc:Bounds x="280" y="80" width="220" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CalculateLoanPayment_di" bpmnElement="CalculateLoanPayment">
-        <dc:Bounds x="330" y="110" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="RecordLoanResolution_di" bpmnElement="RecordLoanResolution">
-        <dc:Bounds x="450" y="110" width="100" height="80" />
+        <dc:Bounds x="340" y="110" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
-        <dc:Bounds x="662" y="142" width="36" height="36" />
+        <dc:Bounds x="560" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="640" y="185" width="80" height="27" />
+          <dc:Bounds x="538" y="185" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_MoreTools_di" bpmnElement="Association_MoreTools">
-        <di:waypoint x="450" y="280" />
-        <di:waypoint x="450" y="330" />
+        <di:waypoint x="390" y="240" />
+        <di:waypoint x="390" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToAgent_di" bpmnElement="Flow_ToAgent">
         <di:waypoint x="198" y="160" />
         <di:waypoint x="280" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToEnd_di" bpmnElement="Flow_ToEnd">
-        <di:waypoint x="610" y="160" />
-        <di:waypoint x="662" y="160" />
+        <di:waypoint x="500" y="160" />
+        <di:waypoint x="560" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_MoreTools_di" bpmnElement="TextAnnotation_MoreTools">
-        <dc:Bounds x="335" y="330" width="310" height="60" />
+        <dc:Bounds x="305" y="290" width="291" height="57" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

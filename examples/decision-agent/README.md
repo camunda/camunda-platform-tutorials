@@ -57,7 +57,9 @@ After `Evaluate expense policy`:
 - `Policy outcome?` gateway sends `approved`/`rejected` straight to a notification
 - `needs review` (the default path) hands off to the `Expense Reasoning Agent`
 
-Inside the agent subprocess, the model is told the same policy bands the rule table just used, plus one documented exception it's allowed to apply with judgment: a `meals` claim can go up to double its normal cap if the justification clearly describes client or prospect entertainment with multiple attendees and a receipt - something a flat DMN band can't express, but a paragraph of context can. The agent converts currency if needed, then records `approved`, `rejected`, or `escalate`.
+Inside the agent subprocess, the model is told the same policy bands the rule table just used, plus one documented exception it's allowed to apply with judgment: a `meals` claim can go up to double its normal cap if the justification clearly describes client or prospect entertainment with multiple attendees and a receipt - something a flat DMN band can't express, but a paragraph of context can. The agent converts currency if needed, then answers with `approved`, `rejected`, or `escalate`.
+
+No extra "recording" tool is needed for that last step. The agent's response format is configured as JSON with a schema (`decision` + `reasoning`), which only populates once the model stops calling tools - so the model can still call `ConvertCurrency` across as many turns as it needs, and its terminal turn is parsed straight into `agentDecision`/`agentReasoning` process variables via the AI Agent connector's own output mapping.
 
 - `Agent resolved?` gateway sends `approved`/`rejected` to the same two notification tasks the policy gateway uses
 - `escalate` (the default path) creates the user task `Review expense claim`

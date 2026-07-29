@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_BankSupportCardAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_BankSupportCardAgent" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:process id="bank-support-card-agent" name="Bank Support Card Agent" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="Card support requested">
       <bpmn:outgoing>Flow_ToAgent</bpmn:outgoing>
@@ -14,19 +14,22 @@
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
-          <zeebe:input source="=&#34;You are the Card Support Agent for Camunda Bank. You only handle card related requests: identifying which bank or network issued a card from its number, and flagging unrecognized charges.&#10;&#10;Always invoke tools through the actual tool-calling mechanism - never describe or simulate a tool call in plain text, and never invent card data the customer did not provide.&#10;&#10;1. Extract the first 6 to 8 digits of the card number mentioned by the customer (the bank identification number).&#10;2. If the customer did not provide any digits of a card number, skip straight to step 4 with status &#39;needs-human&#39;.&#10;3. Otherwise, call LookupCardBin with those digits. The lookup succeeding counts as resolved even if no specific issuing bank is found - just say so in your summary.&#10;4. Call RecordCardResolution exactly once with your final status (&#39;resolved&#39; if you attempted the lookup, &#39;needs-human&#39; if no card number digits were provided at all) and a short summary of what the lookup found. Call it only once you are done - what happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;You are the Card Support Agent for Camunda Bank. You only handle card related requests: identifying which bank or network issued a card from its number, and flagging unrecognized charges.&#10;&#10;Always invoke tools through the actual tool-calling mechanism - never describe or simulate a tool call in plain text, and never invent card data the customer did not provide.&#10;&#10;1. Extract the first 6 to 8 digits of the card number mentioned by the customer (the bank identification number).&#10;2. If the customer did not provide any digits of a card number, skip straight to step 4 with status &#39;needs-human&#39;.&#10;3. Otherwise, call LookupCardBin with those digits. The lookup succeeding counts as resolved even if no specific issuing bank is found - just say so in your summary.&#10;4. Once you&#39;ve reached a conclusion, stop calling tools and give your final answer: &#39;status&#39; must be &#39;resolved&#39; if you attempted the lookup, or &#39;needs-human&#39; if no card number digits were provided at all. Always fill in &#39;summary&#39; with a short explanation of what the lookup found. What happens next is handled automatically.&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=&#34;Customer request: &#34; + customerRequest" target="data.userPrompt.prompt" />
           <zeebe:input target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
           <zeebe:input source="=10" target="data.limits.maxModelCalls" />
           <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
-          <zeebe:input source="text" target="data.response.format.type" />
-          <zeebe:input source="=false" target="data.response.format.parseJson" />
+          <zeebe:input source="json" target="data.response.format.type" />
+          <zeebe:input source="={&#10;  &#34;type&#34;: &#34;object&#34;,&#10;  &#34;properties&#34;: {&#10;    &#34;status&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;enum&#34;: [&#10;        &#34;resolved&#34;,&#10;        &#34;needs-human&#34;&#10;      ],&#10;      &#34;description&#34;: &#34;resolved if you attempted the lookup, or needs-human if the customer did not provide any card number digits at all&#34;&#10;    },&#10;    &#34;summary&#34;: {&#10;      &#34;type&#34;: &#34;string&#34;,&#10;      &#34;description&#34;: &#34;A short 1 to 3 sentence plain English summary of what the BIN lookup found&#34;&#10;    }&#10;  },&#10;  &#34;required&#34;: [&#10;    &#34;status&#34;,&#10;    &#34;summary&#34;&#10;  ]&#10;}" target="data.response.format.schema" />
+          <zeebe:input source="CardResolution" target="data.response.format.schemaName" />
           <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
           <zeebe:input source="=false" target="data.response.includeAgentContext" />
           <zeebe:input target="agent" />
           <zeebe:output source="=agent" target="agent" />
+          <zeebe:output source="=agent.responseJson.status" target="status" />
+          <zeebe:output source="=agent.responseJson.summary" target="summary" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="10" />
@@ -57,17 +60,6 @@
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:serviceTask>
-      <bpmn:scriptTask id="RecordCardResolution" name="Record card resolution">
-        <bpmn:documentation>Captures the agent's final resolution for this card case as structured data returned to the orchestrator.</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:script expression="=resolution" resultVariable="resolution" />
-          <zeebe:ioMapping>
-            <zeebe:input source="={&#10;  status: fromAi(toolCall.status, &#34;Either resolved if you attempted the lookup, or needs-human if the customer did not provide any card number digits at all&#34;, &#34;string&#34;),&#10;  summary: fromAi(toolCall.summary, &#34;A short 1 to 3 sentence plain English summary of what the BIN lookup found&#34;, &#34;string&#34;)&#10;}" target="resolution" />
-            <zeebe:output source="=resolution" target="resolution" />
-            <zeebe:output source="=resolution" target="toolCallResult" />
-          </zeebe:ioMapping>
-        </bpmn:extensionElements>
-      </bpmn:scriptTask>
     </bpmn:adHocSubProcess>
     <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="CardSupportAgent" targetRef="EndEvent_1" />
     <bpmn:endEvent id="EndEvent_1" name="Card case handled">
@@ -87,34 +79,31 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CardSupportAgent_di" bpmnElement="CardSupportAgent" isExpanded="true">
-        <dc:Bounds x="280" y="80" width="330" height="200" />
+        <dc:Bounds x="280" y="80" width="220" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="LookupCardBin_di" bpmnElement="LookupCardBin">
-        <dc:Bounds x="330" y="110" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="RecordCardResolution_di" bpmnElement="RecordCardResolution">
-        <dc:Bounds x="450" y="110" width="100" height="80" />
+        <dc:Bounds x="340" y="110" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
-        <dc:Bounds x="662" y="142" width="36" height="36" />
+        <dc:Bounds x="560" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="640" y="185" width="80" height="27" />
+          <dc:Bounds x="538" y="185" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_MoreTools_di" bpmnElement="Association_MoreTools">
-        <di:waypoint x="450" y="280" />
-        <di:waypoint x="450" y="310" />
+        <di:waypoint x="390" y="240" />
+        <di:waypoint x="390" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToAgent_di" bpmnElement="Flow_ToAgent">
         <di:waypoint x="198" y="160" />
         <di:waypoint x="280" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ToEnd_di" bpmnElement="Flow_ToEnd">
-        <di:waypoint x="610" y="160" />
-        <di:waypoint x="662" y="160" />
+        <di:waypoint x="500" y="160" />
+        <di:waypoint x="560" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_MoreTools_di" bpmnElement="TextAnnotation_MoreTools">
-        <dc:Bounds x="335" y="310" width="332" height="60" />
+        <dc:Bounds x="305" y="280" width="315" height="57" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
