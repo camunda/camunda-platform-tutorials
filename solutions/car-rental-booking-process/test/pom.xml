@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.6</version>
     </parent>
 
     <groupId>io.camunda</groupId>
@@ -21,18 +21,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <camunda.version>8.9.0-rc4</camunda.version>
+        <camunda.version>8.9.8</camunda.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>camunda-public-artifactory</id>
-            <name>Camunda Public Artifactory</name>
-            <url>https://artifacts.camunda.com/artifactory/public/</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -69,6 +60,7 @@
                     <include>car-rental-booking-process.bpmn</include>
                     <include>inspect-car.form</include>
                     <include>inspect-returned-car.form</include>
+                    <include>propose-alternative.form</include>
                 </includes>
             </testResource>
         </testResources>

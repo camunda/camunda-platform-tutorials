@@ -116,6 +116,19 @@
           "variables": {
             "mergeRequestWebhookPayload": {
               "object_attributes": {
+                "action": "update",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
                 "action": "merge",
                 "id": "mr-001"
               }
@@ -191,7 +204,1272 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "file does not exist in repo - new file created via error boundary",
+      "description": "CI/CD pipeline triggered. During merge request generation the file is not yet present in the repository, so checkFileExists throws a 'file not found' error. The error boundary routes to creating a new repository file, then the pipeline merges and deploys successfully to all environments.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-123",
+                    "name": "my-process.bpmn",
+                    "type": "BPMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {
+            "milestoneId": "milestone-001"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<bpmn:process/>"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getLatestMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "THROW_BPMN_ERROR_FROM_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "errorCode": "404"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "createRepositoryFile"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "merge",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForDevDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "manualQaTest"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd",
+          "correlationKey": "stage",
+          "variables": {
+            "stageDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForStageDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "66da4b0d-b541-4de4-9ad0-436f2fd7f2c5",
+          "correlationKey": "prod",
+          "variables": {
+            "prodDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForProdDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "previous milestone exists - comparison link retrieved",
+      "description": "CI/CD pipeline triggered for a BPMN file. A prior milestone exists, so getLatestMilestone returns a non-null id. The split routes to getMilestoneComparisonLink and ends at the 'no milestone to compare against' end event. The pipeline then merges and deploys to all environments.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-123",
+                    "name": "my-process.bpmn",
+                    "type": "BPMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {
+            "createdMilestoneId": "milestone-002"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<bpmn:process/>"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getLatestMilestone"
+          },
+          "variables": {
+            "latestMilestoneId": "milestone-001"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getMilestoneComparisonLink"
+          },
+          "variables": {
+            "diffingLink": "https://modeler.cloud.camunda.io/compare/milestone-001...milestone-002"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelector": {
+            "elementId": "endNoMilestoneC"
+          },
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "variables": {
+            "fileExists": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "updateRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "merge",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForDevDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "manualQaTest"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd",
+          "correlationKey": "stage",
+          "variables": {
+            "stageDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForStageDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "66da4b0d-b541-4de4-9ad0-436f2fd7f2c5",
+          "correlationKey": "prod",
+          "variables": {
+            "prodDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForProdDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "DMN file - milestone comparison skipped",
+      "description": "CI/CD pipeline triggered for a DMN file. The is-DMN split routes to the 'no milestone comparison for DMN' end event, skipping getLatestMilestone. The pipeline then merges and deploys to all environments.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-456",
+                    "name": "my-decision.dmn",
+                    "type": "DMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {
+            "createdMilestoneId": "milestone-003"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<dmn:definitions/>"
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelector": {
+            "elementId": "endNoDmnMilestoneComparison"
+          },
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "variables": {
+            "fileExists": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "updateRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "merge",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForDevDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "manualQaTest"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd",
+          "correlationKey": "stage",
+          "variables": {
+            "stageDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForStageDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "66da4b0d-b541-4de4-9ad0-436f2fd7f2c5",
+          "correlationKey": "prod",
+          "variables": {
+            "prodDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForProdDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "dev deployment fails - error end event terminates process",
+      "description": "CI/CD pipeline merges the request and deploys to dev, but the dev deployment webhook reports a failure for this folder. The check routes to the dev deployment error end event, which raises a process-level error and terminates the instance.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-123",
+                    "name": "my-process.bpmn",
+                    "type": "BPMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<bpmn:process/>"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getLatestMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "variables": {
+            "fileExists": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "updateRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "merge",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "another-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "failure"
+            }
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelector": {
+            "elementId": "devDeploymentError"
+          },
+          "state": "IS_ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "stage deployment fails - error end event terminates process",
+      "description": "CI/CD pipeline deploys to dev successfully, completes manual QA, then the stage deployment webhook reports a failure for this folder. The check routes to the stage deployment error end event, which raises a process-level error and terminates the instance.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-123",
+                    "name": "my-process.bpmn",
+                    "type": "BPMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<bpmn:process/>"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getLatestMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "variables": {
+            "fileExists": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "updateRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "merge",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForDevDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "manualQaTest"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd",
+          "correlationKey": "stage",
+          "variables": {
+            "stageDeploymentWebhookPayload": {
+              "deployedFolder": "another-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd",
+          "correlationKey": "stage",
+          "variables": {
+            "stageDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "failure"
+            }
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelector": {
+            "elementId": "stageDeploymentError"
+          },
+          "state": "IS_ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "prod deployment fails - error end event terminates process",
+      "description": "CI/CD pipeline deploys to dev and stage successfully, then the prod deployment webhook reports a failure for this folder. The check routes to the prod deployment error end event, which raises a process-level error and terminates the instance.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-123",
+                    "name": "my-process.bpmn",
+                    "type": "BPMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<bpmn:process/>"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getLatestMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "variables": {
+            "fileExists": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "updateRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "merge",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "cbe375f3-ee90-483e-a3e0-803641904bb0",
+          "correlationKey": "dev",
+          "variables": {
+            "devDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForDevDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "manualQaTest"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "9a53a5e9-436b-43d7-b0fe-2e8f1575b5cd",
+          "correlationKey": "stage",
+          "variables": {
+            "stageDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestoneForStageDeployment"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "66da4b0d-b541-4de4-9ad0-436f2fd7f2c5",
+          "correlationKey": "prod",
+          "variables": {
+            "prodDeploymentWebhookPayload": {
+              "deployedFolder": "another-folder",
+              "status": "success"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "66da4b0d-b541-4de4-9ad0-436f2fd7f2c5",
+          "correlationKey": "prod",
+          "variables": {
+            "prodDeploymentWebhookPayload": {
+              "deployedFolder": "my-folder",
+              "status": "failure"
+            }
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelector": {
+            "elementId": "prodDeploymentError"
+          },
+          "state": "IS_ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "merge request closed - error end event reached",
+      "description": "CI/CD pipeline opens a merge request, but the merge request is closed instead of merged. The check-status gateway routes to the merge-request-closed error end event, which raises a process-level error.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              }
+            },
+            "webModelerFolderId": "folder-123"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getWebModelerToken"
+          },
+          "variables": {
+            "webModelerToken": "token-abc"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFolderDetails"
+          },
+          "variables": {
+            "folder": {
+              "metadata": {
+                "name": "my-folder"
+              },
+              "content": {
+                "files": [
+                  {
+                    "id": "file-123",
+                    "name": "my-process.bpmn",
+                    "type": "BPMN"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getFileContent"
+          },
+          "variables": {
+            "content": "<bpmn:process/>"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "getLatestMilestone"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "createBranch"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "checkFileExists"
+          },
+          "variables": {
+            "fileExists": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "updateRepositoryFile"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "openMergeRequest"
+          },
+          "variables": {
+            "createdMergeRequest": {
+              "id": "mr-001"
+            }
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "977b3fd3-9a57-4fb3-8a93-c81f48f99622",
+          "correlationKey": "mr-001",
+          "variables": {
+            "mergeRequestWebhookPayload": {
+              "object_attributes": {
+                "action": "close",
+                "id": "mr-001"
+              }
+            }
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "cicdGitlabBlueprint"
+          },
+          "elementSelector": {
+            "elementId": "mergeRequestClosedError"
+          },
+          "state": "IS_ACTIVE"
+        }
+      ]
     }
   ],
-  "_integrationTestNotes": "UNTESTABLE PATH — mergeRequestClosedError: The 'MR closed' branch (joinCheckMergeRequestStatus → mergeRequestClosedError) ends with a top-level error end event (code 500). In Zeebe, an unhandled error end event at the process root creates an incident rather than completing the process, so CPT's IS_COMPLETED assertion always fails. This path must be verified via integration testing: publish a webhook with action=close and confirm the process raises an incident on mergeRequestClosedError. INTEGRATION NOTES — This process integrates with GitLab API (create branch, check file, update/create file, open merge request) and Camunda Web Modeler API (get token, get folder details, get file content, get/create milestones). Integration tests should: (1) use a real GitLab test repository; (2) use real Web Modeler API credentials; (3) verify the merge request is created with correct content; (4) verify milestones are created in Web Modeler; (5) verify successful deployment events trigger stage and prod deployment milestones. Key CPT patterns: openMergeRequest resultExpression sets createdMergeRequest (not mergeRequestId) — used as correlationKey for checkMergeRequestStatus webhook (977b3fd3..., correlationKey=createdMergeRequest.id). Deployment webhooks use static correlation keys (dev/stage/prod). manualQaTest is a native Zeebe user task (zeebe:userTask) — use COMPLETE_USER_TASK. splitAdditionalTasks is a parallel gateway — must complete all 3 paths: optionalTests, optionalBusinessOwnerVerification, and the direct path (handled automatically). PUBLISH_MESSAGE variables must match the resultExpression output (e.g. devDeploymentWebhookPayload) not raw request.body. Note: getFolderDetails must return folder.content.files array with items having an 'id' field (not 'fileId') since getFileContent uses file.id in URL. splitIsDmn routes BPMN files to getLatestMilestone (default path) and DMN files to endNoDmnMilestoneComparison (skip). getFileContent sets 'content' variable (via resultExpression header), not a nested 'file' object. The multi-instance sub-process runs per file: parallel fork (createMilestone + getFileContent), then getLatestMilestone (for BPMN), then splitHasMilestone (null → no comparison link needed)."
+  "_integrationTestNotes": "ROOT-LEVEL ERROR END EVENTS (mergeRequestClosedError, devDeploymentError, stageDeploymentError, prodDeploymentError): these end with an uncaught error end event (codes 500/500) that raises a process-level error and creates an incident, so the instance never reaches IS_COMPLETED. CPT covers these by routing to the branch and asserting the error end event is reached with state IS_ACTIVE (the element sits active pending the incident) rather than asserting process completion or termination. LOOP-BACK 'no'/'else' FLOWS (splitCheckDevDeployment/Stage/Prod 'no', joinCheckMergeRequestStatus 'else'): covered by publishing a non-matching webhook first (different deployedFolder, or action=update) so the gateway routes the default flow and re-awaits the catch event, then publishing the matching webhook. The closed-MR path can still be verified via integration testing: publish a webhook with action=close and confirm the process raises an incident on mergeRequestClosedError. INTEGRATION NOTES — This process integrates with GitLab API (create branch, check file, update/create file, open merge request) and Camunda Web Modeler API (get token, get folder details, get file content, get/create milestones). Integration tests should: (1) use a real GitLab test repository; (2) use real Web Modeler API credentials; (3) verify the merge request is created with correct content; (4) verify milestones are created in Web Modeler; (5) verify successful deployment events trigger stage and prod deployment milestones. Key CPT patterns: openMergeRequest resultExpression sets createdMergeRequest (not mergeRequestId) — used as correlationKey for checkMergeRequestStatus webhook (977b3fd3..., correlationKey=createdMergeRequest.id). Deployment webhooks use static correlation keys (dev/stage/prod). manualQaTest is a native Zeebe user task (zeebe:userTask) — use COMPLETE_USER_TASK. splitAdditionalTasks is a parallel gateway — must complete all 3 paths: optionalTests, optionalBusinessOwnerVerification, and the direct path (handled automatically). PUBLISH_MESSAGE variables must match the resultExpression output (e.g. devDeploymentWebhookPayload) not raw request.body. Note: getFolderDetails must return folder.content.files array with items having an 'id' field (not 'fileId') since getFileContent uses file.id in URL. splitIsDmn routes BPMN files to getLatestMilestone (default path) and DMN files to endNoDmnMilestoneComparison (skip). getFileContent sets 'content' variable (via resultExpression header), not a nested 'file' object. The multi-instance sub-process runs per file: parallel fork (createMilestone + getFileContent), then getLatestMilestone (for BPMN), then splitHasMilestone (null → no comparison link needed)."
 }

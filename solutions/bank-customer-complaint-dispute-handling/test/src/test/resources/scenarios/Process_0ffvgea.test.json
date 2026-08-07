@@ -333,6 +333,362 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "customer slow to send documents - reminder sent",
+      "description": "Customer has not returned documents. The non-interrupting two-day timer on the receive-documents task fires, a reminder is sent, and the reminder branch completes while the dispute continues to a no-refund settlement.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "variables": {
+            "customerId": "CUST004",
+            "disputeDetails": {
+              "disputeId": "D004",
+              "disputeAmount": {
+                "amount": 500,
+                "currency": "EUR"
+              },
+              "disputeStartDate": "2024-08-10T10:00:00Z"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0f196ti"
+          },
+          "variables": {}
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT49H"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0yj7tox"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_1om9n2v"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "dispute_process_receive_documents",
+          "correlationKey": "D004CUST004",
+          "variables": {
+            "documentsReceived": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1nvtpnt"
+          },
+          "variables": {
+            "customerInfo": {
+              "name": "Dan"
+            },
+            "customer_claim_frequency": 2
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1ec0e8t"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1ys0vez"
+          },
+          "variables": {
+            "vendorInfo": {
+              "name": "Vendor D"
+            },
+            "vendor_claim_frequency": 3
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "dispute_process_refund_approved",
+          "correlationKey": "D004",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0maynr7"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "vendor does not react - timer fires, manual decision",
+      "description": "Vendor proof is requested but the vendor never responds. The two-day timer on the event-based gateway fires, ending the vendor validation as 'vendor did not react in time', escalating to a manual fraud decision that ends in no refund.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "variables": {
+            "customerId": "CUST005",
+            "disputeDetails": {
+              "disputeId": "D005",
+              "disputeAmount": {
+                "amount": 500,
+                "currency": "EUR"
+              },
+              "disputeStartDate": "2024-08-11T10:00:00Z"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0f196ti"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "dispute_process_receive_documents",
+          "correlationKey": "D005CUST005",
+          "variables": {
+            "documentsReceived": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1nvtpnt"
+          },
+          "variables": {
+            "customerInfo": {
+              "name": "Eve"
+            },
+            "customer_claim_frequency": 4
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1ec0e8t"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1ys0vez"
+          },
+          "variables": {
+            "vendorInfo": {
+              "name": "Vendor E"
+            },
+            "vendor_claim_frequency": 10
+          }
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT49H"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_130gtbd"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_0ynau00"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "Activity_0ynau00"
+          },
+          "variables": {
+            "isRefund": false
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0maynr7"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "vendor declines refund with proof - manual decision",
+      "description": "The vendor returns signed proof declining the refund. The 'refund declined with proof' message ends vendor validation as 'vendor declined refund', escalating to a manual fraud decision that ends in no refund.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "variables": {
+            "customerId": "CUST006",
+            "disputeDetails": {
+              "disputeId": "D006",
+              "disputeAmount": {
+                "amount": 500,
+                "currency": "EUR"
+              },
+              "disputeStartDate": "2024-08-12T10:00:00Z"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0f196ti"
+          },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "dispute_process_receive_documents",
+          "correlationKey": "D006CUST006",
+          "variables": {
+            "documentsReceived": true
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1nvtpnt"
+          },
+          "variables": {
+            "customerInfo": {
+              "name": "Frank"
+            },
+            "customer_claim_frequency": 4
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1ec0e8t"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1ys0vez"
+          },
+          "variables": {
+            "vendorInfo": {
+              "name": "Vendor F"
+            },
+            "vendor_claim_frequency": 10
+          }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "dispute_process_refund_declined",
+          "correlationKey": "D006",
+          "variables": {
+            "vendorProofText": "Signed charge slip on file."
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_0sc8le6"
+            }
+          ],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_0ynau00"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "Activity_0ynau00"
+          },
+          "variables": {
+            "isRefund": false
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0maynr7"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_0ffvgea"
+          },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) Activity_1nvtpnt (Store information and get customer info) calls real CRM API and returns actual customer data including claim frequency; (2) Activity_0iv8gg2 (DMN - fraud rating confidence 'determine-fraud-rating-1dmmwcu') evaluates real rules — COLLECT hit policy, inputs: customer_claim_frequency, vendor_claim_frequency, disputeDetails.disputeAmount.amount. DMN must be deployed: determine_fraud_rating_confidence.dmn; (3) Activity_1ys0vez (Get vendor info) calls real vendor API and returns vendor claim frequency; (4) Activity_1pqdlzs (Initiate credit and clawback action) calls real payment system. Key flow: after Activity_1ys0vez, inner sub-process hits event-based gateway (Gateway_1p7bkh1) — must publish EITHER dispute_process_refund_approved OR dispute_process_refund_declined (correlationKey=disputeDetails.disputeId) to unblock. Taking 'vendor declined' path (dispute_process_refund_declined) throws escalation directly to Activity_0ynau00 (bypasses DMN). Taking 'refund_approved' or timer path goes through DMN. Note: decide_on_fraud_case.form must be deployed."

@@ -62,7 +62,147 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "transaction started then completed - user informed mid-processing",
+      "description": "Task added to queue. Webhook reports the transaction started, so the user is informed and the item check loops back. A second webhook reports the transaction completed and the item is processed.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "variables": { "itemId": "ITEM004" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_118pfe1" },
+          "variables": { "queueItemId": "Q004" }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "36a59b39-c6d5-41e6-aa34-bd805badab31",
+          "correlationKey": "Q004",
+          "variables": { "queueItemStatus": "queueItem.transactionStarted" }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "elementSelectors": [{ "elementId": "Activity_0om9p4a" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "36a59b39-c6d5-41e6-aa34-bd805badab31",
+          "correlationKey": "Q004",
+          "variables": { "queueItemStatus": "queueItem.transactionCompleted" }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "transaction failed - compensation reverts the RPA job",
+      "description": "Task added to queue. Webhook reports the transaction failed, raising the item-failed error. The boundary on the item check triggers compensation, the revert RPA job handler runs, and the item is then handled manually.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "variables": { "itemId": "ITEM005" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_118pfe1" },
+          "variables": { "queueItemId": "Q005" }
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "36a59b39-c6d5-41e6-aa34-bd805badab31",
+          "correlationKey": "Q005",
+          "variables": { "queueItemStatus": "queueItem.transactionFailed" }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "elementSelectors": [{ "elementId": "Event_1wojnup" }],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1dibkd5" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "elementSelectors": [
+            { "elementId": "Activity_1dibkd5" },
+            { "elementId": "Event_0gq12nk" }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "no bot response - timer expires, retry loops back, then completes",
+      "description": "Task added to queue. No webhook arrives, so the 60-second timer expires and the item times out. The agent reviews the queue item and chooses to wait, looping back through the retry link. A webhook then reports the transaction completed.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "variables": { "itemId": "ITEM006" }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_118pfe1" },
+          "variables": { "queueItemId": "Q006" }
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT61S"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "elementSelectors": [{ "elementId": "Event_1vvi0dm" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "elementSelectors": [{ "elementId": "Event_1ado95h" }],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0svfozj" },
+          "variables": { "decision": "wait" }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "elementSelectors": [{ "elementId": "Event_0pvygwq" }],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "36a59b39-c6d5-41e6-aa34-bd805badab31",
+          "correlationKey": "Q006",
+          "variables": { "queueItemStatus": "queueItem.transactionCompleted" }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Orchestrate_UiPath_Bot" },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
-  "_integrationTestNotes": "Integration tests should verify: (1) Activity_118pfe1 (add task to queue) calls real UiPath Orchestrator API and confirms item is queued; (2) Event_16yd83w (webhook intermediate catch event, message name '36a59b39-c6d5-41e6-aa34-bd805badab31') receives real UiPath status callbacks — correlationKey is queueItemId; (3) Activity_1dibkd5 (revert RPA job) is a compensation handler (isForCompensation=true) triggered by compensation events, not directly accessible via CPT assertions — test via integration with real UiPath Orchestrator; (4) Activity_0svfozj (get queue item info) and Activity_0hztmxc (manually review queue item) are reached via boundary timer on Activity_1ko88ft in real environment; (5) Error boundary Event_04itckl on Activity_118pfe1 is a compensation boundary (not error) — compensation path requires real UiPath failure scenario. Note: Event_08710ws is an ERROR end event (errorCode=item_timed_out_or_abandoned) — when queueItemStatus=transactionAbandoned, it throws an error caught by boundary Event_16ail2y on Activity_1ko88ft → Activity_0svfozj (get queue item info). After Activity_0svfozj, Activity_0hztmxc (manualTask) and Activity_1umb1rv (manualTask) auto-execute in Zeebe. Gateway_0z2t5ph needs decision='manual' to route to the manual processing path."
+  "_integrationTestNotes": "The CPT suite covers 100% of BPMN flow elements, including the compensation handler, the retry link loop, and the 60s timer path. Integration tests against a real UiPath Orchestrator still add value for: (1) Activity_118pfe1 (add task to queue) calling the real UiPath API and confirming the item is queued; (2) Event_16yd83w (webhook intermediate catch event, message name '36a59b39-c6d5-41e6-aa34-bd805badab31') receiving real UiPath status callbacks — correlationKey is queueItemId; (3) Activity_1dibkd5 (revert RPA job, isForCompensation=true) calling the real revert API. CPT coverage details: compensation (Event_0gq12nk throw -> Event_04itckl boundary on Activity_118pfe1 -> Activity_1dibkd5 revert handler) is exercised by the transaction-failed case, where Activity_1dibkd5 is completed via COMPLETE_JOB and the throw event asserted IS_COMPLETED. The 60s timer (Event_1vvi0dm -> Event_1ado95h) is driven by INCREASE_TIME PT61S, and the retry link (Event_0sl0vbh -> Event_0pvygwq -> Gateway_1jz7av2 loop) by Gateway_0z2t5ph decision='wait'. Event_08710ws (abandoned) and decision='manual' route to the manual processing tail (Activity_0hztmxc, Activity_1umb1rv)."
 }

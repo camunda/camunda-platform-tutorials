@@ -2,8 +2,8 @@
   "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.9/schema.json",
   "testCases": [
     {
-      "name": "happy path - agent resolves successfully, case solved",
-      "description": "Customer email received. Past conversations fetched. Agent handles request. Agent-as-a-Judge rates AGENT_SUCCESS. Human reviews resolution. Final answer sent. Case solved.",
+      "name": "happy path — agent resolves successfully, case solved",
+      "description": "Started at Fetch past conversations (the message start event Event_WaitForEmail cannot be instantiated via the CPT create-instance API, which requires a none start event). Past conversations fetched. Agent handles request. Agent-as-a-Judge rates AGENT_SUCCESS. Human reviews resolution. Final answer sent. Case solved.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
@@ -12,23 +12,20 @@
           "variables": {
             "currentEmail": {
               "subject": "Question about my loan application",
-              "body": "What is the current status of my loan application?",
-              "from": "customer@example.com"
+              "plainTextBody": "What is the current status of my loan application?",
+              "fromAddress": "customer@example.com",
+              "messageId": "msg-happy-1"
             }
           }
         },
         {
           "type": "COMPLETE_JOB",
           "jobSelector": { "elementId": "Activity_0kce977" },
-          "variables": {
-            "pastConversations": [
-              { "date": "2024-01-01", "summary": "Customer inquired about rates" }
-            ]
-          }
+          "variables": { "customerPreviousConversationContext": "Customer inquired about rates on 2024-01-01" }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": { "elementId": "Activity_04glkkx" },
           "variables": {
             "agent": {
               "responseText": "Your loan application is under review. You will receive an update within 2 business days.",
@@ -87,8 +84,8 @@
       ]
     },
     {
-      "name": "agent suboptimal - manual finalization required",
-      "description": "Agent-as-a-Judge rates AGENT_SUBOPTIMAL. Case sent to Finalize case manually user task. Human finalizes.",
+      "name": "agent suboptimal — manual finalization required",
+      "description": "Agent-as-a-Judge rates AGENT_SUBOPTIMAL. Case routed to Finalize case manually user task. Human finalizes; case resolution applied by human.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
@@ -97,19 +94,20 @@
           "variables": {
             "currentEmail": {
               "subject": "Loan rate inquiry",
-              "body": "What interest rate will I get on a 10-year loan?",
-              "from": "customer2@example.com"
+              "plainTextBody": "What interest rate will I get on a 10-year loan?",
+              "fromAddress": "customer2@example.com",
+              "messageId": "msg-subopt-1"
             }
           }
         },
         {
           "type": "COMPLETE_JOB",
           "jobSelector": { "elementId": "Activity_0kce977" },
-          "variables": { "pastConversations": [] }
+          "variables": { "customerPreviousConversationContext": "" }
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": { "elementId": "Activity_04glkkx" },
           "variables": {
             "agent": {
               "responseText": "Interest rates vary. Please contact your branch for exact rates.",
@@ -163,8 +161,91 @@
       ]
     },
     {
-      "name": "no past conversations found - agent runs, case reviewed",
-      "description": "Fetch past conversations raises error (no history). Process continues to agent. Agent succeeds. Case solved.",
+      "name": "judge requires human resolution — outer escalation end",
+      "description": "Agent-as-a-Judge rates HUMAN_INTERVENTION_REQUIRED (default flow). Routes to Event_1jfz6dk escalation throw and the Human control triggered end event.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "startInstructions": [{ "type": "START_BEFORE_ELEMENT", "elementId": "Activity_0kce977" }],
+          "variables": {
+            "currentEmail": {
+              "subject": "Complex restructuring request",
+              "plainTextBody": "I need to restructure my defaulted loan urgently.",
+              "fromAddress": "customer3@example.com",
+              "messageId": "msg-human-1"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0kce977" },
+          "variables": { "customerPreviousConversationContext": "" }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "elementId": "Activity_04glkkx" },
+          "variables": {
+            "agent": {
+              "responseText": "This request requires human review.",
+              "context": {
+                "state": "READY",
+                "metrics": { "modelCalls": 2, "tokenUsage": { "inputTokenCount": 120, "outputTokenCount": 60 } },
+                "conversation": {
+                  "type": "in-process",
+                  "messages": [
+                    { "role": "user", "content": [{ "type": "text", "text": "I need to restructure my defaulted loan." }] },
+                    { "role": "assistant", "content": [{ "type": "text", "text": "This request requires human review." }] }
+                  ]
+                }
+              }
+            }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0tn95r9" },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0hp732o" },
+          "variables": {
+            "decision": "HUMAN_INTERVENTION_REQUIRED",
+            "reasoning": "Defaulted-loan restructuring exceeds agent authority.",
+            "reasoning_quality": "Adequate.",
+            "identified_issues": "Requires licensed loan officer.",
+            "customer_email": ""
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [{ "elementId": "Event_1jfz6dk" }],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [{ "elementId": "Activity_0pyk6oo" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0pyk6oo" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "no past conversations found — fetch raises index_not_found",
+      "description": "Fetch past conversations raises index_not_found error; boundary Event_0fquesm fires; process continues to agent. Agent succeeds; case solved.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
@@ -173,8 +254,9 @@
           "variables": {
             "currentEmail": {
               "subject": "New customer loan application",
-              "body": "I would like to apply for a mortgage loan.",
-              "from": "newcustomer@example.com"
+              "plainTextBody": "I would like to apply for a mortgage loan.",
+              "fromAddress": "newcustomer@example.com",
+              "messageId": "msg-new-1"
             }
           }
         },
@@ -186,7 +268,7 @@
         },
         {
           "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
-          "jobSelector": { "jobType": "io.camunda.agenticai:aiagent-job-worker:1" },
+          "jobSelector": { "elementId": "Activity_04glkkx" },
           "variables": {
             "agent": {
               "responseText": "Welcome! I can help you start a mortgage loan application. Please provide your details.",
@@ -243,7 +325,306 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "agent tool — ask specialist, agent keeps control, save answer to knowledge base",
+      "description": "Agent activates query_knowledge_base and Ask_a_specialist tools. Specialist answers; agent keeps control (not taking_full_control); knowledgeBaseDecision=yes saves the answer. Covers Gateway_1g2difp agent branch, Gateway_1whb5u5 yes branch, Activity_062h34x, join and Specialist answered throw.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "startInstructions": [{ "type": "START_BEFORE_ELEMENT", "elementId": "Activity_0kce977" }],
+          "variables": {
+            "currentEmail": {
+              "subject": "Collateral question",
+              "plainTextBody": "Can I use a second property as collateral?",
+              "fromAddress": "customer4@example.com",
+              "messageId": "msg-spec-1"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0kce977" },
+          "variables": { "customerPreviousConversationContext": "" }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "elementId": "Activity_04glkkx" },
+          "activateElements": [
+            { "elementId": "query_knowledge_base", "variables": {} },
+            {
+              "elementId": "Ask_a_specialist",
+              "variables": { "requestDetails": "Is a second property acceptable as collateral for an existing mortgage?" }
+            }
+          ]
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "query_knowledge_base" },
+          "variables": { "toolResult": "No matching knowledge base entry found." }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [{ "elementId": "Ask_a_specialist" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Ask_a_specialist" },
+          "variables": {
+            "responseToRequest": "Yes, a second property may be pledged subject to a fresh valuation.",
+            "knowledgeBaseDecision": "yes",
+            "taking_full_control": false
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_062h34x" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [
+            { "elementId": "Gateway_1g2difp" },
+            { "elementId": "Gateway_1whb5u5" },
+            { "elementId": "Activity_062h34x" },
+            { "elementId": "Gateway_join_specialist" },
+            { "elementId": "Event_1wd6fel" }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "agent tool — ask specialist, agent keeps control, do not save to knowledge base",
+      "description": "Specialist answers; agent keeps control; knowledgeBaseDecision=no skips the save step. Covers Gateway_1whb5u5 no branch (Flow_0lexqwn) straight to the join.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "startInstructions": [{ "type": "START_BEFORE_ELEMENT", "elementId": "Activity_0kce977" }],
+          "variables": {
+            "currentEmail": {
+              "subject": "One-off payoff question",
+              "plainTextBody": "What is my exact payoff today?",
+              "fromAddress": "customer5@example.com",
+              "messageId": "msg-spec-2"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0kce977" },
+          "variables": { "customerPreviousConversationContext": "" }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "elementId": "Activity_04glkkx" },
+          "activateElements": [
+            {
+              "elementId": "Ask_a_specialist",
+              "variables": { "requestDetails": "Confirm exact payoff amount for this customer today." }
+            }
+          ]
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Ask_a_specialist" },
+          "variables": {
+            "responseToRequest": "Payoff is a one-off figure; do not store in the shared knowledge base.",
+            "knowledgeBaseDecision": "no",
+            "taking_full_control": false
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [
+            { "elementId": "Gateway_1whb5u5" },
+            { "elementId": "Gateway_join_specialist" },
+            { "elementId": "Event_1wd6fel" }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "agent tool — reply to customer via email and correlate the response",
+      "description": "Agent activates Reply_with_email_to_customer. Process waits at Event_WaitForResponse, the customer reply is correlated, Response correlated throw fires.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "startInstructions": [{ "type": "START_BEFORE_ELEMENT", "elementId": "Activity_0kce977" }],
+          "variables": {
+            "currentEmail": {
+              "subject": "Need more info",
+              "plainTextBody": "I have a question about my loan.",
+              "fromAddress": "customer6@example.com",
+              "messageId": "msg-reply-1"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0kce977" },
+          "variables": { "customerPreviousConversationContext": "" }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "elementId": "Activity_04glkkx" },
+          "activateElements": [
+            { "elementId": "Reply_with_email_to_customer", "variables": {} }
+          ]
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Reply_with_email_to_customer" },
+          "variables": { "ourReplyEmail": { "messageId": "reply-corr-1" } }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [{ "elementId": "Event_WaitForResponse" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "a8a45071-240f-4fc1-9d6b-9cb8e4f55971",
+          "correlationKey": "reply-corr-1",
+          "variables": { "responseEmail": { "plainTextBody": "Thanks, that resolves it." } }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [
+            { "elementId": "Reply_with_email_to_customer" },
+            { "elementId": "Event_WaitForResponse" },
+            { "elementId": "Event_0jmzwhr" }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "agent tool — knowledge base query empty, error boundary ignored",
+      "description": "Agent activates query_knowledge_base which throws index_not_found. The knowledge base empty boundary fires and routes to the ignore throw event.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "startInstructions": [{ "type": "START_BEFORE_ELEMENT", "elementId": "Activity_0kce977" }],
+          "variables": {
+            "currentEmail": {
+              "subject": "Obscure question",
+              "plainTextBody": "Do you offer loans on lunar real estate?",
+              "fromAddress": "customer7@example.com",
+              "messageId": "msg-kbempty-1"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0kce977" },
+          "variables": { "customerPreviousConversationContext": "" }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "elementId": "Activity_04glkkx" },
+          "activateElements": [
+            { "elementId": "query_knowledge_base", "variables": {} }
+          ]
+        },
+        {
+          "type": "THROW_BPMN_ERROR_FROM_JOB",
+          "jobSelector": { "elementId": "query_knowledge_base" },
+          "errorCode": "index_not_found",
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [
+            { "elementId": "Event_1wezv96" },
+            { "elementId": "Event_0wh5ha7" }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "agent tool — specialist takes full control, human-controlled subprocess resolves case",
+      "description": "Specialist sets taking_full_control=true. Gateway_1g2difp routes to Event_0xzg3s4 escalation. The Human controlled request event subprocess starts, the human handles the request, and Case resolved by human ends.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "startInstructions": [{ "type": "START_BEFORE_ELEMENT", "elementId": "Activity_0kce977" }],
+          "variables": {
+            "currentEmail": {
+              "subject": "Escalation needed",
+              "plainTextBody": "My loan situation is complicated and disputed.",
+              "fromAddress": "customer8@example.com",
+              "messageId": "msg-fullctrl-1"
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0kce977" },
+          "variables": { "customerPreviousConversationContext": "" }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": { "elementId": "Activity_04glkkx" },
+          "activateElements": [
+            {
+              "elementId": "Ask_a_specialist",
+              "variables": { "requestDetails": "Disputed loan situation, please take over." }
+            }
+          ]
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Ask_a_specialist" },
+          "variables": {
+            "responseToRequest": "I will take full control of this case.",
+            "knowledgeBaseDecision": "no",
+            "taking_full_control": true
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [{ "elementId": "Activity_0pyk6oo" }],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": { "elementId": "Activity_0pyk6oo" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [{ "elementId": "Event_0xzg3s4" }],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_0j5qzil" },
+          "elementSelectors": [
+            { "elementId": "Activity_0sw5ued" },
+            { "elementId": "Event_1daac7o" },
+            { "elementId": "Event_0pcdb7p" }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
-  "_integrationTestNotes": "Integration tests should verify: (1) Activity_0kce977 (Fetch past conversations) retrieves real conversation history from the long-term memory store; (2) Activity_04glkkx adHocSubProcess invokes real AWS Bedrock AI agent via aiagent-job-worker connector; (3) Activity_0hp732o (Agent as a Judge) calls real Bedrock LLM to evaluate agent performance; (4) Activity_0d9av47 (Final answer) sends real email to customer via email connector; (5) Activity_0tn95r9 (Save customer interaction) persists conversation to real memory store."
+  "_integrationTestNotes": "Integration tests should verify with a live LLM and connectors: (1) Activity_0kce977 fetches real conversation history from the long-term memory store; (2) Activity_04glkkx invokes the real AWS Bedrock AI agent and decides which tools to call — in CPT the tool activation and the agent's routing variables (knowledgeBaseDecision, taking_full_control) are mocked deterministically; (3) Activity_0hp732o calls a real Bedrock LLM to evaluate agent performance and emit the decision literal; (4) Activity_0d9av47 sends a real email; (5) Activity_0tn95r9 persists conversation to the real memory store; (6) Reply_with_email_to_customer + Event_WaitForResponse round-trips a real email reply."
 }

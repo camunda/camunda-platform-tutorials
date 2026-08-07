@@ -83,6 +83,110 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "order expires before execution - timer fires, order aborted",
+      "description": "BUY_LIMIT order accepted and registered. Broker never confirms execution. Order expiry date passes, timer fires, order aborted as expired, customer informed.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_wctxyvg" },
+          "variables": {
+            "orderId": "ORD003",
+            "orderType": "BUY_LIMIT",
+            "limitPricePerStock": { "price": 100.0, "currency": "USD" },
+            "orderExpiryDate": "2026-06-12T00:00:00Z"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_18y2a76" },
+          "variables": { "marketPrice": { "price": 99.5, "currency": "USD" } }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0s29l30" },
+          "variables": {}
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "PT48H"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": { "processDefinitionId": "Process_wctxyvg" },
+          "elementSelectors": [{ "elementId": "Event_1lxgzdh" }],
+          "state": "IS_TERMINATED"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1ccl3v1" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_wctxyvg" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "updated order received - broker resubmits, order reprocessed and executed",
+      "description": "BUY_LIMIT order rejected on first price check. Broker informed. Broker sends an updated order, which re-enters the price check, is accepted, registered, executed, and the customer is informed.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "Process_wctxyvg" },
+          "variables": {
+            "orderId": "ORD004",
+            "orderType": "BUY_LIMIT",
+            "limitPricePerStock": { "price": 100.0, "currency": "USD" },
+            "orderExpiryDate": "2099-12-31T23:59:59Z"
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_18y2a76" },
+          "variables": { "marketPrice": { "price": 120.0, "currency": "USD" } }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1w8rn3q" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "updated_order_received",
+          "correlationKey": "ORD004",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_18y2a76" },
+          "variables": { "marketPrice": { "price": 99.5, "currency": "USD" } }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_0s29l30" },
+          "variables": {}
+        },
+        {
+          "type": "PUBLISH_MESSAGE",
+          "name": "order_executed",
+          "correlationKey": "ORD004",
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": { "elementId": "Activity_1ni426c" },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "Process_wctxyvg" },
+          "state": "IS_COMPLETED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) Activity_18y2a76 (Retrieve market price) calls real market data API; (2) Activity_169hqdg DMN (Compare prices) evaluates real limit vs market price using DMN rules; (3) Activity_0s29l30 (Register order) persists to real order management system; (4) Event_1srf2st receives real message from broker confirming order execution; (5) Activity_1ni426c (Inform customer) sends real notification."

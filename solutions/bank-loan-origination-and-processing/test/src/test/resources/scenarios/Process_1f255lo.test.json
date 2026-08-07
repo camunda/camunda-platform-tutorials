@@ -338,6 +338,213 @@
           "state": "IS_COMPLETED"
         }
       ]
+    },
+    {
+      "name": "customer does not respond - reminder sent after 24h",
+      "description": "Loan auto-approved and offer sent. Customer has not yet accepted, so the non-interrupting 'twice in 48h' timer fires and a reminder mail is sent. The customer response task stays active.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "variables": {
+            "applicantName": "Erin Miller",
+            "loan": {
+              "amount": 10000,
+              "tenure": 36
+            },
+            "pi": {
+              "annual_salary": 50000
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0jg58ef"
+          },
+          "variables": {
+            "creditScore": 780
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_19tmw4x"
+          },
+          "variables": {
+            "ticketId": 1005
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0ff69jm"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1qx00c8"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_0ytx2e1"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P1D"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_0ifs0xt"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0ifs0xt"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_1nlwvrt"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_0ytx2e1"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "customer never responds - loan declined by timeout after 7 days",
+      "description": "Loan auto-approved and offer sent. Customer never accepts, so the interrupting 'after 7 days' timer on the customer response sub-process fires, terminating the wait and routing to the timeout decline end event.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "variables": {
+            "applicantName": "Frank Turner",
+            "loan": {
+              "amount": 10000,
+              "tenure": 36
+            },
+            "pi": {
+              "annual_salary": 50000
+            }
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0jg58ef"
+          },
+          "variables": {
+            "creditScore": 780
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_19tmw4x"
+          },
+          "variables": {
+            "ticketId": 1006
+          }
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_0ff69jm"
+          },
+          "variables": {}
+        },
+        {
+          "type": "COMPLETE_JOB",
+          "jobSelector": {
+            "elementId": "Activity_1qx00c8"
+          },
+          "variables": {}
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Activity_0ytx2e1"
+            }
+          ],
+          "state": "IS_ACTIVE"
+        },
+        {
+          "type": "INCREASE_TIME",
+          "duration": "P8D"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_0oxv702"
+            }
+          ],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "Process_1f255lo"
+          },
+          "elementSelectors": [
+            {
+              "elementId": "Event_1pq5rfu"
+            }
+          ],
+          "state": "IS_TERMINATED"
+        }
+      ]
     }
   ],
   "_integrationTestNotes": "Integration tests should verify: (1) Activity_0jg58ef (Get credit score) calls real credit bureau API with applicant details; (2) Activity_19tmw4x (Validate data and create ticket) calls real ticket system; (3) Activity_00toffi (DMN — calculate_loan_results_01uhf55) evaluates real rules with creditScore, loan.amount, loan.tenure, pi.annual_salary; (4) Activity_1qx00c8 (Send offer via mail) sends real email offer; (5) Activity_0ytx2e1 (Customer accepts offer) receives real customer response (receiveTask, message: customer_accepts_offer, correlationKey=ticketId); (6) Activity_0neec1e (Provide loan) calls real loan disbursement system. Key flow: decline paths (auto or manual) throw error Error_1waf4p2 → caught by error boundary on sub-process → event sub-process Activity_18spil4 triggered → must complete Activity_06izmqr (Send rejection mail) and Activity_02ronq9 (Record declined loan). Note: loan-underwriting-form.form must be deployed."
