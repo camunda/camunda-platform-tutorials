@@ -1,15 +1,6 @@
 {
   "components": [
     {
-      "text": "# Use a predefined scenario...",
-      "type": "text",
-      "layout": {
-        "row": "Row_04pl1rt",
-        "columns": null
-      },
-      "id": "Field_0a6kzzq"
-    },
-    {
       "label": "Scenario",
       "values": [
         {
@@ -25,7 +16,7 @@
           "value": ""
         }
       ],
-      "description": "Use pre-defined sceanrio - to use leave Shipment notes below blank.",
+      "description": "Choose a ready-made shipment to get started, or select Custom to write your own below.",
       "type": "select",
       "layout": {
         "row": "Row_scenario",
@@ -36,26 +27,8 @@
       "defaultValue": "SHIP-2026-0731 is prepared for transfer to Brazil. Supporting paperwork includes reference code TP53"
     },
     {
-      "text": "The following shipments notes are used:\n* Likely cleared: SHIP-2026-0731 is prepared for transfer to Brazil. Supporting paperwork includes reference code TP53.\n* Likely flagged: SHIP-2026-0900 is prepared for transfer to Germany. Supporting paperwork includes reference code BRCA1.",
-      "type": "text",
-      "layout": {
-        "row": "Row_1h31mub",
-        "columns": null
-      },
-      "id": "Field_0j1vwd9"
-    },
-    {
-      "text": "# ...or hand in your own data",
-      "type": "text",
-      "layout": {
-        "row": "Row_1wu4opr",
-        "columns": null
-      },
-      "id": "Field_12u5gzd"
-    },
-    {
       "label": "Shipment notes",
-      "description": "If set, overrides the scenario above. Leave blank to use the scenario selected above. The agent reads this to check for clearance.",
+      "description": "Optional. When filled in, used instead of the scenario above. The agent reads these notes to check for clearance.",
       "type": "textarea",
       "layout": {
         "row": "Row_shipment_notes",
