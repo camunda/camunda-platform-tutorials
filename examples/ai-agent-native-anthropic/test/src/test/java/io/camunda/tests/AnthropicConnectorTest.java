@@ -37,9 +37,9 @@ import org.wiremock.spring.EnableWireMock;
       "camunda.process-test.runtime-mode=managed",
       "camunda.process-test.connectors-enabled=true",
       "camunda.process-test.camunda-docker-image-name=camunda/camunda",
-      "camunda.process-test.camunda-docker-image-version=8.10.0-alpha5",
+      "camunda.process-test.camunda-docker-image-version=${camunda.test.version}",
       "camunda.process-test.connectors-docker-image-name=camunda/connectors-bundle",
-      "camunda.process-test.connectors-docker-image-version=8.10.0-alpha5",
+      "camunda.process-test.connectors-docker-image-version=${camunda.test.version}",
       "camunda.process-test.connectors-secrets.ANTHROPIC_API_KEY=test-api-key",
       "camunda.process-test.connectors-secrets.ANTHROPIC_API_ENDPOINT="
           + "http://host.testcontainers.internal:${wiremock.server.port}"
