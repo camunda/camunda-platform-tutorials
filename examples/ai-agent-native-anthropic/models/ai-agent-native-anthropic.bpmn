@@ -40,7 +40,7 @@
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="1" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" />
-          <zeebe:header key="errorExpression" value="=bpmnError(&#34;AGENT_FAILURE&#34;, error.message)" />
+          <zeebe:header key="errorExpression" value="=if is defined(error) and error != null then bpmnError(&#34;AGENT_FAILURE&#34;, string(error.message)) else null" />
           <zeebe:header key="retryBackoff" value="PT1S" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>

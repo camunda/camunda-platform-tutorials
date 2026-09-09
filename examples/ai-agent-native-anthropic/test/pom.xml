@@ -16,6 +16,7 @@
     <!-- GA MERGE GATE: promote this single pin to Camunda 8.10 GA and rerun every documented gate. -->
     <camunda.version>8.10.0-alpha5</camunda.version>
     <java.version>21</java.version>
+    <wiremock-spring-boot.version>4.2.2</wiremock-spring-boot.version>
   </properties>
   <dependencies>
     <dependency>
@@ -30,9 +31,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.wiremock</groupId>
-      <artifactId>wiremock-standalone</artifactId>
-      <version>3.13.1</version>
+      <groupId>org.wiremock.integrations</groupId>
+      <artifactId>wiremock-spring-boot</artifactId>
+      <version>${wiremock-spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
