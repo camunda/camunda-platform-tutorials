@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Native Anthropic case-resolution agent</title>
+  <desc id="desc">A case enters an Anthropic AI Agent subprocess, which calls a deterministic resolution-policy tool before a structured result is accepted or rejected.</desc>
+  <rect width="1200" height="630" fill="#f4f4f4"/>
+  <text x="72" y="92" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#161616">Native Anthropic case resolution</text>
+  <text x="72" y="135" font-family="Arial, sans-serif" font-size="23" fill="#525252">Reason, call a deterministic BPMN tool, return a structured recommendation</text>
+  <circle cx="110" cy="315" r="30" fill="#ffffff" stroke="#0f62fe" stroke-width="5"/>
+  <text x="70" y="375" font-family="Arial, sans-serif" font-size="20" fill="#161616">Case received</text>
+  <path d="M140 315H220" stroke="#525252" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="225" y="200" width="510" height="230" rx="14" fill="#ffffff" stroke="#a56eff" stroke-width="5"/>
+  <text x="258" y="248" font-family="Arial, sans-serif" font-size="27" font-weight="700" fill="#161616">Anthropic AI Agent</text>
+  <text x="258" y="283" font-family="Arial, sans-serif" font-size="19" fill="#525252">adaptive reasoning · prompt caching · 4-call limit</text>
+  <rect x="335" y="325" width="290" height="68" rx="8" fill="#e8daff" stroke="#6929c4" stroke-width="3"/>
+  <text x="370" y="354" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#161616">LookupResolutionPolicy</text>
+  <text x="382" y="380" font-family="Arial, sans-serif" font-size="17" fill="#525252">FEEL script tool with fromAi()</text>
+  <path d="M735 315H815" stroke="#525252" stroke-width="4" marker-end="url(#arrow)"/>
+  <polygon points="855,275 895,315 855,355 815,315" fill="#ffffff" stroke="#0f62fe" stroke-width="4"/>
+  <text x="786" y="400" font-family="Arial, sans-serif" font-size="19" fill="#161616">Structured result?</text>
+  <path d="M895 315H995" stroke="#525252" stroke-width="4" marker-end="url(#arrow)"/>
+  <circle cx="1035" cy="315" r="30" fill="#ffffff" stroke="#24a148" stroke-width="7"/>
+  <text x="982" y="375" font-family="Arial, sans-serif" font-size="20" fill="#161616">Case resolved</text>
+  <path d="M855 355V480H995" stroke="#525252" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+  <circle cx="1035" cy="480" r="30" fill="#ffffff" stroke="#da1e28" stroke-width="7"/>
+  <text x="957" y="540" font-family="Arial, sans-serif" font-size="20" fill="#161616">Result rejected</text>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#525252"/>
+    </marker>
+  </defs>
+</svg>
