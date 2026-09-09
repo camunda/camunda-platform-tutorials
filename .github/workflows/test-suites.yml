@@ -7,7 +7,7 @@ on:
 
 jobs:
   detect:
-    name: Detect changed solutions
+    name: Detect changed test suites
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Find changed solutions with test suites
+      - name: Find changed directories with test suites
         id: set-matrix
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
@@ -30,9 +30,9 @@ jobs:
             HEAD="${{ github.event.pull_request.head.sha }}"
           fi
 
-          # Find solutions/quick-start dirs that changed AND have a test subdir
+          # Find changed top-level tutorial entries that have a Maven test suite.
           CHANGED=$(git diff --name-only "$BASE"..."$HEAD" \
-            | grep -E '^(solutions|quick-start)/[^/]+/' \
+            | grep -E '^(solutions|quick-start|examples)/[^/]+/' \
             | cut -d'/' -f1-2 \
             | sort -u)
 

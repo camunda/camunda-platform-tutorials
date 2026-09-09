@@ -1,0 +1,214 @@
+{
+  "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.10/schema.json",
+  "testCases": [
+    {
+      "name": "Billing case — policy tool resolves a high-priority request",
+      "description": "The agent invokes the deterministic policy tool and returns a valid structured recommendation.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "variables": {
+            "caseId": "CASE-1",
+            "caseRequest": "Resolve a duplicate billing charge with severity 4.",
+            "policyContext": "Reusable policy context for deterministic process testing."
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": {"elementId": "ResolveCaseAgent"},
+          "variables": {
+            "agent": {
+              "context": {
+                "state": "WAITING_FOR_TOOL_CALL_RESULTS",
+                "metrics": {"modelCalls": 1, "tokenUsage": {"inputTokenCount": 1200, "outputTokenCount": 80}}
+              }
+            }
+          },
+          "activateElements": [
+            {
+              "elementId": "LookupResolutionPolicy",
+              "variables": {
+                "toolCall": {
+                  "_meta": {"id": "toolu_policy_1", "name": "LookupResolutionPolicy"},
+                  "category": "billing",
+                  "severity": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "elementSelectors": [{"elementId": "LookupResolutionPolicy"}],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": {"elementId": "ResolveCaseAgent"},
+          "variables": {
+            "agent": {
+              "responseText": "{\"outcome\":\"resolved\",\"priority\":\"high\",\"recommendation\":\"Verify the invoice and issue a correction.\",\"rationale\":\"The billing policy marks severity 4 as high priority.\"}",
+              "responseJson": {
+                "outcome": "resolved",
+                "priority": "high",
+                "recommendation": "Verify the invoice and issue a correction.",
+                "rationale": "The billing policy marks severity 4 as high priority."
+              },
+              "context": {
+                "state": "READY",
+                "metrics": {"modelCalls": 2, "tokenUsage": {"inputTokenCount": 2250, "outputTokenCount": 170}}
+              }
+            }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "elementSelectors": [
+            {"elementId": "CaseReceived"},
+            {"elementId": "ResolveCaseAgent"},
+            {"elementId": "LookupResolutionPolicy"},
+            {"elementId": "StructuredResultAvailable"},
+            {"elementId": "CaseResolved"}
+          ],
+          "state": "IS_COMPLETED_IN_ORDER"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "Unknown category — policy tool returns a manual-review result",
+      "description": "An unsupported category is handled deterministically and still produces a bounded recommendation.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "variables": {
+            "caseId": "CASE-2",
+            "caseRequest": "Resolve an unsupported warranty request.",
+            "policyContext": "Reusable policy context for deterministic process testing."
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": {"elementId": "ResolveCaseAgent"},
+          "activateElements": [
+            {
+              "elementId": "LookupResolutionPolicy",
+              "variables": {
+                "toolCall": {
+                  "_meta": {"id": "toolu_policy_2", "name": "LookupResolutionPolicy"},
+                  "category": "warranty",
+                  "severity": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": {"elementId": "ResolveCaseAgent"},
+          "variables": {
+            "agent": {
+              "responseJson": {
+                "outcome": "manual-review",
+                "priority": "medium",
+                "recommendation": "Route the case to case review.",
+                "rationale": "No deterministic policy exists for this category."
+              },
+              "context": {"state": "READY", "metrics": {"modelCalls": 2}}
+            }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "elementSelectors": [{"elementId": "CaseResolved"}],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "Malformed response — successful resolution is rejected",
+      "description": "Unparseable provider text cannot take the successful structured-result path.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "variables": {
+            "caseId": "CASE-3",
+            "caseRequest": "Resolve a billing request.",
+            "policyContext": "Reusable policy context for deterministic process testing."
+          }
+        },
+        {
+          "type": "COMPLETE_JOB_AD_HOC_SUB_PROCESS",
+          "jobSelector": {"elementId": "ResolveCaseAgent"},
+          "variables": {
+            "agent": {
+              "responseText": "This is not JSON.",
+              "context": {"state": "READY", "metrics": {"modelCalls": 1}}
+            }
+          },
+          "completionConditionFulfilled": true
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "elementSelectors": [{"elementId": "InvalidStructuredResult"}],
+          "state": "IS_COMPLETED"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "Model-call exhaustion — connector failure is handled",
+      "description": "A bounded agent failure follows the explicit BPMN error path instead of reporting success.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "variables": {
+            "caseId": "CASE-4",
+            "caseRequest": "Resolve a looping request.",
+            "policyContext": "Reusable policy context for deterministic process testing."
+          }
+        },
+        {
+          "type": "THROW_BPMN_ERROR_FROM_JOB",
+          "jobSelector": {"elementId": "ResolveCaseAgent"},
+          "errorCode": "AGENT_FAILURE",
+          "errorMessage": "MAXIMUM_NUMBER_OF_MODEL_CALLS_REACHED"
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "elementSelectors": [{"elementId": "AgentFailureBoundary"}, {"elementId": "AgentFailed"}],
+          "state": "IS_COMPLETED_IN_ORDER"
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {"processDefinitionId": "ai-agent-native-anthropic"},
+          "state": "IS_COMPLETED"
+        }
+      ]
+    }
+  ]
+}

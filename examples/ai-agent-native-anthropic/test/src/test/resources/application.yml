@@ -1,0 +1,11 @@
+camunda:
+  process-test:
+    runtime-mode: shared
+
+logging:
+  level:
+    root: warn
+    io.camunda.process.test: info
+    io.camunda.tests: info
+    org.testcontainers: warn
+    tc: error

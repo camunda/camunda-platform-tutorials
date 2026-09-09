@@ -1,0 +1,26 @@
+{
+  "$schema": "https://camunda.com/schemas/runnable-example/v1.json",
+  "title": "Native Anthropic case-resolution agent",
+  "subtitle": "Reason, call a BPMN tool, and return a structured recommendation",
+  "description": "A self-contained AI Agent Sub-process using Camunda 8.10's native Anthropic provider, reasoning controls, prompt caching, a deterministic fromAi() policy tool, bounded calls, structured output, and credential-free process and connector-runtime tests.",
+  "creator": "Camunda",
+  "camundaVersion": "8.10+",
+  "thumbnail": "docs/ai-agent-native-anthropic.png",
+  "thumbnailAlt": "BPMN model showing a case entering a native Anthropic AI Agent subprocess with a deterministic resolution-policy script tool, followed by structured-result validation and separate success and failure end events.",
+  "resources": [
+    "models/ai-agent-native-anthropic.bpmn"
+  ],
+  "importTitle": "Native Anthropic case-resolution agent",
+  "sampleVariables": [
+    {
+      "label": "High-priority billing case",
+      "variables": {
+        "caseId": "CASE-2026-0917",
+        "caseRequest": "A customer reports a duplicate express-delivery charge after order ORD-9472 arrived three days late. Classify this as a billing case with severity 4, consult the resolution policy, and recommend the next action.",
+        "policyContext": "Use the checked-in demo-input.json value for the full reusable prompt prefix."
+      }
+    }
+  ],
+  "documentation": "https://github.com/camunda/camunda-8-tutorials/tree/main/examples/ai-agent-native-anthropic",
+  "support": "https://forum.camunda.io/"
+}
